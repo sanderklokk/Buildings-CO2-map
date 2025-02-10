@@ -12,7 +12,7 @@ To-Do:
 
 **properties: ["properties": "bygningsstatuskode: ]**: strings. Verdier (i dette datasettet): TB, MB, MF, FA
 
-**features: [geometry: {coordinates: }]**: Koordinatene for bygget TO-DO: (Finn ut av koordinattype. Byggene er ikke midt i det arabiske hav)
+**features: [geometry: {coordinates: }]**: Koordinatene for bygget i formen [breddegrad, lengdegrad]
 
 **type: feature collections**: Overordna array. Ignorer, ettersom at vi kun ser på innmaten av det nøstede arrayet  
 
