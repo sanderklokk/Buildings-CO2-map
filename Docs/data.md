@@ -1,8 +1,3 @@
-> To-Do:
-> * Gå over data15
-> * Strukturer/formuler bedre
-> * Sub-To-Dos under
-
 # Dokumentasjon for data14.json og data15.json
 
 Dette dokumentet beskriver strukturen og innholdet i data14.json og data15.json. Diese datasettene gir henholdvis grunnleggende og detaljert informasjon om bygninger.
@@ -15,15 +10,25 @@ Dette dokumentet beskriver strukturen og innholdet i data14.json og data15.json.
 ### `properties`
 - `bygningsnr`: Unik ID for bygningen. Brukes som primærnøkkel i data14 og som foreign key for kobling med data15.
 
-- `msid`: En eller annen ID (antar relatert til et unikt byggingsobjekt). *TO-DO: finn ut av det*
+- `msid`: En eller annen ID (antar relatert til et unikt byggingsobjekt). Kanskje gårdsnummer?? *TO-DO: finn ut av det*
 
 - `dato`: Dato i ISO 8601-format (antar dump timestamp som viser når dataen ble generert intil videre). *TO-DO: finn ut hva det faktisk vil si*
 
-- `bygningsstatuskode`: Strings som viser bygningens status. Verdier i dette datasettet:
-  - `TB`: Bygning er tatt i bruk
-  - `MB`: Midlertidig brukstillatelse
-  - `MF`: Meldingsak tiltak fullført
-  - `FA`: Ferdigattest
+- `bygningsstatuskode`: Kode for fysisk/juridisk tilstand til bygget / hvor bygget er i bygningsprosessen. Verdier i dette datasettet:
+  - `TB`: Bygning er tatt i bruk - I bruk, inkluder i kartet
+  - `FA`: Ferdigattest - Bygget står ferdig, skal med i kartet
+  - `BR`: Bygning er revet eller brent - Skal fjernes fra kartet
+  - `BU`: Bygningsnummer er utgått - Skal fjernes fra kartet
+  - `IG`: Igangsettingstillatelse - Ikke ferdig, skal ikke være på kartet
+  - `BA`: Bygging avlyst - Skal fjernes fra kartet
+  - `MB`: Midlertidig brukstillatelse - I bruk, skal være på kartet
+  - `RA`: Rammetillatelse - Ikke ferdigbygd, ikke inkludert i kartet
+  - `MF`: Meldingsak tiltak fullført - Tilltak fullført, inkluder i kartet
+  - `GR`: Bygning godkjent revet/brent - Fjernes fra kartet
+  - `IP`: Ikke pliktig registrert - Untatt regelverket, skal være på kartet
+  - `FS`: Frittatt for søknadsplikt - Skal være på kartet, bygg under grensen for søknadsplikt
+  - `BF`: Bygning flyttet - Skal fjernes fra kartet
+  - `MT`: Meldingsak registrer tiltak - Tilltak ikke fullført, ikke inkluder i kartet
   - Flere koder: [BygningsstatusKode fra GeoNorge](https://objektkatalog.geonorge.no/Objekttype/Index/EAID_5631E82B_3B83_42e3_8E2B_83A3A20DAF8D)
 
 ### `features.geometry.coordinates`
@@ -49,7 +54,8 @@ Dette dokumentet beskriver strukturen og innholdet i data14.json og data15.json.
 - `tilbyggsnr`: Tilleggsnummer for tilbygg. `null` hvis ikke relevant.
 
 - `bygningstypekode`:
-  Kode som angir bygningstypen, f.eks.:
+  Kode som angir bygningstypen. Koden gis ved 3-siffrede tall hvor hvert siffer peker ut en node i hvert nivå av klassifiseringstreet.
+Så 135 = hovedkategori 1: bolig, underkategori 5: Bygning for bofellesskap, type 1: Bo- og servicesenter. f.eks.:
   - `111`: Enebolig
   - `112`: Enebolig m/hybel/sokkelleilighet
   - `131`: Rekkehus
@@ -57,12 +63,23 @@ Dette dokumentet beskriver strukturen og innholdet i data14.json og data15.json.
   - `722`: Bo- og behandlingssenter
   - `null`: Ikke spesifisert
   - Flere koder: [Standard for bygningstype / Matrikkelen fra SSB](https://www.ssb.no/klass/klassifikasjoner/31/koder)
+  - Fullstendig oversikt ligger i Public Data/64.csv.
 
-
-- `bygningstatuskode`:
-  Samme som i data14 (`TB`, `MB`, `MF`, `FA`), men kan også inneholde
-  - `BU`: Bygningsnummer er utgått
-  - `BR`: Bygning er revet eller brent
+- `bygningsstatuskode`: Kode for fysisk/juridisk tilstand til bygget / hvor bygget er i bygningsprosessen. Verdier i dette datasettet:
+  - `TB`: Bygning er tatt i bruk - I bruk, inkluder i kartet
+  - `FA`: Ferdigattest - Bygget står ferdig, skal med i kartet
+  - `BR`: Bygning er revet eller brent - Skal fjernes fra kartet
+  - `BU`: Bygningsnummer er utgått - Skal fjernes fra kartet
+  - `IG`: Igangsettingstillatelse - Ikke ferdig, skal ikke være på kartet
+  - `BA`: Bygging avlyst - Skal fjernes fra kartet
+  - `MB`: Midlertidig brukstillatelse - I bruk, skal være på kartet
+  - `RA`: Rammetillatelse - Ikke ferdigbygd, ikke inkludert i kartet
+  - `MF`: Meldingsak tiltak fullført - Tilltak fullført, inkluder i kartet
+  - `GR`: Bygning godkjent revet/brent - Fjernes fra kartet
+  - `IP`: Ikke pliktig registrert - Untatt regelverket, skal være på kartet
+  - `FS`: Frittatt for søknadsplikt - Skal være på kartet, bygg under grensen for søknadsplikt
+  - `BF`: Bygning flyttet - Skal fjernes fra kartet
+  - `MT`: Meldingsak registrer tiltak - Tilltak ikke fullført, ikke inkluder i kartet
   - Flere koder: [BygningsstatusKode fra GeoNorge](https://objektkatalog.geonorge.no/Objekttype/Index/EAID_5631E82B_3B83_42e3_8E2B_83A3A20DAF8D)
 
 - `antallboenheter`:
@@ -72,7 +89,7 @@ Dette dokumentet beskriver strukturen og innholdet i data14.json og data15.json.
   Antall etasjer i bygget. `0` kan forekomme for tilbygg eller uferdige bygg. Men 0 på veldig mange av byggene👀 Sus
 
 - `bebygdareal`:
-  Areal i m² som bygget dekker på bakken. `0` hvis ikke oppgitt.
+  Areal i m² som bygget dekker på bakken. `0` hvis ikke oppgitt. Står 0 på 90% av registrerte bygg👀 Sus
 
 - `bruksarealtotalt`:
   Totalt bruksareal i m².
