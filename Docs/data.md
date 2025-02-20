@@ -56,7 +56,8 @@ Dette dokumentet beskriver strukturen og innholdet i data14.json og data15.json.
   - `212`: Verkstedbygning
   - `722`: Bo- og behandlingssenter
   - `null`: Ikke spesifisert
-  - Flere koder: [BygningstypeKode fra GeoNorge](https://objektkatalog.geonorge.no/Objekttype/Index/EAID_3EBD8DF5_9CA2_404d_B280_586B7BBBE288)
+  - Flere koder: [Standard for bygningstype / Matrikkelen fra SSB](https://www.ssb.no/klass/klassifikasjoner/31/koder)
+
 
 - `bygningstatuskode`:
   Samme som i data14 (`TB`, `MB`, `MF`, `FA`), men kan også inneholde
@@ -68,7 +69,7 @@ Dette dokumentet beskriver strukturen og innholdet i data14.json og data15.json.
   Antall boenheter i bygget. `0` angir ingen boenheter (f.eks. næringsbygg)
 
 - `antalletasjer`:
-  Antall etasjer i bygget. `0` kan forekomme for tilbygg eller uferdige bygg.
+  Antall etasjer i bygget. `0` kan forekomme for tilbygg eller uferdige bygg. Men 0 på veldig mange av byggene👀 Sus
 
 - `bebygdareal`:
   Areal i m² som bygget dekker på bakken. `0` hvis ikke oppgitt.
