@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-
   /* COLORS */
-  --color-trk-deep-blue: #005AA7;
-  --color-trk-light-blue: #009BDF;
-  --color-trk-light-gray: #CCCCCC;
+  --color-trk-deep-blue: #005aa7;
+  --color-trk-light-blue: #009bdf;
+  --color-trk-light-gray: #cccccc;
   --color-trk-black: #000000;
-  --color-trk-white: #FFFFFF;
+  --color-trk-white: #ffffff;
 
   /*  */
 }
@@ -37,7 +36,6 @@ a:hover {
 }
 
 body {
-  margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
