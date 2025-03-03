@@ -1,13 +1,14 @@
-import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
-import { latLng } from "leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
+import { HeatLayer } from "./MapLayers/HeatLayer";
+import { MarkerLayer } from "./MapLayers/MarkerLayer";
+
+// temporary
+import { getData } from "../../../../Data/getdata.ts";
 
 export const Map = () => {
-  const { data } = {
-    data: [{ lat: 63.43049, long: 10.39506, text: "Trondheim" }],
-  }; /*useQuery({
-        queryKey: ["buildingSearch", address],
-        queryFn: () => searchBuilding(address)
-    });*/
+  
+ const data = getData();
+ // const data = [{ lat: 63.43049, long: 10.39506, text: "Trondheim", intensity: 40 }];
 
   return (
     <MapContainer
@@ -16,17 +17,15 @@ export const Map = () => {
       zoom={13}
       scrollWheelZoom={true}
     >
+      <HeatLayer data={data} />
+      <MarkerLayer data={data} />
       <TileLayer url='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         subdomains='abcd'
         maxZoom={20}
       />
-      {data &&
-        data.map((pos, i) => (
-          <Marker key={i} position={latLng(pos.lat, pos.long)}>
-            <Popup>{pos.text}</Popup>
-          </Marker>
-        ))}
+    
+ 
     </MapContainer>
   );
 };
