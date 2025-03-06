@@ -14,6 +14,7 @@ export const Router = () => {
       path: "/login",
       component: <Login />,
     },
+
   ];
 
   return (
