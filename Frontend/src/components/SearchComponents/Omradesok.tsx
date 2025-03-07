@@ -51,7 +51,6 @@ const Omradesok: React.FC = () => {
     const newMaterials = typeof value === "string" ? value.split(",") : value;
     setSelectedMaterials(newMaterials);
 
-    // Når Material 2 fjernes, tøm også undermaterialer
     if (!newMaterials.includes("Material 2")) {
       setSelectedSubMaterials([]);
     }
@@ -76,7 +75,7 @@ const Omradesok: React.FC = () => {
 
   const clearMaterial = () => {
     setSelectedMaterials([]);
-    setSelectedSubMaterials([]); // Tøm også undermaterialer
+    setSelectedSubMaterials([]);
   };
 
   const clearSubMaterial = () => {
@@ -85,7 +84,6 @@ const Omradesok: React.FC = () => {
 
   return (
     <Box className="w-[80%] p-4 mx-auto space-y-8">
-      {/* Byggtype multi-select */}
       <Box>
         <FormControl fullWidth variant="outlined">
           <InputLabel id="byggtype-label">Byggtype</InputLabel>
@@ -120,7 +118,6 @@ const Omradesok: React.FC = () => {
         )}
       </Box>
 
-      {/* Område multi-select med "Tegn område"-knapp */}
       <Box>
         <Box className="flex items-center space-x-4">
           <FormControl fullWidth variant="outlined">
@@ -160,7 +157,6 @@ const Omradesok: React.FC = () => {
         )}
       </Box>
 
-      {/* Materialtype multi-select */}
       <Box>
         <FormControl fullWidth variant="outlined">
           <InputLabel id="materialtype-label">Materialtype</InputLabel>
@@ -195,7 +191,6 @@ const Omradesok: React.FC = () => {
         )}
       </Box>
 
-      {/* Undermaterialer for Material 2 */}
       {selectedMaterials.includes("Material 2") && (
         <Box className="space-y-4">
           <FormControl fullWidth variant="outlined">
@@ -232,7 +227,6 @@ const Omradesok: React.FC = () => {
         </Box>
       )}
 
-      {/* Søk-knapp nederst */}
       <Box>
         <Button variant="contained" fullWidth>
           Søk
