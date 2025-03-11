@@ -20,7 +20,7 @@ export const HeatLayer = ({ data, zIndex }: HeatLayerProps) => {
         return [p.lat, p.long, p.intensity];
       })
       : [];
-
+      
     L.heatLayer(points, { }).addTo(map);
 
     map.eachLayer((layer) => {
