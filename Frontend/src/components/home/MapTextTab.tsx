@@ -55,12 +55,11 @@ export default function MapTextTab() {
           <Tab label="Tekstvisning" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        {/* <Map /> */}
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <DataTextView />
-      </CustomTabPanel>
+ 
+ {value === 0 && <Map />}
+  
+ {value === 1 &&  <DataTextView />}
+
     </Box>
   );
 }
