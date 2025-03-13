@@ -1,13 +1,14 @@
 import { MapContainer, Pane, TileLayer } from "react-leaflet";
 import { HeatLayer } from "./MapLayers/HeatLayer";
 import { MarkerLayer } from "./MapLayers/MarkerLayer";
+
 //import { TileLayer } from "./MapLayers/TileLayer";
 
 // temporary
 import { getData } from "../../../../Data/getdata.ts";
 
 
-export const Map = () => {
+
 
   const data = getData();
 
@@ -18,6 +19,7 @@ export const Map = () => {
       className="h-full"
       center={[63.3516508469412, 10.3585716127384]}
       zoom={10}
+
       scrollWheelZoom={true}
       maxBounds={[
         [63.895025250709246, 8.530996400060626],
@@ -34,11 +36,20 @@ export const Map = () => {
       </Pane>
       <HeatLayer data={data} zIndex={2} />
       <MarkerLayer data={data} />
+
+      <TileLayer
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        subdomains="abcd"
+        maxZoom={20}
+      />
+
       <Pane name="labelpane" style={{ zIndex: 3 }}>
         <TileLayer url='https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png'
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
       </Pane>
+
     </MapContainer>
   );
 };

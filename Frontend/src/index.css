@@ -11,6 +11,9 @@
   /*  */
 }
 
+/*
+Dette er ikke i bruk?
+-------------------
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -21,3 +24,4 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
