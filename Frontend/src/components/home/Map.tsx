@@ -16,8 +16,8 @@ export const Map = () => {
   return (
     <MapContainer
       className="h-full"
-      center={[63.43049, 10.39506]}
-      zoom={13}
+      center={[63.3516508469412, 10.3585716127384]}
+      zoom={10}
       scrollWheelZoom={true}
       maxBounds={[
         [63.895025250709246, 8.530996400060626],
