@@ -42,3 +42,46 @@ export const BUILDING_TYPES: BuildingType[] = [
     name: "Blokk over 3 etasjer",
   },
 ];
+
+export interface WasteMaterial {
+    parent?: WasteMaterial;
+    id: string;
+    name: string;
+    description: string;
+}
+
+const WASTEMATERIALS: WasteMaterial[] = [
+    {
+        id: "0",
+        name: "Trevirke",
+        description: "Overordet kategori for trevirke"
+    },
+    {   
+      id: "1",
+      name: "Metall",
+      description: "Overordet kategori for metall"
+    }
+]
+
+WASTEMATERIALS.push({
+    id: "2",
+    name: "Trykkimpregnert trevirke",
+    description: "Trykkimpregnert trevirke",
+    parent: WASTEMATERIALS[0]
+})
+
+WASTEMATERIALS.push({
+    id: "3",
+    name: "Kobber",
+    description: "Kobber",
+    parent: WASTEMATERIALS[1]
+})
+
+WASTEMATERIALS.push({
+  id: "4",
+  name: "Aliminium",
+  description: "Aliminium",
+  parent: WASTEMATERIALS[1]
+})
+
+export const WASTE_MATERIALS = WASTEMATERIALS;
