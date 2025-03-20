@@ -1,20 +1,15 @@
-import { Box, FormControl, Typography } from "@mui/material";
-import { EiendomData, GjelderForm, TiltakData } from "../components/submitwastereport/GjelderForm";
+import { Box, Button, FormControl, Typography } from "@mui/material";
+import { GjelderForm } from "../components/submitwastereport/GjelderForm";
 import { AvfallsplanForm } from "../components/submitwastereport/AvfallsplanForm";
-import { AvfallsMaterialeRow } from "../components/submitwastereport/AvfallsMaterialeRow";
+import { useBoundStore } from "../store/Store";
 
-export interface WasteReport {
-    gjelder: {
-        tiltak: TiltakData;
-        eiendom: EiendomData;
-    },
-    avfall: {
-        ordinert: AvfallsMaterialeRow[];
-        farlig: AvfallsMaterialeRow[];
-    }
-};
 
 export const SubmitReportPage = () => {
+    const { wasteReport } = useBoundStore().wasteReportForm;
+
+    const handleSubmit = () => {
+        console.log(wasteReport);
+    }
 
     return <Box width={"100%"} flexGrow={1} maxWidth={"1200px"} mx={"auto"} display={"flex"} flexDirection={"column"} alignContent={"start"} marginBottom={10}>
         <FormControl fullWidth>
@@ -35,7 +30,11 @@ export const SubmitReportPage = () => {
                     </Typography>
                     <AvfallsplanForm />
                 </Box>
+                <Button onClick={handleSubmit} variant="contained" color="primary" size="large" className="w-[200px]" sx={{ marginTop: 5 }}>
+                    Send inn
+                </Button>
             </Box>
+
         </FormControl>
     </Box>
 };
