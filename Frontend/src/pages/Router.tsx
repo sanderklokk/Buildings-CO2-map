@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Home } from "./Home";
 import { Login } from "./Login";
 import { SubmitReportPage } from "./SubmitReportPage";
+import { Admin } from "./Admin";
 
 export const Router = () => {
   const routes = [
@@ -19,7 +20,13 @@ export const Router = () => {
       name: "SubmitReportPage",
       path: "/report/create",
       component: <SubmitReportPage />,
-    }
+    },
+
+    {
+      name: "Adminpanel",
+      path: "/adminpanel",
+      component: <Admin />,
+    },
   ];
 
   return (
