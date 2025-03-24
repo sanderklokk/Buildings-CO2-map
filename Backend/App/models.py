@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class bygning(models.Model):
-    bygnignsnr = models.IntegerField()
+    bygnignsnr = models.IntegerField(primary_key=True)
     bygningsstatuskode = models.CharField(max_length=5)
     kommune = models.IntegerField()
     bygningstypekode = models.IntegerField()
@@ -16,17 +16,46 @@ class bygning(models.Model):
     bygdDato = models.DateField()
 
 class coordinates(models.Model):
-    bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE)
+    bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE) 
     x = models.FloatField()
     y = models.FloatField()
 
-class materialer():
+class materialer(models.Model):
     forelder = models.ForeignKey("self", on_delete=models.CASCADE)
     bygning = models.ForeignKey(bygning, on_delete=models.CASCADE)
     mengde = models.IntegerField()
     totalmengde = models.IntegerField()
 
-class rapport():
+class rapport(models.Model):
     dato = models.DateField()
     bygning = models.ForeignKey(bygning, on_delete=models.CASCADE)
     materialerroot = models.ForeignKey(materialer, on_delete=models.CASCADE)
+
+class rapport(models.Model):
+    id = models.AutoField(primary_key=True)
+    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE)
+
+    dato = models.DateField()
+    address = models.CharField(max_length=100)
+    postalcode = models.IntegerField()
+    postalplace = models.CharField(max_length=100)
+    berortbra = models.IntegerField()
+    bygningstype = models.CharField(max_length=100)
+    konstruksjonstype = models.CharField(max_length=100)
+    handtering = models.CharField(max_length=300)
+    type = models.CharField(max_length=100)
+
+class materiale(models.Model):
+    id = models.AutoField(primary_key=True)
+    forelder = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+    navn = models.CharField(max_length=100)
+
+class rapportmateriale(models.Model):
+    rapport = models.ForeignKey(rapport, on_delete=models.CASCADE)
+    materiale = models.ForeignKey(materiale, on_delete=models.CASCADE)
+    planlagtmengde = models.IntegerField()
+    faktiskmengde = models.IntegerField()
+    mengdetilgjenbruk = models.IntegerField()
+    mengdetilanlegg = models.IntegerField()
+    anlegg = models.CharField(max_length=100)
+    totalmengde = models.IntegerField()
