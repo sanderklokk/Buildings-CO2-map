@@ -26,10 +26,10 @@ class materialer(models.Model):
     mengde = models.IntegerField()
     totalmengde = models.IntegerField()
 
-class rapport(models.Model):
-    dato = models.DateField()
-    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE)
-    materialerroot = models.ForeignKey(materialer, on_delete=models.CASCADE)
+# class rapport(models.Model):
+#     dato = models.DateField()
+#     bygning = models.ForeignKey(bygning, on_delete=models.CASCADE)
+#     materialerroot = models.ForeignKey(materialer, on_delete=models.CASCADE)
 
 class rapport(models.Model):
     id = models.AutoField(primary_key=True)
