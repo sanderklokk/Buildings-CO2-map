@@ -4,6 +4,7 @@ import { Login } from "./Login";
 import { SubmitReportPage } from "./SubmitReportPage";
 import { Admin } from "./Admin";
 import MaterialManagement from "./MaterialManagement";
+import ViewReports from "./ViewReports";
 
 export const Router = () => {
   const routes = [
@@ -33,6 +34,12 @@ export const Router = () => {
       name: "MaterialManagement",
       path: "/materialmanagement",
       component: <MaterialManagement />,
+    },
+
+    {
+      name: "ViewReports",
+      path: "/viewreports",
+      component: <ViewReports />,
     },
   ];
 
