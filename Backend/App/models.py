@@ -15,16 +15,23 @@ class bygning(models.Model):
     bruksarealannet = models.IntegerField()
     bygdDato = models.DateField()
 
-class coordinates(models.Model):
-    bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE) 
+class materialtype(models.Model):
+    id = models.AutoField(primary_key=True)
+    navn = models.CharField(max_length=100)
+    forelder = models.ForeignKey("self", on_delete=models.CASCADE)
+
+class koordinater(models.Model):
+    bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE, primary_key=True) 
     x = models.FloatField()
     y = models.FloatField()
 
-class materialer(models.Model):
-    forelder = models.ForeignKey("self", on_delete=models.CASCADE)
-    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE)
+class materialer(models.Model): #bygningsrelasjon?
+    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE, primary_key=True) 
+    type_materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     mengde = models.IntegerField()
     totalmengde = models.IntegerField()
+
+
 
 # class rapport(models.Model):
 #     dato = models.DateField()
@@ -45,14 +52,9 @@ class rapport(models.Model):
     handtering = models.CharField(max_length=300)
     type = models.CharField(max_length=100)
 
-class materiale(models.Model):
-    id = models.AutoField(primary_key=True)
-    forelder = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
-    navn = models.CharField(max_length=100)
-
 class rapportmateriale(models.Model):
     rapport = models.ForeignKey(rapport, on_delete=models.CASCADE)
-    materiale = models.ForeignKey(materiale, on_delete=models.CASCADE)
+    materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     planlagtmengde = models.IntegerField()
     faktiskmengde = models.IntegerField()
     mengdetilgjenbruk = models.IntegerField()
