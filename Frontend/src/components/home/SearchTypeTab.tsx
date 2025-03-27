@@ -1,9 +1,9 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Hortigsok from "../SearchComponents/Hortigsok";
 import Omradesok from "../SearchComponents/Omradesok";
+import { useState, SyntheticEvent } from "react";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -35,9 +35,9 @@ function a11yProps(index: number) {
 }
 
 export default function SearchTypeTab() {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 

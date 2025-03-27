@@ -1,5 +1,22 @@
-import * as React from "react";
 import { getData } from "../../../../Data/getdata.ts";
+
+interface DataItemType {
+    bygningnr:
+      | string
+      | number
+      | undefined
+    status:
+      | string
+      | number
+      | undefined
+    dato: string | number | Date;
+    lat:
+      | string
+      | number
+    long:
+      | string
+      | number
+}
 
 export const DataTextView = () => {
   const data = getData();
@@ -7,120 +24,7 @@ export const DataTextView = () => {
   return (
     <div className="p-4 overflow-auto max-h-full">
       {data.map(
-        (
-          item: {
-            bygningnr:
-              | string
-              | number
-              | bigint
-              | boolean
-              | React.ReactElement<
-                  unknown,
-                  string | React.JSXElementConstructor<any>
-                >
-              | Iterable<React.ReactNode>
-              | React.ReactPortal
-              | Promise<
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactPortal
-                  | React.ReactElement<
-                      unknown,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | null
-                  | undefined
-                >
-              | null
-              | undefined;
-            status:
-              | string
-              | number
-              | bigint
-              | boolean
-              | React.ReactElement<
-                  unknown,
-                  string | React.JSXElementConstructor<any>
-                >
-              | Iterable<React.ReactNode>
-              | React.ReactPortal
-              | Promise<
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactPortal
-                  | React.ReactElement<
-                      unknown,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | null
-                  | undefined
-                >
-              | null
-              | undefined;
-            dato: string | number | Date;
-            lat:
-              | string
-              | number
-              | bigint
-              | boolean
-              | React.ReactElement<
-                  unknown,
-                  string | React.JSXElementConstructor<any>
-                >
-              | Iterable<React.ReactNode>
-              | React.ReactPortal
-              | Promise<
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactPortal
-                  | React.ReactElement<
-                      unknown,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | null
-                  | undefined
-                >
-              | null
-              | undefined;
-            long:
-              | string
-              | number
-              | bigint
-              | boolean
-              | React.ReactElement<
-                  unknown,
-                  string | React.JSXElementConstructor<any>
-                >
-              | Iterable<React.ReactNode>
-              | React.ReactPortal
-              | Promise<
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactPortal
-                  | React.ReactElement<
-                      unknown,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | null
-                  | undefined
-                >
-              | null
-              | undefined;
-          },
-          index: React.Key | null | undefined
-        ) => (
+        (item: DataItemType, index: number) => (
           <div key={index} className="border-b py-2">
             <p>
               <strong>Bygningsnummer:</strong> {item.bygningnr}

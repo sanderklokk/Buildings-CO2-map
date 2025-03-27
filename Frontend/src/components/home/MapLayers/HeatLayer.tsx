@@ -1,5 +1,5 @@
 import { useMap } from "react-leaflet";
-import L, { HeatLatLngTuple } from 'leaflet'
+import L from 'leaflet';
 import { useEffect } from "react";
 import "leaflet.heat";
 
@@ -7,6 +7,8 @@ interface HeatLayerProps {
   data: { lat: number, long: number, intensity: number, text: string }[],
   zIndex: number
 }
+
+type HeatLatLngTuple = [number, number, number];
 
 /*
 * handle logic for when heatlayer is shown.
@@ -20,8 +22,10 @@ export const HeatLayer = ({ data, zIndex }: HeatLayerProps) => {
         return [p.lat, p.long, p.intensity];
       })
       : [];
-      
-    L.heatLayer(points, { }).addTo(map);
+    
+
+    // @ts-expect-error - Leaflet false error
+    L.heatLayer(points, { }).addTo(map); 
 
     map.eachLayer((layer) => {
       const l = layer.getPane();
