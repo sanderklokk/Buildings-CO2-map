@@ -1,0 +1,44 @@
+name: Frontend build+lint
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Cache dependencies (Frontend)
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: frontend-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            frontend-
+      - name: Install dependencies (Frontend)
+        working-directory: frontend
+        run: npm ci
+
+  build-frontend:
+    runs-on: self-hosted
+    needs: setup
+    defaults:
+      run:
+        working-directory: Frontend
+    steps:
+      - name: Build Frontend
+        run: npm run build
+
+  eslint-frontend:
+    runs-on: self-hosted
+    needs: setup
+    defaults:
+      run:
+        working-directory: Frontend
+    steps:
+      - name: Run ESLint
+        run: npx eslint . --fix
