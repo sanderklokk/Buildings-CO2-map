@@ -1,11 +1,8 @@
 from rest_framework import serializers
 from .models import materialtype, rapport, rapportmateriale
 
-
+# DTO Models
 class WasteReportMaterialDTOSerializer(serializers.Serializer):
- 
-
-
     id = serializers.IntegerField(required=False, allow_null=True)
     materiale = serializers.IntegerField()
     planlagtmengde = serializers.FloatField()
@@ -16,8 +13,6 @@ class WasteReportMaterialDTOSerializer(serializers.Serializer):
     totalmengde = serializers.FloatField()
 
 class WasteReportDTOSerializer(serializers.Serializer):
- 
-
     id = serializers.IntegerField(required=False, allow_null=True)
     bygning = serializers.IntegerField(required=False, allow_null=True)
     dato = serializers.CharField(required=False, allow_null=True)
@@ -31,6 +26,8 @@ class WasteReportDTOSerializer(serializers.Serializer):
     type = serializers.CharField()
     materialer = WasteReportMaterialDTOSerializer(many=True)
 
+
+# DB MODELS
 class RapportMaterialeSerializer(serializers.ModelSerializer):
     class Meta:
         model = rapportmateriale
@@ -39,4 +36,9 @@ class RapportMaterialeSerializer(serializers.ModelSerializer):
 class RapportSerializer(serializers.ModelSerializer):
     class Meta:
         model = rapport
+        fields = '__all__'
+
+class MaterialTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = materialtype
         fields = '__all__'
