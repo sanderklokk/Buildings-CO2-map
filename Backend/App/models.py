@@ -18,7 +18,8 @@ class bygning(models.Model):
 class materialtype(models.Model):
     id = models.AutoField(primary_key=True)
     navn = models.CharField(max_length=100)
-    forelder = models.ForeignKey("self", on_delete=models.CASCADE)
+    forelder = models.ForeignKey("self", on_delete=models.CASCADE, null=True)
+    farlig = models.BooleanField(default=False)
 
 class koordinater(models.Model):
     bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE, primary_key=True) 
@@ -40,9 +41,10 @@ class materialer(models.Model): #bygningsrelasjon?
 
 class rapport(models.Model):
     id = models.AutoField(primary_key=True)
-    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE)
+    # Null=True temporary
+    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE, null=True)
 
-    dato = models.DateField()
+    dato = models.DateField(auto_now_add=True, null=True)
     address = models.CharField(max_length=100)
     postalcode = models.IntegerField()
     postalplace = models.CharField(max_length=100)
