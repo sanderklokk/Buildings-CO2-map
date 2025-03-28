@@ -11,11 +11,9 @@ const Hortigsok: React.FC = () => {
   };
 
   return (
-    <Box className="w-[80%] p-4 mx-auto">
-      {/* Hurtigsøk-input */}
+    <Box className="p-4">
       <TextField fullWidth label="Hurtigsøk på bygg" variant="outlined" />
 
-      {/* Knapp for å vise/skjule detaljert søk, høyrestilt */}
       <Box className="mt-2 flex justify-end">
         <Button
           variant="text"
@@ -29,7 +27,6 @@ const Hortigsok: React.FC = () => {
         </Button>
       </Box>
 
-      {/* Detaljerte søkefelt, horisontalt midtstilt, men topplinjet */}
       {showDetailed && (
         <Box className="mt-2 flex justify-center items-start space-x-2">
           <TextField className="w-1/3" label="Gårdsnr" variant="outlined" />
@@ -38,7 +35,6 @@ const Hortigsok: React.FC = () => {
         </Box>
       )}
 
-      {/* Søk-knapp nederst */}
       <Box className="mt-4">
         <Button variant="contained" fullWidth>
           Søk

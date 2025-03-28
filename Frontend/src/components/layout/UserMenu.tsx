@@ -27,8 +27,9 @@ const UserMenu = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
     handleClose();
-    navigate("/login");
+    window.location.replace("/login");
   };
 
   return (

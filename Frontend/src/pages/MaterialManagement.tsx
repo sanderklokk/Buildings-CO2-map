@@ -1,14 +1,48 @@
 import React, { useState, useEffect } from "react";
-import { Container, Typography, TextField, Button, Box } from "@mui/material";
+import { Typography, TextField, Button, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MaterialCard from "../components/adminComponents/MaterialCard";
 import AddMaterial from "../components/adminComponents/AddMaterial";
-
-// For testing med demodata
+import MainLayout from "../components/layout/MainLayout";
 import demoData from "../../../Data/demomaterialer.json";
 import { Material } from "../components/adminComponents/MaterialCardTypes";
 
-const MaterialManagement: React.FC = () => {
+interface MaterialSidebarProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  onOpenAddDialog: () => void;
+}
+
+const MaterialSidebar = ({
+  searchTerm,
+  onSearchChange,
+  onOpenAddDialog,
+}: MaterialSidebarProps) => {
+  return (
+    <Box sx={{ p: 4 }}>
+      <TextField
+        label="Søk materiale"
+        variant="outlined"
+        fullWidth
+        value={searchTerm}
+        onChange={(e) => onSearchChange(e.target.value)}
+        sx={{ mb: 4 }}
+      />
+
+      <Button
+        variant="contained"
+        startIcon={<AddIcon />}
+        fullWidth
+        onClick={onOpenAddDialog}
+        sx={{ mt: 4 }}
+      >
+        Legg til nytt hovedmateriale
+      </Button>
+    </Box>
+  );
+};
+
+const MaterialManagement = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -49,34 +83,18 @@ const MaterialManagement: React.FC = () => {
   });
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <MainLayout
+      sidebar={
+        <MaterialSidebar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onOpenAddDialog={() => setOpenAddDialog(true)}
+        />
+      }
+    >
       <Typography variant="h4" gutterBottom>
         Rediger materialer
       </Typography>
-
-      {/* Søkefelt */}
-      <Box sx={{ mb: 3 }}>
-        <TextField
-          label="Søk etter materiale eller undermateriale"
-          variant="outlined"
-          fullWidth
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </Box>
-
-      {/* Knapp for å legge til nytt materiale */}
-      <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-start" }}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setOpenAddDialog(true)}
-        >
-          Legg til nytt materiale hovedmateriale
-        </Button>
-      </Box>
-
-      {/* Kortvisning av materialene */}
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
         {filteredMaterials.map((mat) => (
           <MaterialCard
@@ -86,14 +104,12 @@ const MaterialManagement: React.FC = () => {
           />
         ))}
       </Box>
-
-      {/* Legge til nytt materiale */}
       <AddMaterial
         open={openAddDialog}
         onClose={() => setOpenAddDialog(false)}
         onAdd={handleAddNewMaterial}
       />
-    </Container>
+    </MainLayout>
   );
 };
 

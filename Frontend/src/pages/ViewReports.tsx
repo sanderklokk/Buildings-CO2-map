@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container, Typography, TextField, Box } from "@mui/material";
+import { Typography, Box, TextField } from "@mui/material";
 import ReportCard, { WasteReport } from "../components/viewReports/ReportCard";
+import MainLayout from "../components/layout/MainLayout";
 
-// Data for testing
+// Dummy-data for testing
 const testReports: WasteReport[] = [
   {
     id: 1001,
@@ -33,12 +34,35 @@ const testReports: WasteReport[] = [
   },
 ];
 
-const ViewReports: React.FC = () => {
+interface ReportsSidebarProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+}
+
+const ReportsSidebar = ({
+  searchTerm,
+  onSearchChange,
+}: ReportsSidebarProps) => {
+  return (
+    <Box sx={{ p: 4 }}>
+      <TextField
+        label="Søk rapport"
+        variant="outlined"
+        fullWidth
+        value={searchTerm}
+        onChange={(e) => onSearchChange(e.target.value)}
+        sx={{ mb: 4 }}
+      />
+    </Box>
+  );
+};
+
+const ViewReports = () => {
   const [reports, setReports] = useState<WasteReport[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    // Henting av testdata
+    // Henter dummy-data for testing
     setReports(testReports);
   }, []);
 
@@ -50,36 +74,30 @@ const ViewReports: React.FC = () => {
     );
   });
 
-  const handleViewReport = (id: number) => {};
+  const handleViewReport = (id: number) => {
+    alert(`Viser rapport med ID: ${id}`);
+  };
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <MainLayout
+      sidebar={
+        <ReportsSidebar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
+      }
+    >
       <Typography variant="h4" gutterBottom>
         Innsendte avfallsrapporter
       </Typography>
-      <Box sx={{ mb: 3 }}>
-        <TextField
-          label="Søk i avfallsrapporter"
-          variant="outlined"
-          fullWidth
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 2,
-        }}
-      >
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
         {filteredReports.map((report) => (
           <Box key={report.id} sx={{ flex: "1 1 300px" }}>
             <ReportCard report={report} onViewReport={handleViewReport} />
           </Box>
         ))}
       </Box>
-    </Container>
+    </MainLayout>
   );
 };
 
