@@ -26,8 +26,8 @@ export const AvfallsplanForm = () => {
        
         if (!materialtypes) return [];
 
-        if (addWasteCategoryInputValue === "") return materialtypes.filter((wasteMaterial) => !wasteMaterial.forelder && !wasteReport.avfall.farlig.concat(wasteReport.avfall.ordinert).map(x => x.id).includes(wasteMaterial.id));
-        return materialtypes.filter((wasteMaterial) => !wasteReport.avfall.farlig.concat(wasteReport.avfall.ordinert).map(x => x.id).includes(wasteMaterial.id));
+        if (addWasteCategoryInputValue === "") return materialtypes.data.filter((wasteMaterial) => !wasteMaterial.forelder && !wasteReport.avfall.farlig.concat(wasteReport.avfall.ordinert).map(x => x.id).includes(wasteMaterial.id));
+        return materialtypes.data.filter((wasteMaterial) => !wasteReport.avfall.farlig.concat(wasteReport.avfall.ordinert).map(x => x.id).includes(wasteMaterial.id));
 
     }
 
@@ -35,7 +35,7 @@ export const AvfallsplanForm = () => {
     const getSubMaterials = (materialId: number) => {
         if (!materialtypes) return [];
 
-        return materialtypes.filter((wasteMaterial) => wasteMaterial.forelder === materialId);
+        return materialtypes.data.filter((wasteMaterial) => wasteMaterial.forelder === materialId);
     }
  
     const getSubMaterialsNotInUse = () => {
@@ -80,7 +80,7 @@ export const AvfallsplanForm = () => {
                 {showSubMaterials &&
                     <Box>
 
-                        <Typography marginTop={2} fontSize={18} marginBottom={2}>Velg underkategori for {materialtypes.find(x => x.id == selected)?.navn}</Typography>
+                        <Typography marginTop={2} fontSize={18} marginBottom={2}>Velg underkategori for {materialtypes.data.find(x => x.id == selected)?.navn}</Typography>
                         <Box>
                             {showSubMaterials && getSubMaterialsNotInUse().length === 0 && <Typography>Ingen gjenværende underkategorier </Typography>}
                             {showSubMaterials && getSubMaterialsNotInUse().map((material) => {
@@ -131,7 +131,7 @@ export const AvfallsplanForm = () => {
                             {
                                 wasteReport.avfall.ordinert.length > 0 ?
                                     wasteReport.avfall.ordinert.map((wasteCategory) => {
-                                        return <AvfallsMaterialeRow key={wasteCategory.id} material={materialtypes?.find(x => x.id == wasteCategory.id)} />
+                                        return <AvfallsMaterialeRow key={wasteCategory.id} material={materialtypes?.data.find(x => x.id == wasteCategory.id)} />
                                     }) :
                                     <TableRow><TableCell colSpan={8}><Typography>Ingen ordinært avfall</Typography></TableCell></TableRow>
                             }
@@ -173,7 +173,7 @@ export const AvfallsplanForm = () => {
                             {
                                 wasteReport.avfall.farlig.length > 0 ?
                                     wasteReport.avfall.farlig.map((wasteCategory) => {
-                                        return <AvfallsMaterialeRow key={wasteCategory.id} material={materialtypes?.find(x => x.id == wasteCategory.id)} />
+                                        return <AvfallsMaterialeRow key={wasteCategory.id} material={materialtypes?.data.find(x => x.id == wasteCategory.id)} />
                                     }) :
                                     <TableRow><TableCell colSpan={8}><Typography>Ingen farlig avfall</Typography></TableCell></TableRow>
 

@@ -72,14 +72,20 @@ def get_wastereport(_, id):
     
     reportdata = report.data
     materials = rapportmateriale.objects.filter(rapport=reportdata['id']).select_related("materiale")
+
     serialized = RapportMaterialeSerializer(materials, many=True).data
     for i in range(len(serialized)):
+        print(materials[i].materiale.forelder)
         serialized[i]['navn'] = materials[i].materiale.navn
         serialized[i]['farlig'] = materials[i].materiale.farlig
-        serialized[i]['parent'] = materials[i].materiale.forelder
-
+    
+        parent = MaterialTypeSerializer(data=materials[i].materiale.forelder)
+        if parent.is_valid():
+            serialized[i]['parent'] = parent.data['id']
+        else:
+            serialized[i]['parent'] = None
+            
     reportdata['materialer'] = serialized
     reportdata['totalmaterials'] =  sum([x["faktiskmengde"] for x in serialized])
         
-    
     return Response(reportdata, status=200)

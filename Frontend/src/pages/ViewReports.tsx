@@ -50,7 +50,7 @@ const ViewReports = () => {
   const navigate = useNavigate();
 
   const handleViewReport = (id: number) => {
-    navigate(`/wastereport/view/${id}`);
+    navigate(`/report/view/${id}`);
   };
 
   return (

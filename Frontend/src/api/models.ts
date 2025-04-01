@@ -66,7 +66,7 @@ export interface APIWasteReportDetailedMaterial {
     farlig: boolean;
 }
 
-export type APIWasteReportDetailed = APIWasteReport & {
+export type APIWasteReportDetailed = APIWasteReportOverview & {
     materialer: APIWasteReportDetailedMaterial[];
 };
     

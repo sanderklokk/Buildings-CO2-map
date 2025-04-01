@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { service }  from "./config";
-import { APIWasteReport, APIWasteReportOverviewList } from "./models";
+import { APIWasteReport, APIWasteReportDetailed, APIWasteReportOverviewList } from "./models";
 
 const WASTE_REPORT_CREATE_PATH = "api/wastereport/create";
 
@@ -13,4 +13,8 @@ export const get_wastereports = async (page: number, count: number, searchTerm: 
     const c = count < 1 ? 1 : count;
     const s = searchTerm || "";
     return await service.get(`api/wastereport/all?page=${p}&count=${c}&search=${s}`);
+}
+
+export const get_wastereport = async (id: number): Promise<AxiosResponse<APIWasteReportDetailed>> => {
+    return await service.get(`api/wastereport/${id}`);
 }
