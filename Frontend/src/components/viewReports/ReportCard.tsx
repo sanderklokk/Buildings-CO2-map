@@ -8,6 +8,7 @@ import {
   Box,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import { APIWasteReportOverview } from "../../api/models";
 
 export interface WasteReport {
   id: number;
@@ -20,11 +21,11 @@ export interface WasteReport {
 }
 
 interface ReportCardProps {
-  report: WasteReport;
+  report: APIWasteReportOverview;
   onViewReport: (id: number) => void;
 }
 
-const ReportCard: React.FC<ReportCardProps> = ({ report, onViewReport }) => {
+const ReportCard = ({ report, onViewReport }: ReportCardProps) => {
   return (
     <Card sx={{ minHeight: 250 }}>
       <CardContent>
@@ -36,19 +37,19 @@ const ReportCard: React.FC<ReportCardProps> = ({ report, onViewReport }) => {
           <Typography variant="h6">{report.address}</Typography>
         </Box>
         <Typography variant="body2">
-          <strong>Bruksnr.:</strong> {report.usageNumber}
+          <strong>Bruksnr.:</strong> {/*report.usageNumber*/}
         </Typography>
         <Typography variant="body2">
-          <strong>Seksjonsnr.:</strong> {report.sectionNumber}
+          <strong>Seksjonsnr.:</strong> {/*report.sectionNumber*/}
         </Typography>
         <Typography variant="body2">
-          <strong>Total mengde avfall:</strong> {report.totalWaste} kg
+          <strong>Total mengde avfall:</strong> {report.totalmaterials} kg
         </Typography>
         <Typography variant="body2">
-          <strong>Byggeår:</strong> {report.buildingYear}
+          <strong>Byggeår:</strong> {/*report.buildingYear*/}
         </Typography>
         <Typography variant="body2">
-          <strong>Dato levert:</strong> {report.deliveredDate}
+          <strong>Dato levert:</strong> {report.dato}
         </Typography>
       </CardContent>
       <CardActions>

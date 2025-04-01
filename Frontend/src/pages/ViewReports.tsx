@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Container, Typography, TextField, Box } from "@mui/material";
-import ReportCard, { WasteReport } from "../components/viewReports/ReportCard";
+import { useState } from "react";
+import { Container, Typography, TextField, Box, Pagination } from "@mui/material";
+import ReportCard from "../components/viewReports/ReportCard";
+import { get_wastereports } from "../api/wastereportAPI";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useDebounce } from 'use-debounce';
 
 // Data for testing
+/*
 const testReports: WasteReport[] = [
   {
     id: 1001,
@@ -31,26 +36,22 @@ const testReports: WasteReport[] = [
     buildingYear: 1978,
     deliveredDate: "2023-10-30",
   },
-];
+];*/
 
-const ViewReports: React.FC = () => {
-  const [reports, setReports] = useState<WasteReport[]>([]);
+const ViewReports = () => {
+
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const count = 9;
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
 
-  useEffect(() => {
-    // Henting av testdata
-    setReports(testReports);
-  }, []);
+  const { data: reports, isLoading, isError } = useQuery({ queryKey: ["wastereports", page, count, debouncedSearch], queryFn: () => get_wastereports(page, count, debouncedSearch) });
 
-  const filteredReports = reports.filter((report) => {
-    const lowerSearch = searchTerm.toLowerCase();
-    return (
-      report.address.toLowerCase().includes(lowerSearch) ||
-      report.id.toString().includes(lowerSearch)
-    );
-  });
+  const navigate = useNavigate();
 
-  const handleViewReport = (id: number) => {};
+  const handleViewReport = (id: number) => {
+    navigate(`/wastereport/view/${id}`);
+  };
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
@@ -66,19 +67,35 @@ const ViewReports: React.FC = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 2,
-        }}
-      >
-        {filteredReports.map((report) => (
-          <Box key={report.id} sx={{ flex: "1 1 300px" }}>
-            <ReportCard report={report} onViewReport={handleViewReport} />
+
+      {isLoading && <Typography>Henter rapporter...</Typography>}
+      {isError && <Typography>Feil oppstod under henting av rapporter</Typography>}
+      {reports?.data.results &&
+        <Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 2,
+            }}
+          >
+            {reports.data.results.length === 0 && <Typography>Ingen rapporter med valgt søk</Typography>}
+            {
+              reports.data.results.map((report) => (
+
+                <Box key={report.id} sx={{ flex: "1 1 300px" }}>
+                  <ReportCard report={report} onViewReport={handleViewReport} />
+                </Box>
+              ))
+            }
+
           </Box>
-        ))}
-      </Box>
+          <Box flex={1} display="flex" justifyContent="center" marginTop={3}>
+            <Pagination page={page} count={Math.ceil((reports.data.total / count) + 0.1)} onChange={(_, value) => setPage(value)} />
+          </Box>
+        </Box>
+      }
     </Container>
   );
 };
