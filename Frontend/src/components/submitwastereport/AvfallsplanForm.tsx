@@ -12,31 +12,43 @@ import {
   Typography,
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import { WASTE_MATERIALS, WasteMaterial } from "../../assets/data";
 import { AvfallsMaterialeRow } from "./AvfallsMaterialeRow";
 import { useBoundStore } from "../../store/Store";
+import { useQuery } from "@tanstack/react-query";
+import { get_all_materialtypes } from "../../api/materialtypeAPI";
+import { APIMaterialType } from "../../api/models";
 
 export const AvfallsplanForm = () => {
+  const {
+    data: materialtypes,
+    isLoading: isMaterialsLoading,
+    isError: isMaterialsError,
+  } = useQuery({ queryKey: ["materialtypes"], queryFn: get_all_materialtypes });
+
   const { addAvfallRow, wasteReport } = useBoundStore().wasteReportForm;
 
   const [addWasteCategoryInputValue, setAddWasteCategoryInputValue] =
     useState<string>("");
   const [addWasteCategoryValue, setAddWasteCategoryValue] =
-    useState<WasteMaterial | null>(null);
+    useState<APIMaterialType | null>(null);
   const [showSubMaterials, setShowSubMaterials] = useState<boolean>(false);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
 
   const getSearchOptions = () => {
+    // Show only toplevel categories if no input
+
+    if (!materialtypes) return [];
+
     if (addWasteCategoryInputValue === "")
-      return WASTE_MATERIALS.filter(
+      return materialtypes.filter(
         (wasteMaterial) =>
-          !wasteMaterial.parent &&
+          !wasteMaterial.forelder &&
           !wasteReport.avfall.farlig
             .concat(wasteReport.avfall.ordinert)
             .map((x) => x.id)
             .includes(wasteMaterial.id)
       );
-    return WASTE_MATERIALS.filter(
+    return materialtypes.filter(
       (wasteMaterial) =>
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
@@ -45,14 +57,18 @@ export const AvfallsplanForm = () => {
     );
   };
 
-  const getSubMaterials = (materialId: string) => {
-    return WASTE_MATERIALS.filter(
-      (wasteMaterial) => wasteMaterial.parent === materialId
+  const getSubMaterials = (materialId: number) => {
+    if (!materialtypes) return [];
+
+    return materialtypes.filter(
+      (wasteMaterial) => wasteMaterial.forelder === materialId
     );
   };
 
   const getSubMaterialsNotInUse = () => {
-    return getSubMaterials(selected || "").filter(
+    if (!selected) return [];
+
+    return getSubMaterials(selected || 0).filter(
       (wasteMaterial) =>
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
@@ -61,12 +77,12 @@ export const AvfallsplanForm = () => {
     );
   };
 
-  const handleAddWasteCategory = (value: WasteMaterial | null) => {
+  const handleAddWasteCategory = (value: APIMaterialType | null) => {
     if (value) {
       setSelected(value.id);
       if (getSubMaterials(value.id).length === 0) {
         setShowSubMaterials(false);
-        addAvfallRow(value.id);
+        addAvfallRow(value.id, value.farlig);
         setAddWasteCategoryValue(null);
         setAddWasteCategoryInputValue("");
       } else {
@@ -83,48 +99,61 @@ export const AvfallsplanForm = () => {
         <Typography marginTop={2} fontSize={20} marginBottom={2}>
           Legg til type
         </Typography>
-        <Box display={"flex"} justifyContent={"start"}>
-          <Autocomplete
-            options={getSearchOptions()}
-            getOptionLabel={(option) => option.name}
-            style={{ width: 300 }}
-            inputValue={addWasteCategoryInputValue}
-            value={addWasteCategoryValue}
-            onInputChange={(_, v) => setAddWasteCategoryInputValue(v)}
-            onChange={(_, v) => {
-              handleAddWasteCategory(v);
-            }}
-            renderInput={(params) => (
-              <TextField {...params} label="Materialtype" variant="outlined" />
-            )}
-          />
-        </Box>
-        {showSubMaterials && (
-          <Box>
-            <Typography marginTop={2} fontSize={18} marginBottom={2}>
-              Velg underkategori for{" "}
-              {WASTE_MATERIALS.find((x) => x.id == selected)?.name}
-            </Typography>
-            <Box>
-              {showSubMaterials && getSubMaterialsNotInUse().length === 0 && (
-                <Typography>Ingen gjenværende underkategorier </Typography>
-              )}
-              {showSubMaterials &&
-                getSubMaterialsNotInUse().map((material) => {
-                  return (
-                    <Button
-                      key={material.id}
-                      sx={{ margin: "3px" }}
-                      onClick={() => handleAddWasteCategory(material)}
-                      variant="outlined"
-                    >
-                      {material.name}
-                    </Button>
-                  );
-                })}
+        {materialtypes && (
+          <>
+            <Box display={"flex"} justifyContent={"start"}>
+              <Autocomplete
+                options={getSearchOptions()}
+                getOptionLabel={(option) => option.navn}
+                style={{ width: 300 }}
+                inputValue={addWasteCategoryInputValue}
+                value={addWasteCategoryValue}
+                onInputChange={(_, v) => setAddWasteCategoryInputValue(v)}
+                onChange={(_, v) => {
+                  handleAddWasteCategory(v);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Materialtype"
+                    variant="outlined"
+                  />
+                )}
+              />
             </Box>
-          </Box>
+            {showSubMaterials && (
+              <Box>
+                <Typography marginTop={2} fontSize={18} marginBottom={2}>
+                  Velg underkategori for{" "}
+                  {materialtypes.find((x) => x.id == selected)?.navn}
+                </Typography>
+                <Box>
+                  {showSubMaterials &&
+                    getSubMaterialsNotInUse().length === 0 && (
+                      <Typography>
+                        Ingen gjenværende underkategorier{" "}
+                      </Typography>
+                    )}
+                  {showSubMaterials &&
+                    getSubMaterialsNotInUse().map((material) => {
+                      return (
+                        <Button
+                          key={material.id}
+                          sx={{ margin: "3px" }}
+                          onClick={() => handleAddWasteCategory(material)}
+                          variant="outlined"
+                        >
+                          {material.navn}
+                        </Button>
+                      );
+                    })}
+                </Box>
+              </Box>
+            )}
+          </>
         )}
+        {isMaterialsLoading && <Typography>Loading...</Typography>}
+        {isMaterialsError && <Typography>Error loading materials</Typography>}
       </Box>
       <Box>
         <Typography
@@ -204,7 +233,9 @@ export const AvfallsplanForm = () => {
                     return (
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
-                        materialId={wasteCategory.id}
+                        material={materialtypes?.find(
+                          (x) => x.id == wasteCategory.id
+                        )}
                       />
                     );
                   })
@@ -294,7 +325,9 @@ export const AvfallsplanForm = () => {
                     return (
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
-                        materialId={wasteCategory.id}
+                        material={materialtypes?.find(
+                          (x) => x.id == wasteCategory.id
+                        )}
                       />
                     );
                   })

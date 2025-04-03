@@ -1,5 +1,4 @@
 import { StateCreator } from "zustand";
-import { WASTE_MATERIALS } from "../assets/data";
 
 export interface EiendomData {
     address: string;
@@ -21,7 +20,7 @@ export interface AvfallsMaterialeRow {
     amountToFacility: number;
     amountToReuse: number;
     facility: string;
-    id: string;
+    id: number;
 }
 
 export interface WasteReport {
@@ -40,9 +39,9 @@ export interface WasteReportSlice {
         wasteReport: WasteReport;
         setGjelder: (gjelder: WasteReport["gjelder"]) => void;
         setAvfall: (avfall: WasteReport["avfall"]) => void;
-        removeAvfallRow: (id: string) => void;
-        addAvfallRow: (id: string) => void;
-        updateAvfallRow: (id: string, data: Partial<AvfallsMaterialeRow>) => void;
+        removeAvfallRow: (id: number) => void;
+        addAvfallRow: (id: number, dangerous: boolean) => void;
+        updateAvfallRow: (id: number, data: Partial<AvfallsMaterialeRow>) => void;
     }
 }
 
@@ -74,21 +73,20 @@ export const createWasteReportFormSlice: StateCreator<WasteReportSlice> = (set) 
         },
         setGjelder: (gjelder: WasteReport["gjelder"]) => set((state) => ({ ...state, wasteReportForm: {...state.wasteReportForm, wasteReport: { ...state.wasteReportForm.wasteReport, gjelder } }})),
         setAvfall: (avfall: WasteReport["avfall"]) => set((state) => ({ ...state, wasteReportForm: {...state.wasteReportForm, wasteReport: { ...state.wasteReportForm.wasteReport, avfall } }})),
-        removeAvfallRow: (id: string) => set((state) => {
+        removeAvfallRow: (id: number) => set((state) => {
             const ordinert = state.wasteReportForm.wasteReport.avfall.ordinert.filter((i) => i.id !== id);
             const farlig = state.wasteReportForm.wasteReport.avfall.farlig.filter((i) => i.id !== id);
             return { ...state, wasteReportForm: {...state.wasteReportForm,  wasteReport: { ...state.wasteReportForm.wasteReport, avfall: { ordinert, farlig } } }}
         }),
-        addAvfallRow: (id: string) => set((state) => {
-            const material = WASTE_MATERIALS.find((i) => i.id === id);
-            if (!material) return state;
-            if (material.dangerous === true) {
+        addAvfallRow: (id: number, dangerous: boolean) => set((state) => {
+
+            if (dangerous === true) {
                 return { ...state, wasteReportForm: {...state.wasteReportForm,  wasteReport: { ...state.wasteReportForm.wasteReport, avfall: { ordinert: state.wasteReportForm.wasteReport.avfall.ordinert, farlig: [...state.wasteReportForm.wasteReport.avfall.farlig, { plannedAmount: 0, actualAmount: 0, amountToFacility: 0, amountToReuse: 0, facility: "", id }] } }} }
             } else {
                 return { ...state, wasteReportForm: {...state.wasteReportForm,  wasteReport: { ...state.wasteReportForm.wasteReport, avfall: { farlig: state.wasteReportForm.wasteReport.avfall.farlig, ordinert: [...state.wasteReportForm.wasteReport.avfall.ordinert, { plannedAmount: 0, actualAmount: 0, amountToFacility: 0, amountToReuse: 0, facility: "", id }] } }} }
             }
         }),
-        updateAvfallRow: (id: string, data: Partial<AvfallsMaterialeRow>) => set((state) => {
+        updateAvfallRow: (id: number, data: Partial<AvfallsMaterialeRow>) => set((state) => {
             const ordinert = state.wasteReportForm.wasteReport.avfall.ordinert.map((i) => i.id === id ? { ...i, ...data } : i);
             const farlig = state.wasteReportForm.wasteReport.avfall.farlig.map((i) => i.id === id ? { ...i, ...data } : i);
             return { ...state, wasteReportForm: {...state.wasteReportForm, wasteReport: { ...state.wasteReportForm.wasteReport, avfall: { ordinert, farlig } } }}
