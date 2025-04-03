@@ -3,7 +3,7 @@ import SeachTypeTab from "../components/home/SearchTypeTab";
 
 export const Home = () => {
   return (
-    <div className="flex flex-row bg-trk-white h-[85vh] overflow-hidden">
+    <div className="flex flex-row bg-trk-white h-[85vh] overflow-x-hidden">
       {/* Venstre side med filtrering*/}
       <div className="w-1/3 h-full">
         <SeachTypeTab />
