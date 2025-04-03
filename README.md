@@ -44,3 +44,16 @@ localhost:5432:buildingsc02-dev:<username>:<password> #change username and passw
 ``` bash
 python manage.py makemigrations --name a_suitable_label #the --name flag is optional, but recomended to more easily keep track of the migration files. 
 ```
+## Frontend
+The frontend is dependent on the user having working installations of npm and node.js. 
+
+### Run the frontend map
+1. Install npm and run Run the following command from ```/Frontend``` to install the requirements from package.json.
+```bash
+npm install
+```
+2. Run the following command from ```/Frontend``` to start the project at http://localhost:5173/    
+```bash
+npm run dev
+```
+
