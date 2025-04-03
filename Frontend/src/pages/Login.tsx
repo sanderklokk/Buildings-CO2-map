@@ -1,62 +1,68 @@
+import { useState } from "react";
 import {
-  Button,
-  TextField,
   Container,
-  Link,
-  Paper,
+  TextField,
+  Button,
   Typography,
+  Box,
+  Paper,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-export const Login = () => {
+const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    if (username === "admin" && password === "admin") {
+      localStorage.setItem("isLoggedIn", "true");
+      navigate("/");
+    } else {
+      setError("Ugyldig brukernavn eller passord");
+    }
+  };
+
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      className="flex items-center justify-center min-h-screen"
-    >
-      <Paper elevation={3} className="p-6 rounded-2xl shadow-lg w-full">
-        <div className="flex flex-col items-center">
-          <img
-            src="/images/trkLogoHorisontalFarge.png"
-            alt="TRK Logo"
-            className="mb-4 w-4/5"
+    <Container maxWidth="xs" sx={{ padding: 20 }}>
+      <Paper sx={{ padding: 5 }}>
+        <img
+          src="/images/trkLogoHorisontalFarge.png"
+          alt="TRK Logo"
+          className="mb-4 w-4/5"
+        />
+        <Typography variant="h4" gutterBottom align="center">
+          Logg inn
+        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <TextField
+            label="Brukernavn"
+            variant="outlined"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
           />
-
-          <Typography
-            component="h1"
-            variant="h5"
-            className="text-(--color-trk-black)"
-          >
+          <TextField
+            label="Passord"
+            type="password"
+            variant="outlined"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+          />
+          {error && (
+            <Typography variant="body2" color="error">
+              {error}
+            </Typography>
+          )}
+          <Button variant="contained" onClick={handleLogin} fullWidth>
             Logg inn
-          </Typography>
-          <form className="w-full mt-4">
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="E-post"
-              type="email"
-              className="mb-3"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Passord"
-              type="password"
-              className="mb-3"
-            />
-            <Button fullWidth variant="contained">
-              Logg inn
-            </Button>
-            <div className="flex justify-between mt-4 text-sm">
-              <Link href="#" className="hover:underline">
-                Glemt passord?
-              </Link>
-            </div>
-          </form>
-        </div>
+          </Button>
+        </Box>
       </Paper>
     </Container>
   );
 };
+
+export default Login;
