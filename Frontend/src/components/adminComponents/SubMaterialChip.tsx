@@ -6,15 +6,7 @@ interface SubMaterialChipProps {
 }
 
 export const SubMaterialChip: React.FC<SubMaterialChipProps> = ({ label }) => {
-  return (
-    <Chip
-      label={label}
-      sx={{
-        backgroundColor: "var(--color-trk-deep-blue)",
-        color: "var(--color-trk-white)",
-      }}
-    />
-  );
+  return <Chip color="secondary" label={label} />;
 };
 
 export default SubMaterialChip;

@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Home } from "./Home";
-import { Login } from "./Login";
+import Home from "./Home";
+import Login from "./Login";
 import { SubmitReportPage } from "./SubmitReportPage";
-import { Admin } from "./Admin";
+import Admin from "./Admin";
 import MaterialManagement from "./MaterialManagement";
-import ViewReports from "./ViewReports";
+import { ViewReports } from "./ViewReports";
 import { DetailedReport } from "./DetailedReport";
 
 export const Router = () => {

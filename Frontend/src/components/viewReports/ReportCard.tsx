@@ -32,7 +32,7 @@ const ReportCard = ({ report, onViewReport }: ReportCardProps) => {
           <strong>Rapport-ID:</strong> {report.id}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <HomeIcon sx={{ mr: 1 }} />
+          <HomeIcon color="primary" sx={{ mr: 1 }} />
           <Typography variant="h6">{report.address}</Typography>
         </Box>
         <Typography variant="body2">
@@ -53,6 +53,7 @@ const ReportCard = ({ report, onViewReport }: ReportCardProps) => {
       </CardContent>
       <CardActions>
         <Button
+          color="primary"
           size="small"
           variant="contained"
           onClick={() => onViewReport(report.id)}

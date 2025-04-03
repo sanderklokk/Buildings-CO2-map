@@ -47,7 +47,6 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
   const [selectedParent, setSelectedParent] = useState<number | "root">("root");
   const [showHideConfirmation, setShowHideConfirmation] = useState(false);
 
-  // For slettebekreftelse
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [subToDelete, setSubToDelete] = useState<SubMaterial | null>(null);
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
@@ -275,7 +274,7 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
                   setSelectedParent(e.target.value as number | "root")
                 }
               >
-                <MenuItem value="root">Nytt hovedmateriale</MenuItem>
+                <MenuItem value="root">Nytt undermateriale</MenuItem>
                 {flattenedOptions.map((option) => (
                   <MenuItem key={option.id} value={option.id}>
                     {option.label}

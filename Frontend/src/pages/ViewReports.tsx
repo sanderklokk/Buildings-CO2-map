@@ -1,46 +1,38 @@
 import { useState } from "react";
-import { Container, Typography, TextField, Box, Pagination } from "@mui/material";
+import { Typography, Box, TextField, Pagination } from "@mui/material";
 import ReportCard from "../components/viewReports/ReportCard";
 import { get_wastereports } from "../api/wastereportAPI";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from 'use-debounce';
+import MainLayout from "../components/layout/MainLayout";
 
-// Data for testing
-/*
-const testReports: WasteReport[] = [
-  {
-    id: 1001,
-    address: "Klæbuveien, Trondheim",
-    sectionNumber: "A1",
-    usageNumber: "101",
-    totalWaste: 150,
-    buildingYear: 1985,
-    deliveredDate: "2023-11-01",
-  },
-  {
-    id: 1002,
-    address: "Prinsens gate, Trondheim",
-    sectionNumber: "B2",
-    usageNumber: "202",
-    totalWaste: 200,
-    buildingYear: 1995,
-    deliveredDate: "2023-10-25",
-  },
-  {
-    id: 1003,
-    address: "kongens gate, Trondheim",
-    sectionNumber: "C3",
-    usageNumber: "303",
-    totalWaste: 120,
-    buildingYear: 1978,
-    deliveredDate: "2023-10-30",
-  },
-];*/
+interface ReportsSidebarProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+}
 
-const ViewReports = () => {
+const ReportsSidebar = ({
+  searchTerm,
+  onSearchChange,
+}: ReportsSidebarProps) => {
+  return (
+    <Box sx={{ p: 4 }}>
+      <TextField
+        label="Søk rapport"
+        variant="outlined"
+        fullWidth
+        value={searchTerm}
+        onChange={(e) => onSearchChange(e.target.value)}
+        sx={{ mb: 4 }}
+      />
+    </Box>
+  );
+};
 
+export const ViewReports = () => {
   const [searchTerm, setSearchTerm] = useState("");
+
   const [page, setPage] = useState(1);
   const count = 9;
   const [debouncedSearch] = useDebounce(searchTerm, 500);
@@ -54,7 +46,14 @@ const ViewReports = () => {
   };
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <MainLayout
+      sidebar={
+        <ReportsSidebar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
+      }
+    >
       <Typography variant="h4" gutterBottom>
         Innsendte avfallsrapporter
       </Typography>
@@ -96,8 +95,6 @@ const ViewReports = () => {
           </Box>
         </Box>
       }
-    </Container>
+    </MainLayout>
   );
 };
-
-export default ViewReports;
