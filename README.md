@@ -15,7 +15,8 @@ How to contribute
 pip install -r requirements.txt
 ```
 2. [install postgres](https://www.postgresql.org/download/) and pgadmin4
-    * pgadmin4 can be checked as an option in the postgres installer. 
+    * pgadmin4 can be checked as an option in the postgres installer.
+    * The project was setup using postgres 17.2
 
 **Create the database**
 1. [Create a user](https://www.pgadmin.org/docs/pgadmin4/8.14/user_management.html) in pgadmin. **Warning: do not choose one of your real passwords. This will be stored as plain text later**
@@ -43,6 +44,23 @@ localhost:5432:buildingsc02-dev:<username>:<password> #change username and passw
 * **Make new migrations.** Whenever changes to the data models are done, the database schema must be updated as well, do this by making and applying a new migration. By doing this, the database can also be rolled back to a previous schema using the above step.
 ``` bash
 python manage.py makemigrations --name a_suitable_label #the --name flag is optional, but recomended to more easily keep track of the migration files. 
+```
+**Docker**
+The project contains a docker-compose.yml file. This is the easiest way to start the project. The port used for this is 5432 and the docker will not start if the port is taken by another process. 
+1. create a file called ```.pg_service.conf``` in your home folder and add these variables:
+``` bash
+[my_service]
+host=localhost
+user=postgres #matching POSTGRES_USER in docker-compose
+password=postgres #matching POSTGRES_PASSWORD in docker-compose
+dbname=buildingsc02-dev #matching POSTGRES_DB in docker-compose
+port=5432
+
+``` 
+
+2. **Start Docker**  Using docker-compose up
+```bash
+docker-compose up
 ```
 ## Frontend
 The frontend is dependent on the user having working installations of npm and node.js. 

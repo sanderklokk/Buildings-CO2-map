@@ -2,20 +2,20 @@
 For table entries from matrikkel, see the [documentation](./../Docs/data.md)
 ## Tables
 - `bygning`
-    - `bygnignsnr` : Taken from matrikkel
-    - `bygningsstatuskode` : Taken from matrikkel 
-    - `kommune` : Taken from matrikkel 
-    - `bygningstypekode` : Taken from matrikkel 
-    - `anntalboenheter` : Taken from matrikkel 
-    - `antalletasjer` : Taken from matrikkel 
-    - `bebygdareal` : Taken from matrikkel 
-    - `bruksarealtotalt` : Taken from matrikkel 
-    - `bruksarealbolig` : Taken from matrikkel 
-    - `bruksarealannet`: Taken from matrikkel 
-    - `bygdDato`: Taken from matrikkel 
+    - `bygnignsnr`: **Integer Primary key** -  Taken from matrikkel
+    - `bygningsstatuskode`: **Char[5]** - Taken from matrikkel 
+    - `kommune`: **Integer** - Taken from matrikkel 
+    - `bygningstypekode`: **Integer** - Taken from matrikkel 
+    - `anntalboenheter`: **Integer** - Taken from matrikkel 
+    - `antalletasjer`: **Integer** - Taken from matrikkel 
+    - `bebygdareal`: **Integer** - Taken from matrikkel 
+    - `bruksarealtotalt`: **Integer** - Taken from matrikkel 
+    - `bruksarealbolig`: **Integer** - Taken from matrikkel 
+    - `bruksarealannet`: **Integer** - Taken from matrikkel 
+    - `bygdDato`: **Date** - Taken from matrikkel 
 
 - `materialtype`
-    - `id`: 
+    - `id`: **Integer Primary key** 
     - `navn`: 
     - `forelder`: 
     - `farlig`: 
@@ -32,7 +32,7 @@ For table entries from matrikkel, see the [documentation](./../Docs/data.md)
     - `totalmengde`: 
 
 - `rapport`
-    - `id`: 
+    - `id`: **Integer Primary key**
     - `bygning`: 
     - `dato`: 
     - `address`: 
