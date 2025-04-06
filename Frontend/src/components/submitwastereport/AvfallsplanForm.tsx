@@ -37,10 +37,10 @@ export const AvfallsplanForm = () => {
   const getSearchOptions = () => {
     // Show only toplevel categories if no input
 
-    if (!materialtypes) return [];
+    if (!materialtypes?.data) return [];
 
     if (addWasteCategoryInputValue === "")
-      return materialtypes.filter(
+      return materialtypes.data.filter(
         (wasteMaterial) =>
           !wasteMaterial.forelder &&
           !wasteReport.avfall.farlig
@@ -48,7 +48,7 @@ export const AvfallsplanForm = () => {
             .map((x) => x.id)
             .includes(wasteMaterial.id)
       );
-    return materialtypes.filter(
+    return materialtypes.data.filter(
       (wasteMaterial) =>
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
@@ -60,7 +60,7 @@ export const AvfallsplanForm = () => {
   const getSubMaterials = (materialId: number) => {
     if (!materialtypes) return [];
 
-    return materialtypes.filter(
+    return materialtypes.data.filter(
       (wasteMaterial) => wasteMaterial.forelder === materialId
     );
   };
@@ -94,7 +94,6 @@ export const AvfallsplanForm = () => {
 
   return (
     <>
-      {" "}
       <Box>
         <Typography marginTop={2} fontSize={20} marginBottom={2}>
           Legg til type
@@ -125,7 +124,7 @@ export const AvfallsplanForm = () => {
               <Box>
                 <Typography marginTop={2} fontSize={18} marginBottom={2}>
                   Velg underkategori for{" "}
-                  {materialtypes.find((x) => x.id == selected)?.navn}
+                  {materialtypes.data.find((x) => x.id == selected)?.navn}
                 </Typography>
                 <Box>
                   {showSubMaterials &&
@@ -233,7 +232,7 @@ export const AvfallsplanForm = () => {
                     return (
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
-                        material={materialtypes?.find(
+                        material={materialtypes?.data.find(
                           (x) => x.id == wasteCategory.id
                         )}
                       />
@@ -325,7 +324,7 @@ export const AvfallsplanForm = () => {
                     return (
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
-                        material={materialtypes?.find(
+                        material={materialtypes?.data.find(
                           (x) => x.id == wasteCategory.id
                         )}
                       />

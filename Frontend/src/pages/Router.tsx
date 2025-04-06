@@ -4,7 +4,8 @@ import Login from "./Login";
 import { SubmitReportPage } from "./SubmitReportPage";
 import Admin from "./Admin";
 import MaterialManagement from "./MaterialManagement";
-import ViewReports from "./ViewReports";
+import { ViewReports } from "./ViewReports";
+import { DetailedReport } from "./DetailedReport";
 
 export const Router = () => {
   const routes = [
@@ -38,9 +39,14 @@ export const Router = () => {
 
     {
       name: "ViewReports",
-      path: "/viewreports",
+      path: "/report/all",
       component: <ViewReports />,
     },
+    {
+      name: "DetailedReport",
+      path: "/report/view/:id",
+      component: <DetailedReport />,
+    }
   ];
 
   return (

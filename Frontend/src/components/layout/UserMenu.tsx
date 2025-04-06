@@ -70,7 +70,7 @@ const UserMenu = () => {
         <MenuItem onClick={() => handleMenuItemClick("/")}>
           <MapIcon fontSize="small" sx={{ mr: 1 }} /> Kartsøk
         </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick("/viewreports")}>
+        <MenuItem onClick={() => handleMenuItemClick("/report/all")}>
           <ReportIcon fontSize="small" sx={{ mr: 1 }} /> Se innsendte
           avfallsrapporter
         </MenuItem>
