@@ -24,3 +24,19 @@ def create_materialtype(request):
 
     return Response(MaterialTypeSerializer(saved).data, status=200)
 
+# Update materialtype
+@api_view(['PUT'])
+def update_materialtype(request):
+    mattype_id = request.data.get("id")
+    try:
+        mattype = materialtype.objects.get(id=mattype_id)
+    except materialtype.DoesNotExist:
+        return Response({"error": "Material type not found"}, status=404)
+    
+    serialized = MaterialTypeSerializer(mattype, data=request.data)
+    if (not serialized.is_valid()):
+        return Response(serialized.errors, status=400)
+
+    saved = serialized.save()
+
+    return Response(MaterialTypeSerializer(saved).data, status=200)
