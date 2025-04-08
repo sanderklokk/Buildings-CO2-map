@@ -6,7 +6,7 @@ class bygning(models.Model):
     bygnignsnr = models.IntegerField(primary_key=True)
     bygningsstatuskode = models.CharField(max_length=5)
     kommune = models.IntegerField()
-    bygningstypekode = models.IntegerField()
+    bygningstypekode = models.IntegerField(null=True)
     anntalboenheter = models.IntegerField()
     antalletasjer = models.IntegerField()
     bebygdareal = models.IntegerField()
