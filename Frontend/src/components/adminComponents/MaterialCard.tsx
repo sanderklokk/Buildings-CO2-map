@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,36 +9,40 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SubMaterialChip from "./SubMaterialChip";
+import { APIMaterialType } from "../../api/models";
 import EditMaterial from "./EditMaterial";
-import { Material } from "./MaterialCardTypes";
+import { useBoundStore } from "../../store/Store";
 
 interface MaterialCardProps {
-  material: Material;
-  onUpdateMaterial: (updated: Material) => void;
+  material: APIMaterialType;
 }
 
-const MaterialCard: React.FC<MaterialCardProps> = ({
+const MaterialCard = ({
   material,
-  onUpdateMaterial,
-}) => {
+}: MaterialCardProps) => {
+
+  const { materials } = useBoundStore().materialManagementSlice;
   const [openEdit, setOpenEdit] = useState(false);
 
   const handleOpenEdit = () => setOpenEdit(true);
   const handleCloseEdit = () => setOpenEdit(false);
-  const handleSaveEdit = (updatedMaterial: Material) => {
-    onUpdateMaterial(updatedMaterial);
+  const handleSaveEdit = () => {
     setOpenEdit(false);
   };
 
-  const renderSubcategories = (subs: Material["subcategories"], level = 0) => {
+  const subcategories = (id: string) => materials.filter((mat) => mat.forelder === id);
+
+
+  const renderSubcategories = (subs: APIMaterialType[], level=0) => {
     return subs.map((sub) => (
       <Box key={sub.id} sx={{ ml: level * 2, mt: 1 }}>
-        <SubMaterialChip label={sub.name} />
-        {sub.subcategories &&
-          sub.subcategories.length > 0 &&
-          renderSubcategories(sub.subcategories, level + 1)}
+        <SubMaterialChip label={sub.navn} />
+        {subcategories(sub.id) &&
+          subcategories(sub.id).length > 0 &&
+          renderSubcategories(subcategories(sub.id), level + 1)}
       </Box>
     ));
+
   };
 
   return (
@@ -55,8 +59,8 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
           }}
         >
           <Chip
-            label={material.active ? "Synlig" : "Skjult"}
-            color={material.active ? "success" : "default"}
+            label={material.synlig ? "Synlig" : "Skjult"}
+            color={material.synlig ? "success" : "default"}
           />
           <Button
             variant="text"
@@ -70,12 +74,12 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
 
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            {material.name}
+            {material.navn}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
             Undermaterialer
           </Typography>
-          <Box>{renderSubcategories(material.subcategories)}</Box>
+          <Box>{renderSubcategories(subcategories(material.id))}</Box>
         </CardContent>
       </Card>
 

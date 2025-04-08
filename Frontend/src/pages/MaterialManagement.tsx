@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Typography, TextField, Button, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MaterialCard from "../components/adminComponents/MaterialCard";
 import AddMaterial from "../components/adminComponents/AddMaterial";
 import MainLayout from "../components/layout/MainLayout";
-import demoData from "../../../Data/demomaterialer.json";
-import { Material } from "../components/adminComponents/MaterialCardTypes";
+import { useQuery } from "@tanstack/react-query";
+import { get_all_materialtypes, create_materialtype } from "../api/materialtypeAPI";
+import { useBoundStore } from "../store/Store";
 
 interface MaterialSidebarProps {
   searchTerm: string;
@@ -43,44 +44,54 @@ const MaterialSidebar = ({
 };
 
 const MaterialManagement = () => {
-  const [materials, setMaterials] = useState<Material[]>([]);
+  const { data: materialsData, isLoading, isError } = useQuery(
+    { queryKey: ["materials"], queryFn: get_all_materialtypes })
+
+  
+
+  const { materials, setMaterials } = useBoundStore().materialManagementSlice;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
-  useEffect(() => {
-    if (demoData && demoData.materials) {
-      setMaterials(demoData.materials);
-    }
-  }, []);
+  const handleAddNewMaterial = async (materialName: string) => {
+    try {
+      const res = await create_materialtype({
+        id: "",
+        navn: materialName,
+        forelder: null,
+        farlig: false,
+        synlig: false,
+      });
 
-  const handleUpdateMaterial = (updated: Material) => {
-    setMaterials((prev) =>
-      prev.map((mat) => (mat.id === updated.id ? updated : mat))
-    );
-  };
-
-  const handleAddNewMaterial = (materialName: string) => {
-    if (materialName.trim() !== "") {
-      const newMaterial: Material = {
-        id: Date.now(),
-        name: materialName,
-        active: true,
-        subcategories: [],
-      };
-      setMaterials([...materials, newMaterial]);
-      setOpenAddDialog(false);
+      if (res.status === 200) {
+        const newmaterial = res.data;
+        setMaterials([...materials, newmaterial]);
+        console.log("Material created successfully:", newmaterial);
+        console.log("Materials after creation:", materials);
+        setOpenAddDialog(false);
+      }
+    } catch (error) {
+      console.error("Error creating material:", error);
     }
   };
 
-  const filteredMaterials = materials.filter((mat) => {
+  const subcategories = (id: string) => materials.filter((mat) => mat.forelder === id);
+
+  const filteredMaterials = materials?.filter((mat) => {
     const lowerSearch = searchTerm.toLowerCase();
     return (
-      mat.name.toLowerCase().includes(lowerSearch) ||
-      mat.subcategories.some((sub) =>
-        sub.name.toLowerCase().includes(lowerSearch)
+      mat.navn.toLowerCase().includes(lowerSearch) ||
+      subcategories(mat.id).some((sub) => sub.navn.toLowerCase().includes(lowerSearch)
       )
     );
-  });
+  }).filter(mat => mat.forelder == null);
+
+  useEffect(() => {
+    if (materialsData) {
+      setMaterials(materialsData.data);
+    }
+  }, [materialsData, setMaterials]);
 
   return (
     <MainLayout
@@ -95,15 +106,25 @@ const MaterialManagement = () => {
       <Typography variant="h4" gutterBottom>
         Rediger materialer
       </Typography>
+      { isLoading && <Typography>Loading...</Typography>}
+      { isError && <Typography>Error loading materials</Typography>}
+      { materials && (
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+      
         {filteredMaterials.map((mat) => (
           <MaterialCard
             key={mat.id}
             material={mat}
-            onUpdateMaterial={handleUpdateMaterial}
           />
         ))}
-      </Box>
+        {filteredMaterials.length === 0 && (
+          <Typography marginLeft={2}>
+            Ingen materialer funnet.
+          </Typography>
+        )}
+        
+      </Box>)}
+     
       <AddMaterial
         open={openAddDialog}
         onClose={() => setOpenAddDialog(false)}

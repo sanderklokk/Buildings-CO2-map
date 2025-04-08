@@ -26,7 +26,7 @@ export const SubmitReportPage = () => {
 
     const toApiMaterial = (material: AvfallsMaterialeRow): APIWasteReportMaterial => ({
         id: null,
-        materiale: Number(material.id),
+        materiale: material.id,
         planlagtmengde: material.plannedAmount,
         faktiskmengde: material.actualAmount,
         mengdetilgjenbruk: material.amountToReuse,
@@ -54,6 +54,8 @@ export const SubmitReportPage = () => {
         const wastematerials: APIWasteReportMaterial[] = wasteReport.avfall.farlig.concat(wasteReport.avfall.ordinert).map(toApiMaterial);
         const data: APIWasteReport = { ...toApiReport(wasteReport), materialer: wastematerials };
 
+        console.log(wastematerials)
+        console.log(data)
 
         try {
             await post_wastereport(data);

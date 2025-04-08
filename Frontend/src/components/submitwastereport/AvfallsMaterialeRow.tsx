@@ -6,7 +6,7 @@ import { useBoundStore } from "../../store/Store";
 import { APIMaterialType } from "../../api/models";
 
 export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | undefined}) => {
-
+    console.log(material)
     const { updateAvfallRow, wasteReport }  = useBoundStore().wasteReportForm;
     if (!material) {
         return <></>;
@@ -52,7 +52,7 @@ export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | u
     </TableRow>
 }
 
-const MoreIconPopup = ({id}: {id: number}) => {
+const MoreIconPopup = ({id}: {id: string}) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const { removeAvfallRow } = useBoundStore().wasteReportForm;
 

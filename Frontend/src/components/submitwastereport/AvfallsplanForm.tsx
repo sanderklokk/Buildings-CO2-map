@@ -32,7 +32,7 @@ export const AvfallsplanForm = () => {
   const [addWasteCategoryValue, setAddWasteCategoryValue] =
     useState<APIMaterialType | null>(null);
   const [showSubMaterials, setShowSubMaterials] = useState<boolean>(false);
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
 
   const getSearchOptions = () => {
     // Show only toplevel categories if no input
@@ -57,7 +57,7 @@ export const AvfallsplanForm = () => {
     );
   };
 
-  const getSubMaterials = (materialId: number) => {
+  const getSubMaterials = (materialId: string) => {
     if (!materialtypes) return [];
 
     return materialtypes.data.filter(
@@ -68,7 +68,7 @@ export const AvfallsplanForm = () => {
   const getSubMaterialsNotInUse = () => {
     if (!selected) return [];
 
-    return getSubMaterials(selected || 0).filter(
+    return getSubMaterials(selected || "").filter(
       (wasteMaterial) =>
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)

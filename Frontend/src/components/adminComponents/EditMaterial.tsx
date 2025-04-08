@@ -18,143 +18,201 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SubMaterialChip from "./SubMaterialChip";
-import { Material, SubMaterial } from "./MaterialCardTypes";
+import { APIMaterialType } from "../../api/models";
+import { useBoundStore } from "../../store/Store";
+import { create_materialtype, delete_materialtype, update_materialtype } from "../../api/materialtypeAPI";
 
 interface FlattenedOption {
-  id: number;
+  id: string;
   label: string;
 }
 
 interface EditMaterialProps {
-  material: Material;
+  material: APIMaterialType;
   open: boolean;
   onClose: () => void;
-  onSave: (updated: Material) => void;
+  onSave: () => void;
 }
 
-const EditMaterial: React.FC<EditMaterialProps> = ({
+export const EditMaterial = ({
   material,
   open,
   onClose,
   onSave,
-}) => {
-  const [localActive, setLocalActive] = useState(material.active);
-  const [localSubcategories, setLocalSubcategories] = useState<SubMaterial[]>(
-    material.subcategories ?? []
-  );
+}: EditMaterialProps) => {
+  const { materials, setMaterials, replaceMaterials, removeMaterial } = useBoundStore().materialManagementSlice;
+
+  const localsubcategories = (id: string) => materials.filter((mat) => mat.forelder === id);
+
+  const globalsubcategories = (id: string): APIMaterialType[] => {
+    const subs = localsubcategories(id);
+    const allsubs = new Set<APIMaterialType>();
+    for (const sub of subs) {
+      allsubs.add(sub);
+      const s2 = globalsubcategories(sub.id);
+      for (const s3 of s2) {
+        {
+          allsubs.add(s3);
+        }
+      }
+    }
+    return Array.from(allsubs);
+
+  }
+  const [localActive, setLocalActive] = useState(material.synlig);
+
   const [newSubName, setNewSubName] = useState("");
 
-  const [selectedParent, setSelectedParent] = useState<number | "root">("root");
+  const [selectedParent, setSelectedParent] = useState<string | "root">("root");
   const [showHideConfirmation, setShowHideConfirmation] = useState(false);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [subToDelete, setSubToDelete] = useState<SubMaterial | null>(null);
+  const [subToDelete, setSubToDelete] = useState<APIMaterialType | null>(null);
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
 
   useEffect(() => {
     if (open) {
-      setLocalActive(material.active);
-      setLocalSubcategories(material.subcategories ?? []);
       setNewSubName("");
       setSelectedParent("root");
       setShowHideConfirmation(false);
     }
-  }, [material, open]);
+  }, [material, materials, open]);
 
   const handleToggleActive = () => {
     if (localActive) {
       setShowHideConfirmation(true);
     } else {
+      activateMaterial();
       setLocalActive(true);
     }
   };
 
-  const confirmHide = () => {
+  const confirmHide = async () => {
+    hideMaterial();
+
     setLocalActive(false);
     setShowHideConfirmation(false);
   };
 
+  const hideMaterial = async () => {
+    try {
+      const res = await update_materialtype({
+        ...material,
+        synlig: false,
+      });
+      if (res.status === 200) {
+        const updatedMaterial = res.data;
+        replaceMaterials([updatedMaterial]);
+      } else {
+        console.error("Failed to update material visibility");
+      } 
+    } catch (error) {
+      console.error("Error setting material active:", error);
+    
+    }
+  }
+
+  const activateMaterial = async () => {
+      try {
+        const res = await update_materialtype({
+          ...material,
+          synlig: true,
+        });
+        if (res.status === 200) {
+          const updatedMaterial = res.data;
+          replaceMaterials([updatedMaterial]);
+        } else {
+          console.error("Failed to update material visibility");
+        } 
+      } catch (error) {
+        console.error("Error setting material active:", error);
+      
+      }
+    }
+
+
   const cancelHide = () => {
+
     setShowHideConfirmation(false);
   };
 
-  const flattenSubcategories = (
-    subs: SubMaterial[],
-    level: number = 0
-  ): FlattenedOption[] => {
-    let result: FlattenedOption[] = [];
-    subs.forEach((sub) => {
-      result.push({ id: sub.id, label: `${"—".repeat(level)} ${sub.name}` });
-      if (sub.subcategories && sub.subcategories.length > 0) {
-        result = result.concat(
-          flattenSubcategories(sub.subcategories, level + 1)
-        );
+
+  const getSubDepth = (material: APIMaterialType, depth = 0): number => {
+    if (material.forelder === null) {
+      return depth;
+    }
+    for (const m of materials) {
+      if (material.forelder === m.id) {
+        return getSubDepth(m, depth + 1);
       }
+    }
+    return depth;
+  }
+
+  const flattenSubcategories = (
+    subs: APIMaterialType[],
+  ): FlattenedOption[] => {
+    const result: FlattenedOption[] = [];
+    subs.forEach((sub) => {
+      const depth = getSubDepth(sub);
+      result.push({
+        id: sub.id,
+        label: `${"—".repeat(depth)} ${sub.navn}`,
+      });
     });
     return result;
   };
 
-  const addSubToParent = (
-    subs: SubMaterial[],
-    parentId: number,
-    newSub: SubMaterial
-  ): SubMaterial[] => {
-    return subs.map((sub) => {
-      if (sub.id === parentId) {
-        return {
-          ...sub,
-          subcategories: sub.subcategories
-            ? [...sub.subcategories, newSub]
-            : [newSub],
-        };
-      } else if (sub.subcategories && sub.subcategories.length > 0) {
-        return {
-          ...sub,
-          subcategories: addSubToParent(sub.subcategories, parentId, newSub),
-        };
-      }
-      return sub;
-    });
-  };
-
-  const handleAddSubcategory = () => {
+  const handleAddSubcategory = async () => {
     if (newSubName.trim() !== "") {
-      const newSub: SubMaterial = {
-        id: Date.now(),
-        name: newSubName,
-        subcategories: [],
-      };
-      if (selectedParent === "root") {
-        setLocalSubcategories([...localSubcategories, newSub]);
-      } else {
-        setLocalSubcategories((prev) =>
-          addSubToParent(prev, selectedParent as number, newSub)
-        );
+      try {
+        const res = await create_materialtype({
+          id: "",
+          navn: newSubName,
+          forelder: selectedParent === "root" ? material.id : selectedParent,
+          farlig: false,
+          synlig: true,
+        });
+
+        if (res.status === 200) {
+          const newSub = res.data;
+          setMaterials([...materials, newSub]);
+
+        }
+      } catch (error) {
+        console.error("Error creating subcategory:", error);
       }
+
       setNewSubName("");
       setSelectedParent("root");
     }
   };
 
-  const removeSubById = (subs: SubMaterial[], id: number): SubMaterial[] => {
-    return subs
-      .filter((sub) => sub.id !== id)
-      .map((sub) => ({
-        ...sub,
-        subcategories: sub.subcategories
-          ? removeSubById(sub.subcategories, id)
-          : [],
-      }));
+  const removeSubById = async (id: string): Promise<APIMaterialType[]> => {
+    try {
+      console.log("Deleting subcategory with id:", id);
+      const res = await delete_materialtype(id);
+      if (res.status === 200) {
+        const affected_materials = res.data;
+        console.log("affected_materials", affected_materials);
+        return affected_materials;
+      }
+    } catch (error) {
+      console.error("Error deleting subcategory:", error);
+    }
+    return []
   };
 
-  const initiateDelete = (sub: SubMaterial) => {
+  const initiateDelete = (sub: APIMaterialType) => {
     setSubToDelete(sub);
     setDeleteConfirmOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (subToDelete) {
-      setLocalSubcategories(removeSubById(localSubcategories, subToDelete.id));
+      const affected_materials = await removeSubById(subToDelete.id);
+      removeMaterial(subToDelete.id);
+      replaceMaterials(affected_materials);
     }
     setDeleteConfirmOpen(false);
     setSubToDelete(null);
@@ -162,15 +220,13 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
   };
 
   const cancelDelete = () => {
+
     setDeleteConfirmOpen(false);
     setSubToDelete(null);
     setDeleteConfirmInput("");
   };
 
-  const GroupedSubcategories: React.FC<{
-    subs: SubMaterial[];
-    level: number;
-  }> = ({ subs, level }) => {
+  const GroupedSubcategories = ({ subs, level }: { subs: APIMaterialType[], level: number }) => {
     return (
       <>
         {subs.map((sub) => (
@@ -185,7 +241,7 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
-              <SubMaterialChip label={sub.name} />
+              <SubMaterialChip label={sub.navn} />
               <IconButton
                 size="small"
                 onClick={(e) => {
@@ -197,9 +253,9 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </Box>
-            {sub.subcategories && sub.subcategories.length > 0 && (
+            {localsubcategories(sub.id) && localsubcategories(sub.id).length > 0 && (
               <GroupedSubcategories
-                subs={sub.subcategories}
+                subs={localsubcategories(sub.id)}
                 level={level + 1}
               />
             )}
@@ -209,20 +265,16 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
     );
   };
 
-  const handleSave = () => {
-    onSave({
-      ...material,
-      active: localActive,
-      subcategories: localSubcategories,
-    });
+  const handleClose = () => {
+    onSave();
   };
 
-  const flattenedOptions = flattenSubcategories(localSubcategories);
+  const flattenedOptions = flattenSubcategories(globalsubcategories(material.id));
 
   return (
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-        <DialogTitle>{material.name}</DialogTitle>
+        <DialogTitle>{material.navn}</DialogTitle>
         <DialogContent>
           <Box sx={{ my: 2 }}>
             <FormControlLabel
@@ -260,7 +312,7 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             Undermaterialer
           </Typography>
-          <GroupedSubcategories subs={localSubcategories} level={0} />
+          <GroupedSubcategories subs={localsubcategories(material.id)} level={0} />
           <Box sx={{ mt: 2 }}>
             <FormControl fullWidth size="small">
               <InputLabel id="parent-select-label">
@@ -271,7 +323,7 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
                 value={selectedParent}
                 label="Overordnet kategori"
                 onChange={(e) =>
-                  setSelectedParent(e.target.value as number | "root")
+                  setSelectedParent(e.target.value as string | "root")
                 }
               >
                 <MenuItem value="root">Nytt undermateriale</MenuItem>
@@ -296,9 +348,9 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Avbryt</Button>
-          <Button onClick={handleSave} variant="contained">
-            Lagre
+
+          <Button onClick={handleClose} variant="contained">
+            Lukk
           </Button>
         </DialogActions>
       </Dialog>
@@ -306,7 +358,7 @@ const EditMaterial: React.FC<EditMaterialProps> = ({
         <DialogTitle>Bekreft sletting</DialogTitle>
         <DialogContent>
           <Typography>
-            Er du sikker på at du vil slette undermateriale: {subToDelete?.name}
+            Er du sikker på at du vil slette undermateriale: {subToDelete?.navn}
             ? Denne handlingen kan ikke reverseres.
           </Typography>
           <Typography sx={{ mt: 2 }}>
