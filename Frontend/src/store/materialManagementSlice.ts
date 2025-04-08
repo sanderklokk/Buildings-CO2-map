@@ -12,9 +12,8 @@ export interface MaterialManagementSlice {
     }
 }
 
-
 /**
- * State handling all data related to waste report form
+ * State handling all data and actions related to material management
 */
 export const createMaterialManagementSlice: StateCreator<MaterialManagementSlice> = (set) => ({
     materialManagementSlice: {
