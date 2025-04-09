@@ -82,9 +82,8 @@ CORS_ALLOWED_ORIGINS = [
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-
 DATABASES = {
-     "default": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "buildingsc02-dev",
         "USER": "postgres",

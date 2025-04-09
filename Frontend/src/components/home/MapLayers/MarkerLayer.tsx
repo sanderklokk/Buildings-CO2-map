@@ -1,6 +1,7 @@
 import { Marker, Popup, useMap, useMapEvent } from "react-leaflet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBoundStore } from "../../../store/Store";
+import { BuildingPopup } from "./BuildingPopup";
 
 interface HeatLayerProps {
     data: { lat: number, long: number, intensity: number, text: string }[]
@@ -13,9 +14,9 @@ export const MarkerLayer = ({ data }: HeatLayerProps) => {
 
     const { hurtigsok } = useBoundStore().mapSearch;
 
-    const [zoom, setZoom] = useState<number>(13);
+    const [, setZoom] = useState<number>(13);
     // north, east, south, west
-    const [bounds, setBounds] = useState<number[]>([0, 0, 0, 0]);
+    const [, setBounds] = useState<number[]>([0, 0, 0, 0]);
 
 
     const map = useMap();
@@ -27,11 +28,19 @@ export const MarkerLayer = ({ data }: HeatLayerProps) => {
         const bounds = map.getBounds();
         setBounds([bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest()]);
     });
+    
+
+    useEffect(() => {
+        if (hurtigsok.result) {
+            map.setView([hurtigsok.result.lon, hurtigsok.result.lat], 17);
+        }
+
+    }, [hurtigsok.result, map]);
     return <>
         {hurtigsok.result &&
-            <Marker position={[hurtigsok.result.lat, hurtigsok.result.lon]}>
+            <Marker position={[hurtigsok.result.lon, hurtigsok.result.lat]}>
                 <Popup>
-                    Hurtigsøk
+                    <BuildingPopup data={hurtigsok.result} />
                 </Popup>
             </Marker>
         }

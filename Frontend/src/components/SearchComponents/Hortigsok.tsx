@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { useQuery } from "@tanstack/react-query";
-import { APIAddressSearchParameters, get_address_search } from "../../api/geonorgeAPI";
+
+import { APIAddressSearchResult, get_address_search, get_building_search } from "../../api/mapsearchAPI";
 import { useBoundStore } from "../../store/Store";
+import { AxiosResponse } from "axios";
 
 
 
@@ -12,16 +13,11 @@ import { useBoundStore } from "../../store/Store";
 const Hortigsok = () => {
   const [showDetailed, setShowDetailed] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+
+  const [searchResult, setSearchResult] = useState<AxiosResponse<APIAddressSearchResult> | null>();
 
   const { setHurtigsokResult } = useBoundStore().mapSearch;
-
-  const [searchParams, setSearchParams] = useState<APIAddressSearchParameters>({
-    query: "",
-    count: 10,
-    gardsnummer: "",
-    bruksnummer: "",
-    festenummer: "",
-  });
 
   const [formInputs, setFormInputs] = useState({
     query: "",
@@ -33,42 +29,59 @@ const Hortigsok = () => {
 
   const toggleDetailed = () => {
     if (showDetailed) {
-
-      setSearchParams({
-        query: searchParams.query,
-        count: searchParams.count,
+      setFormInputs((prev) => ({
+        ...prev,
         gardsnummer: "",
         bruksnummer: "",
         festenummer: "",
-      });
+      }));
+  
     }
     setShowDetailed((prev) => !prev);
 
   };
 
-  const { data, error, isLoading } = useQuery({ queryKey: ['addressSearch', searchParams], queryFn: () => get_address_search(searchParams) });
-
-  const handleSearch = () => {
-    setSearchParams({
-      query: formInputs.query,
-      count: searchParams.count,
-      gardsnummer: formInputs.gardsnummer,
-      bruksnummer: formInputs.bruksnummer,
-      festenummer: formInputs.festenummer,
-    });
+  const handleSearch = async () => {
+  
     setHasSearched(true);
+    try {
+      setLoadingSearch(true);
+      const res = await get_address_search({
+        query: formInputs.query,
+        count: 10,
+        gardsnummer: formInputs.gardsnummer,
+        bruksnummer: formInputs.bruksnummer,
+        festenummer: formInputs.festenummer,
+      });
+
+      if (res.status === 200) {
+        setSearchResult(res);
+      }
+      setLoadingSearch(false);
+
+    } catch (error) {
+      console.error("Error fetching address search results:", error);
+    }
+  
   };
 
 
-  const handleSelectResult = ({ lat, long }: { lat: number, long: number }) => {
-    setHurtigsokResult({ lat, lon: long });
+  const handleSelectResult = async ({ lat, long }: { lat: number, long: number }) => {
+    try {
+      const res = await get_building_search({ lat, lon: long });
+      if (res.status === 200) {
+        setHurtigsokResult(res.data);
+      }
+    } catch (error) {
+      console.error("Error fetching building search results:", error);
+    }
     setHasSearched(false);
   }
 
 
   return (
     <Box className="p-4">
-      <TextField fullWidth label="Hurtigsøk på bygg" variant="outlined" />
+      <TextField fullWidth label="Hurtigsøk på bygg" variant="outlined" value={formInputs.query} onChange={(e) => setFormInputs({ ...formInputs, query: e.target.value })} />
 
       <Box className="mt-2 flex justify-end">
         <Button
@@ -92,22 +105,22 @@ const Hortigsok = () => {
       )}
 
       <Box className="mt-4">
-        <Button variant="contained" fullWidth>
+        <Button variant="contained" fullWidth onClick={handleSearch}>
           Søk
         </Button>
       </Box>
       {hasSearched &&
         <>
           {
-            data?.data &&
+            searchResult?.data &&
             <Typography className="">
-              Resultater ({data?.data.metadata.totaltAntallTreff > 10 ? 10 : data?.data.metadata.totaltAntallTreff})
+              Resultater ({searchResult?.data.metadata.totaltAntallTreff > 10 ? 10 : searchResult?.data.metadata.totaltAntallTreff})
             </Typography>
           }
           {
-            data?.data && data?.data.adresser.length > 0 &&
+            searchResult?.data && searchResult?.data.adresser.length > 0 &&
             <Box display={"flex"} flexDirection={"column"} gap={1} p={1} overflow={"scroll"} maxHeight={"300px"} boxShadow={3} borderRadius={2} bgcolor={"white"}>{
-              data?.data.adresser.map((address, i) => (
+              searchResult?.data.adresser.map((address, i) => (
                 <Box key={i} borderBottom={"1px solid #ccc"} padding={1} >
 
                   <Typography>
@@ -125,7 +138,7 @@ const Hortigsok = () => {
 
               ))}
             </Box>}
-          {error &&
+          {searchResult?.status != 200 &&
             <>
               <Typography className="">
                 Resultater (0)
@@ -135,7 +148,7 @@ const Hortigsok = () => {
               </Typography>
             </>
           }
-          {isLoading &&
+          {loadingSearch &&
             <>
               <Typography className="">
                 Resultater

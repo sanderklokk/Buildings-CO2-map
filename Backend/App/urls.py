@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import wastereportviews, materialtypeviews
+from .views import wastereportviews, materialtypeviews, mapview
 
 urlpatterns = [
     path('materialtype/all', materialtypeviews.get_materialtypes, name='get_materialtypes'),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('materialtype/create', materialtypeviews.create_materialtype, name='create_materialtype'),
     path('materialtype/update', materialtypeviews.update_materialtype, name='update_materialtype'),
     path('materialtype/delete', materialtypeviews.delete_materialtype, name='delete_materialtype'),
+    path('map/building', mapview.get_buildingdata, name='get_buildingdata'),
 ]

@@ -1,18 +1,13 @@
 import { StateCreator } from "zustand";
+import { APICoordinatesBuildingSearchResult } from "../api/mapsearchAPI";
 
 
 export interface MapSearchSlice {
     mapSearch: {
         hurtigsok: {
-            result: {
-                lat: number;
-                lon: number;
-            } | null;
+            result: APICoordinatesBuildingSearchResult | null;
         },
-        setHurtigsokResult: (result: {
-            lat: number;
-            lon: number;
-        } | null) => void;
+        setHurtigsokResult: (result: APICoordinatesBuildingSearchResult | null) => void;
     },
 
 }
@@ -26,10 +21,7 @@ export const createMapSearchSlice: StateCreator<MapSearchSlice> = (set) => ({
         hurtigsok: {
             result: null,
         },
-        setHurtigsokResult: (result: {
-            lat: number;
-            lon: number;
-        } | null) => set((state) => ({
+        setHurtigsokResult: (result: APICoordinatesBuildingSearchResult | null) => set((state) => ({
             mapSearch: {
                 ...state.mapSearch,
                 hurtigsok: {
