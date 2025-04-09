@@ -67,11 +67,9 @@ const Hortigsok = () => {
 
 
   return (
-    <Box className="w-[80%] p-4 mx-auto overflow-auto pt-6">
-      {/* Hurtigsøk-input */}
-      <TextField fullWidth label="Hurtigsøk på bygg" variant="outlined" value={formInputs.query} onChange={(e) => setFormInputs({ ...formInputs, query: e.target.value })} />
+    <Box className="p-4">
+      <TextField fullWidth label="Hurtigsøk på bygg" variant="outlined" />
 
-      {/* Knapp for å vise/skjule detaljert søk, høyrestilt */}
       <Box className="mt-2 flex justify-end">
         <Button
           variant="text"
@@ -85,7 +83,6 @@ const Hortigsok = () => {
         </Button>
       </Box>
 
-      {/* Detaljerte søkefelt, horisontalt midtstilt, men topplinjet */}
       {showDetailed && (
         <Box className="mt-2 flex justify-center items-start space-x-2">
           <TextField className="w-1/3" label="Gårdsnr" variant="outlined" value={formInputs.gardsnummer} onChange={(e) => setFormInputs({ ...formInputs, gardsnummer: e.target.value })} />
@@ -94,9 +91,8 @@ const Hortigsok = () => {
         </Box>
       )}
 
-      {/* Søk-knapp nederst */}
-      <Box className="mt-4 mb-4">
-        <Button variant="contained" fullWidth onClick={handleSearch}>
+      <Box className="mt-4">
+        <Button variant="contained" fullWidth>
           Søk
         </Button>
       </Box>

@@ -83,7 +83,7 @@ const Omradesok: React.FC = () => {
   };
 
   return (
-    <Box className="w-[80%] p-4 mx-auto space-y-8 pt-6">
+    <Box className="p-4 space-y-8">
       <Box>
         <FormControl fullWidth variant="outlined">
           <InputLabel id="byggtype-label">Byggtype</InputLabel>

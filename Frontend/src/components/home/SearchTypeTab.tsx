@@ -20,8 +20,7 @@ export default function SearchTypeTab() {
   };
 
   return (
-    <Box sx={{ width: "100%", bgcolor: "background.paper"}}>
-      {/* Tabs-container */}
+    <Box>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
