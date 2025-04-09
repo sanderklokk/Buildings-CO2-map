@@ -4,8 +4,7 @@ import uuid
 # Create your models here.
 
 class bygning(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    bygnignsnr = models.IntegerField()
+    bygnignsnr = models.IntegerField(primary_key=True)
     bygningsstatuskode = models.CharField(max_length=5)
     kommune = models.IntegerField()
     bygningstypekode = models.IntegerField()
