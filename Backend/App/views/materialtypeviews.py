@@ -9,8 +9,14 @@ from django.core.paginator import Paginator
 
 # Get all material types
 @api_view(['GET'])
-def get_materialtypes(_):
-    materialtypes = MaterialTypeSerializer(materialtype.objects.all(), many=True)
+def get_materialtypes(request):
+    includehidden = int(request.GET.get('includehidden', 0))
+    print("includehidden", includehidden)
+    if includehidden == 1:
+        materialtypes = MaterialTypeSerializer(materialtype.objects.all(), many=True)
+    else:
+        materialtypes = MaterialTypeSerializer(materialtype.objects.exclude(synlig=False), many=True)
+
     return Response(materialtypes.data, status=200)
 
 # Create new materialtype
@@ -24,22 +30,28 @@ def create_materialtype(request):
 
     return Response(MaterialTypeSerializer(saved).data, status=200)
 
-# Update materialtype
+# Update list of materials
 @api_view(['PUT'])
 def update_materialtype(request):
-    mattype_id = request.data.get("id")
-    try:
-        mattype = materialtype.objects.get(id=mattype_id)
-    except materialtype.DoesNotExist:
-        return Response({"error": "Material type not found"}, status=404)
-    
-    serialized = MaterialTypeSerializer(mattype, data=request.data)
-    if (not serialized.is_valid()):
-        return Response(serialized.errors, status=400)
+    materials = request.data
 
-    saved = serialized.save()
+    updated_materials = []
+    for material in materials:
+        try:
+            mattype = materialtype.objects.get(id=material["id"])
+        except materialtype.DoesNotExist:
+            return Response({"error": "Material type not found"}, status=404)
+        
+        serialized = MaterialTypeSerializer(mattype, data=material)
+        if (not serialized.is_valid()):
+            return Response(serialized.errors, status=400)
 
-    return Response(MaterialTypeSerializer(saved).data, status=200)
+        saved = serialized.save()
+        updated_materials.append(MaterialTypeSerializer(saved).data)
+
+    return Response(updated_materials, status=200)
+
+
 
 # Delete materialtype
 @api_view(['DELETE'])

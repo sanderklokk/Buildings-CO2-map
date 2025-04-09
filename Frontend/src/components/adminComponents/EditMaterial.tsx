@@ -20,7 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SubMaterialChip from "./SubMaterialChip";
 import { APIMaterialType } from "../../api/models";
 import { useBoundStore } from "../../store/Store";
-import { create_materialtype, delete_materialtype, update_materialtype } from "../../api/materialtypeAPI";
+import { create_materialtype, delete_materialtype, update_materialtypes } from "../../api/materialtypeAPI";
 
 interface FlattenedOption {
   id: string;
@@ -96,13 +96,14 @@ export const EditMaterial = ({
 
   const hideMaterial = async () => {
     try {
-      const res = await update_materialtype({
-        ...material,
+      const materialsToUpdate = [...globalsubcategories(material.id), material].map((m) => ({
+        ...m,
         synlig: false,
-      });
+      }));
+      const res = await update_materialtypes(materialsToUpdate);
       if (res.status === 200) {
-        const updatedMaterial = res.data;
-        replaceMaterials([updatedMaterial]);
+        const updatedMaterials = res.data;
+        replaceMaterials(updatedMaterials);
       } else {
         console.error("Failed to update material visibility");
       } 
@@ -114,13 +115,14 @@ export const EditMaterial = ({
 
   const activateMaterial = async () => {
       try {
-        const res = await update_materialtype({
-          ...material,
+        const materialsToUpdate = [...globalsubcategories(material.id), material].map((m) => ({
+          ...m,
           synlig: true,
-        });
+        }));
+        const res = await update_materialtypes(materialsToUpdate);
         if (res.status === 200) {
-          const updatedMaterial = res.data;
-          replaceMaterials([updatedMaterial]);
+          const updatedMaterials = res.data;
+          replaceMaterials(updatedMaterials);
         } else {
           console.error("Failed to update material visibility");
         } 

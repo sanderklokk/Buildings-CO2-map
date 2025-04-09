@@ -45,7 +45,7 @@ const MaterialSidebar = ({
 
 const MaterialManagement = () => {
   const { data: materialsData, isLoading, isError } = useQuery(
-    { queryKey: ["materials"], queryFn: get_all_materialtypes })
+    { queryKey: ["materials", true], queryFn: () => get_all_materialtypes(true) })
 
   
 

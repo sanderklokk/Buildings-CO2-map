@@ -23,7 +23,7 @@ export const AvfallsplanForm = () => {
     data: materialtypes,
     isLoading: isMaterialsLoading,
     isError: isMaterialsError,
-  } = useQuery({ queryKey: ["materialtypes"], queryFn: get_all_materialtypes });
+  } = useQuery({ queryKey: ["materialtypes", false], queryFn: () => get_all_materialtypes(false) });
 
   const { addAvfallRow, wasteReport } = useBoundStore().wasteReportForm;
 

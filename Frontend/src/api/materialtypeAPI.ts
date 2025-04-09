@@ -12,8 +12,10 @@ const MATERIAL_TYPES_UPDATE = "api/materialtype/update";
 const MATERIAL_TYPES_DELETE = "api/materialtype/delete";
 
 // Array of materialtyper
-export const get_all_materialtypes = async (): Promise<AxiosResponse<APIMaterialType[]>> => {
-    return service.get(MATERIAL_TYPES_GET_ALL);
+export const get_all_materialtypes = async (includehidden?: boolean): Promise<AxiosResponse<APIMaterialType[]>> => {
+    return service.get(MATERIAL_TYPES_GET_ALL, { 
+        params: { includehidden: includehidden ? 1 : 0 } 
+    });
 }
 
 // Uses APIMaterialType without id, returns same body with id
@@ -22,8 +24,8 @@ export const create_materialtype = async (materialtype: APIMaterialType): Promis
 }
 
 // Uses APIMaterialType with id, returns updated instance
-export const update_materialtype = async (materialtype: APIMaterialType): Promise<AxiosResponse<APIMaterialType>> => {
-    return service.put(MATERIAL_TYPES_UPDATE, materialtype);
+export const update_materialtypes = async (materialtypes: APIMaterialType[]): Promise<AxiosResponse<APIMaterialType[]>> => {
+    return service.put(MATERIAL_TYPES_UPDATE, materialtypes);
 }
 
 // Uses Id, returns all impacted materialtypes so they can be updated in local state
