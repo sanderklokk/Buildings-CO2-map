@@ -15,6 +15,6 @@ export const get_wastereports = async (page: number, count: number, searchTerm: 
     return await service.get(`api/wastereport/all?page=${p}&count=${c}&search=${s}`);
 }
 
-export const get_wastereport = async (id: number): Promise<AxiosResponse<APIWasteReportDetailed>> => {
+export const get_wastereport = async (id: string): Promise<AxiosResponse<APIWasteReportDetailed>> => {
     return await service.get(`api/wastereport/${id}`);
 }

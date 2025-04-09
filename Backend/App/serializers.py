@@ -3,8 +3,8 @@ from .models import materialtype, rapport, rapportmateriale
 
 # DTO Models
 class WasteReportMaterialDTOSerializer(serializers.Serializer):
-    id = serializers.IntegerField(required=False, allow_null=True)
-    materiale = serializers.IntegerField()
+    id = serializers.UUIDField(required=False, allow_null=True)
+    materiale = serializers.UUIDField()
     planlagtmengde = serializers.FloatField()
     faktiskmengde = serializers.FloatField()
     mengdetilgjenbruk = serializers.FloatField()
@@ -13,8 +13,8 @@ class WasteReportMaterialDTOSerializer(serializers.Serializer):
     totalmengde = serializers.FloatField()
 
 class WasteReportDTOSerializer(serializers.Serializer):
-    id = serializers.IntegerField(required=False, allow_null=True)
-    bygning = serializers.IntegerField(required=False, allow_null=True)
+    id = serializers.UUIDField(required=False, allow_null=True)
+    bygning = serializers.UUIDField(required=False, allow_null=True)
     dato = serializers.CharField(required=False, allow_null=True)
     address = serializers.CharField()
     postalcode = serializers.IntegerField()

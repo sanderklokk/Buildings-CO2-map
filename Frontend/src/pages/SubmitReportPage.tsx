@@ -26,7 +26,7 @@ export const SubmitReportPage = () => {
 
     const toApiMaterial = (material: AvfallsMaterialeRow): APIWasteReportMaterial => ({
         id: null,
-        materiale: Number(material.id),
+        materiale: material.id,
         planlagtmengde: material.plannedAmount,
         faktiskmengde: material.actualAmount,
         mengdetilgjenbruk: material.amountToReuse,

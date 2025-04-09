@@ -9,9 +9,9 @@ import { TextField, RadioGroup, Radio, Table, TableBody, TableCell, TableContain
 
 export const DetailedReport = () => {
 
-    const id = Number(useParams().id);
+    const id = useParams().id;
 
-    const { data: report, isLoading, isError } = useQuery({ queryKey: ["wastereport", id], queryFn: () => get_wastereport(id) });
+    const { data: report, isLoading, isError } = useQuery({ queryKey: ["wastereport", id], queryFn: () => get_wastereport(id || "") });
 
 
     return <Box width={"100%"} flexGrow={1} maxWidth={"1200px"} mx={"auto"} display={"flex"} flexDirection={"column"} alignContent={"start"} marginBottom={10} padding={2}>
@@ -20,7 +20,10 @@ export const DetailedReport = () => {
                 Tilbake
             </Link>
         <Typography variant="h4" marginTop={2} >
-            {id} - Avfallsrapport
+           Avfallsrapport
+        </Typography>
+        <Typography marginBottom={2} >
+            Ref: {id}
         </Typography>
         </Box>
         {isLoading && <Typography variant="h5">Laster...</Typography>}

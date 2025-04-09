@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -16,10 +17,11 @@ class bygning(models.Model):
     bygdDato = models.DateField()
 
 class materialtype(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     navn = models.CharField(max_length=100)
     forelder = models.ForeignKey("self", on_delete=models.CASCADE, null=True)
     farlig = models.BooleanField(default=False)
+    synlig = models.BooleanField(default=True)
 
 class koordinater(models.Model):
     bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE, primary_key=True) 
@@ -40,7 +42,7 @@ class materialer(models.Model): #bygningsrelasjon?
 #     materialerroot = models.ForeignKey(materialer, on_delete=models.CASCADE)
 
 class rapport(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     # Null=True temporary
     bygning = models.ForeignKey(bygning, on_delete=models.CASCADE, null=True)
 
