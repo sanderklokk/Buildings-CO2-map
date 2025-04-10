@@ -8,7 +8,7 @@ export interface MaterialManagementSlice {
         materials: APIMaterialType[];
         setMaterials: (materials: APIMaterialType[]) => void;
         replaceMaterials: (materials: APIMaterialType[]) => void;
-        removeMaterial: (id: string) => void;
+        removeMaterial: (id: number) => void;
     }
 }
 
@@ -34,7 +34,7 @@ export const createMaterialManagementSlice: StateCreator<MaterialManagementSlice
                 },
             }));
         },
-        removeMaterial: (id: string) => {
+        removeMaterial: (id: number) => {
             set((state) => ({
                 materialManagementSlice: {
                     ...state.materialManagementSlice,

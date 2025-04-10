@@ -57,7 +57,7 @@ const MaterialManagement = () => {
   const handleAddNewMaterial = async (materialName: string) => {
     try {
       const res = await create_materialtype({
-        id: "",
+        id: null,
         navn: materialName,
         forelder: null,
         farlig: false,
@@ -76,7 +76,12 @@ const MaterialManagement = () => {
     }
   };
 
-  const subcategories = (id: string) => materials.filter((mat) => mat.forelder === id);
+  const subcategories = (id: number | null) => {
+    if (id == null) {
+      return [];
+    } 
+    return materials.filter((mat) => mat.forelder === id);
+  }
 
   const filteredMaterials = materials?.filter((mat) => {
     const lowerSearch = searchTerm.toLowerCase();

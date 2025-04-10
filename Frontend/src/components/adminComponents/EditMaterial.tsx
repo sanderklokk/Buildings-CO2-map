@@ -23,7 +23,7 @@ import { useBoundStore } from "../../store/Store";
 import { create_materialtype, delete_materialtype, update_materialtypes } from "../../api/materialtypeAPI";
 
 interface FlattenedOption {
-  id: string;
+  id: number;
   label: string;
 }
 
@@ -42,9 +42,18 @@ export const EditMaterial = ({
 }: EditMaterialProps) => {
   const { materials, setMaterials, replaceMaterials, removeMaterial } = useBoundStore().materialManagementSlice;
 
-  const localsubcategories = (id: string) => materials.filter((mat) => mat.forelder === id);
+  const localsubcategories = (id: number | null) => {
+    if (id == null) {
+      return [];
 
-  const globalsubcategories = (id: string): APIMaterialType[] => {
+    }
+    return materials.filter((mat) => mat.forelder === id);
+  }
+
+  const globalsubcategories = (id: number | null): APIMaterialType[] => {
+    if (id == null) {
+      return [];
+    }
     const subs = localsubcategories(id);
     const allsubs = new Set<APIMaterialType>();
     for (const sub of subs) {
@@ -63,7 +72,7 @@ export const EditMaterial = ({
 
   const [newSubName, setNewSubName] = useState("");
 
-  const [selectedParent, setSelectedParent] = useState<string | "root">("root");
+  const [selectedParent, setSelectedParent] = useState<number | "root">("root");
   const [showHideConfirmation, setShowHideConfirmation] = useState(false);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -106,31 +115,31 @@ export const EditMaterial = ({
         replaceMaterials(updatedMaterials);
       } else {
         console.error("Failed to update material visibility");
-      } 
+      }
     } catch (error) {
       console.error("Error setting material active:", error);
-    
+
     }
   }
 
   const activateMaterial = async () => {
-      try {
-        const materialsToUpdate = [...globalsubcategories(material.id), material].map((m) => ({
-          ...m,
-          synlig: true,
-        }));
-        const res = await update_materialtypes(materialsToUpdate);
-        if (res.status === 200) {
-          const updatedMaterials = res.data;
-          replaceMaterials(updatedMaterials);
-        } else {
-          console.error("Failed to update material visibility");
-        } 
-      } catch (error) {
-        console.error("Error setting material active:", error);
-      
+    try {
+      const materialsToUpdate = [...globalsubcategories(material.id), material].map((m) => ({
+        ...m,
+        synlig: true,
+      }));
+      const res = await update_materialtypes(materialsToUpdate);
+      if (res.status === 200) {
+        const updatedMaterials = res.data;
+        replaceMaterials(updatedMaterials);
+      } else {
+        console.error("Failed to update material visibility");
       }
+    } catch (error) {
+      console.error("Error setting material active:", error);
+
     }
+  }
 
 
   const cancelHide = () => {
@@ -156,6 +165,10 @@ export const EditMaterial = ({
   ): FlattenedOption[] => {
     const result: FlattenedOption[] = [];
     subs.forEach((sub) => {
+      if (sub.id == null) {
+        return;
+      }
+    
       const depth = getSubDepth(sub);
       result.push({
         id: sub.id,
@@ -169,7 +182,7 @@ export const EditMaterial = ({
     if (newSubName.trim() !== "") {
       try {
         const res = await create_materialtype({
-          id: "",
+          id: null,
           navn: newSubName,
           forelder: selectedParent === "root" ? material.id : selectedParent,
           farlig: false,
@@ -190,7 +203,11 @@ export const EditMaterial = ({
     }
   };
 
-  const removeSubById = async (id: string): Promise<APIMaterialType[]> => {
+  const removeSubById = async (id: number | null): Promise<APIMaterialType[]> => {
+    if (id === null) {
+      return [];
+    }
+
     try {
       console.log("Deleting subcategory with id:", id);
       const res = await delete_materialtype(id);
@@ -212,8 +229,11 @@ export const EditMaterial = ({
 
   const confirmDelete = async () => {
     if (subToDelete) {
+
       const affected_materials = await removeSubById(subToDelete.id);
-      removeMaterial(subToDelete.id);
+      if (subToDelete.id != null) {
+        removeMaterial(subToDelete.id);
+      }
       replaceMaterials(affected_materials);
     }
     setDeleteConfirmOpen(false);
@@ -325,7 +345,7 @@ export const EditMaterial = ({
                 value={selectedParent}
                 label="Overordnet kategori"
                 onChange={(e) =>
-                  setSelectedParent(e.target.value as string | "root")
+                  setSelectedParent(e.target.value as number | "root")
                 }
               >
                 <MenuItem value="root">Nytt undermateriale</MenuItem>

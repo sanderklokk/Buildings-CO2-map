@@ -29,6 +29,6 @@ export const update_materialtypes = async (materialtypes: APIMaterialType[]): Pr
 }
 
 // Uses Id, returns all impacted materialtypes so they can be updated in local state
-export const delete_materialtype = async (id: string): Promise<AxiosResponse<APIMaterialType[]>> => {
+export const delete_materialtype = async (id: number): Promise<AxiosResponse<APIMaterialType[]>> => {
     return service.delete(MATERIAL_TYPES_DELETE, { data: { id } });
 }

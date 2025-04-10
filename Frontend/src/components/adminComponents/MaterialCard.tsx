@@ -30,7 +30,12 @@ const MaterialCard = ({
     setOpenEdit(false);
   };
 
-  const subcategories = (id: string) => materials.filter((mat) => mat.forelder === id);
+  const subcategories = (id: number | null) => {
+    if (id == null) {
+      return [];
+    }
+    return materials.filter((mat) => mat.forelder === id);
+  }
 
 
   const renderSubcategories = (subs: APIMaterialType[], level=0) => {

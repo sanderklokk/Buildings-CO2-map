@@ -1,6 +1,6 @@
 export interface APIWasteReportMaterial {
-    id: string | null;
-    materiale: string;
+    id: number | null;
+    materiale: number;
     planlagtmengde: number;
     faktiskmengde: number;
     mengdetilgjenbruk: number;
@@ -11,7 +11,7 @@ export interface APIWasteReportMaterial {
 
 
 export interface APIWasteReport {
-    id: string | null;
+    id: number | null;
     bygning: number | null;
     dato: string;
     address: string;
@@ -26,15 +26,15 @@ export interface APIWasteReport {
 }
 
 export interface APIMaterialType {
-    id: string;
-    forelder: string | null;
+    id: number | null;
+    forelder: number | null;
     navn: string;
     farlig: boolean;
     synlig: boolean;
 }
 
 export interface APIWasteReportOverview {
-    id: string,
+    id: number,
     dato: string;
     address: string;
     postalcode: number;
@@ -53,7 +53,7 @@ export interface APIWasteReportOverviewList {
 }
 
 export interface APIWasteReportDetailedMaterial {
-    id: string;
+    id: number;
     planlagtmengde: number;
     faktiskmengde: number;
     mengdetilgjenbruk: number;
@@ -63,7 +63,7 @@ export interface APIWasteReportDetailedMaterial {
     rapport: number;
     materiale: number;
     navn: string;
-    forelder: string | null;
+    forelder: number | null;
     farlig: boolean;
 }
 

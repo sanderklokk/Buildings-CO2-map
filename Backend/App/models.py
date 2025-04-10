@@ -17,7 +17,7 @@ class bygning(models.Model):
     bygdDato = models.DateField()
 
 class materialtype(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    id = models.AutoField(primary_key=True)
     navn = models.CharField(max_length=100)
     forelder = models.ForeignKey("self", on_delete=models.CASCADE, null=True)
     farlig = models.BooleanField(default=False)
@@ -42,7 +42,7 @@ class materialer(models.Model): #bygningsrelasjon?
 #     materialerroot = models.ForeignKey(materialer, on_delete=models.CASCADE)
 
 class rapport(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    id = models.AutoField(primary_key=True)
     # Null=True temporary
     bygning = models.ForeignKey(bygning, on_delete=models.CASCADE, null=True)
 
