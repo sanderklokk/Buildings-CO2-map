@@ -38,29 +38,54 @@ port=5432
 ``` bash
 localhost:5432:buildingsc02-dev:<username>:<password> #change username and password to match your user
 ``` 
-
-**Django usage**
-* **Migrate the database** using ```python manage.py migrate [migration name]```. Migration name is optiional. Leave empty to use the latest migration file (do this the first time you clone the repo).
-* **Make new migrations.** Whenever changes to the data models are done, the database schema must be updated as well, do this by making and applying a new migration. By doing this, the database can also be rolled back to a previous schema using the above step.
-``` bash
-python manage.py makemigrations --name a_suitable_label #the --name flag is optional, but recomended to more easily keep track of the migration files. 
-```
+## Setup and run using docker
 **Docker**
 The project contains a docker-compose.yml file. This is the easiest way to start the project. The port used for this is 5432 and the docker will not start if the port is taken by another process. 
 1. create a file called ```.pg_service.conf``` in your home folder and add these variables:
 ``` bash
 [my_service]
 host=localhost
-user=postgres #matching POSTGRES_USER in docker-compose
-password=postgres #matching POSTGRES_PASSWORD in docker-compose
-dbname=buildingsc02-dev #matching POSTGRES_DB in docker-compose
+user=postgres 
+password=postgres 
+dbname=buildingsc02-dev 
 port=5432
 
 ``` 
+**Django usage**
+* **Migrate the database** using ```python manage.py migrate [migration name]```. Migration name is optiional. Leave empty to use the latest migration file (do this the first time you clone the repo).
+* **Make new migrations.** Whenever changes to the data models are done, the database schema must be updated as well, do this by making and applying a new migration. By doing this, the database can also be rolled back to a previous schema using the above step.
+``` bash
+python manage.py makemigrations --name a_s49-dokumetasjonuitable_label #the --name flag is optional, but recomended to more easily keep track of the migration files. 
+```
 
-2. **Start Docker**  Using docker-compose up
+## Expected Input
+The program currently expects to recieve the initial data through json files that may be read by the [initialisation script](/Backend/App/Management/Foo.py). 
+
+This is script populates the database, and can be run with 
 ```bash
-docker-compose up
+manage.py management
+```
+THis script expects the Buildings-CO2-Map/Data to contain two .json files named data14.json and data15.json.
+Data14.json is of the form: 
+
+```bash
+{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [(x), (y)], "properties": {"bygningstatuskode": (bygningsstatuskode), "dato": (bygdDato),"msid": (int),"bygningsnr": (bygnignsnr)}}]}
+```
+where x and y in coordinates ill be used for the x and y fields in the koordinater table in the database. Fields in properties match the fields of the bygning table with the exeption of msid wich is to be ignored.
+
+**Example**
+```bash
+{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [10.4369016902098, 63.3077466673765]}, "properties": {"bygningstatuskode": "TB", "dato": "1983-04-17T22:00:00+0000", "msid": 166032650, "bygningsnr": 1234567}}]}
+```
+Data15.json is of the form:
+```bash
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"msid": 12345678, "kommune": (kommune), "bygningsnr": (bygnignsnr), "tilbyggsnr": null, "bygningstypekode": "(bygningstypekode)", "bygningstatuskode": "(bygningsstatuskode)", "antallboenheter": (anntalboenheter), "antalletasjer": (antalletasjer), "bebygdareal": (bebygdareal), "bruksarealtotalt": (bruksarealtotalt), "bruksarealbolig": (bruksarealbolig), "bruksarealannet": (bruksarealannet), "endringstidspunkt": "2040-01-19T23:00:00+0000"}}]}
+```
+Where kommune, bygningsnr, bygningstypekode, bygningsstatuskode, anntalboenheter, antalletasjer, bebygdareal, bruksarealtotalt, bruksarealbolig and bruksarealannet is used to populate the columns with matching names in the bygning table in the database. The rest of the fields are not used, but they are expected by the program and should therefore be included.
+
+**Example**
+```bash
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"msid": 166032650, "kommune": 5001, "bygningsnr": 3435318, "tilbyggsnr": null, "bygningstypekode": "111", "bygningstatuskode": "TB", "antallboenheter": 1, "antalletasjer": 1, "bebygdareal": 0, "bruksarealtotalt": 210, "bruksarealbolig": 210, "bruksarealannet": 0, "endringstidspunkt": "2040-01-19T23:00:00+0000"}}]}
 ```
 ## Frontend
 The frontend is dependent on the user having working installations of npm and node.js. 
