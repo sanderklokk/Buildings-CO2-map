@@ -3,16 +3,17 @@ import { TableCellProps } from "@mui/material/TableCell";
 import { useState } from "react";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useBoundStore } from "../../store/Store";
-import { WASTE_MATERIALS, WasteMaterial } from "../../assets/data";
+import { APIMaterialType } from "../../api/models";
 
-export const AvfallsMaterialeRow = ({ materialId }:{ materialId: string}) => {
+export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | undefined}) => {
 
     const { updateAvfallRow, wasteReport }  = useBoundStore().wasteReportForm;
+    if (!material) {
+        return <></>;
+    }
 
-    const material = WASTE_MATERIALS.find((material: WasteMaterial) => material.id === materialId);
-    if (!material) return null;
     const getAvfallRow = () => {
-        return wasteReport.avfall.ordinert.find((i) => i.id === materialId) || wasteReport.avfall.farlig.find((i) => i.id === materialId);
+        return wasteReport.avfall.ordinert.find((i) => i.id === material.id) || wasteReport.avfall.farlig.find((i) => i.id === material.id);
     }
 
     const cellProps: TableCellProps = {
@@ -23,7 +24,7 @@ export const AvfallsMaterialeRow = ({ materialId }:{ materialId: string}) => {
     return <TableRow>
         <TableCell {...cellProps}>
             <Typography className="font-bold p-3">
-                {material.name}
+                {material.navn}
             </Typography>
         </TableCell>
         <TableCell {...cellProps}>
@@ -51,7 +52,7 @@ export const AvfallsMaterialeRow = ({ materialId }:{ materialId: string}) => {
     </TableRow>
 }
 
-const MoreIconPopup = ({id}: {id: string}) => {
+const MoreIconPopup = ({id}: {id: number}) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const { removeAvfallRow } = useBoundStore().wasteReportForm;
 

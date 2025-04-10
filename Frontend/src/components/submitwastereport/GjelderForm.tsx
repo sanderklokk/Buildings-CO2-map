@@ -18,7 +18,7 @@ export const GjelderForm = () => {
         <Box display={"flex"} flexDirection={"column"} gap={3} alignItems={"start"}>
             <h1 className="text-xl text-center mt-6">Tiltaket gjelder</h1>
             <Box display={"flex"} flexDirection={"column"} gap={3} alignItems={"start"}>
-                <RadioGroup row aria-label="tiltak" name="tiltak" defaultValue="nybygg" className="flex justify-center" onChange={(e) => setGjelder({ ...wasteReport.gjelder, tiltak: { ...wasteReport.gjelder.tiltak, type: e.target.value } })}>
+                <RadioGroup row aria-label="tiltak" name="tiltak" className="flex justify-center" onChange={(e) => setGjelder({ ...wasteReport.gjelder, tiltak: { ...wasteReport.gjelder.tiltak, type: e.target.value } })}>
                     <Box>
                         <Radio name="tiltak" value="nybygg" /> Nybygg, påpygg mv.
                     </Box>
