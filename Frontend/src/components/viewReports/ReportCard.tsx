@@ -21,7 +21,7 @@ export interface WasteReport {
 
 interface ReportCardProps {
   report: APIWasteReportOverview;
-  onViewReport: (id: number) => void;
+  onViewReport: (id: string) => void;
 }
 
 const ReportCard = ({ report, onViewReport }: ReportCardProps) => {

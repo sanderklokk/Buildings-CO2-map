@@ -1,11 +1,13 @@
+# VIEWS / API Endpoints related to waste reports
+
+
 from django.shortcuts import render
 from rest_framework.decorators import api_view
-from .serializers import WasteReportDTOSerializer, RapportSerializer, RapportMaterialeSerializer, MaterialTypeSerializer
-from .models import materialtype, rapport, rapportmateriale
+from ..serializers import WasteReportDTOSerializer, RapportSerializer, RapportMaterialeSerializer, MaterialTypeSerializer
+from ..models import materialtype, rapport, rapportmateriale
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
 
-# Create your views here.
 
 
 # Create new waste report
@@ -33,12 +35,6 @@ def post_wastereport(request):
 
     return Response(status=200)
 
-
-# Get all material types
-@api_view(['GET'])
-def get_materialtypes(_):
-    materialtypes = MaterialTypeSerializer(materialtype.objects.all(), many=True)
-    return Response(materialtypes.data, status=200)
 
 
 # Get list of reports with page/count/search filters. Less detailjed objects without list of materials

@@ -41,7 +41,7 @@ export const ViewReports = () => {
 
   const navigate = useNavigate();
 
-  const handleViewReport = (id: number) => {
+  const handleViewReport = (id: string) => {
     navigate(`/report/view/${id}`);
   };
 

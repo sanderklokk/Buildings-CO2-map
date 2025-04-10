@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -20,6 +21,7 @@ class materialtype(models.Model):
     navn = models.CharField(max_length=100)
     forelder = models.ForeignKey("self", on_delete=models.CASCADE, null=True)
     farlig = models.BooleanField(default=False)
+    synlig = models.BooleanField(default=True)
 
 class koordinater(models.Model):
     bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE, primary_key=True) 

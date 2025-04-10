@@ -26,10 +26,11 @@ export interface APIWasteReport {
 }
 
 export interface APIMaterialType {
-    id: number;
+    id: number | null;
     forelder: number | null;
     navn: string;
     farlig: boolean;
+    synlig: boolean;
 }
 
 export interface APIWasteReportOverview {
