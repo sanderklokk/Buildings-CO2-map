@@ -49,7 +49,7 @@ const Admin = () => {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate("/ViewReports")}
+            onClick={() => navigate("/report/all")}
             sx={{
               flex: 1,
               fontSize: "1.25rem",
