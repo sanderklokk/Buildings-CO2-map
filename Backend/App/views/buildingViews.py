@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
-from ..serializers import buildingMaterialSerializer, singleByggSerializer
-from ..models import materialtype, bygning, materialtype
+from ..serializers import buildingMaterialSerializer, singleByggSerializer, KoordinaterSerializer
+from ..models import materialtype, bygning, materialtype, koordinater
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
 
@@ -21,3 +21,12 @@ def get_allByngingByMaterial(request):
 @api_view(['GET'])
 def get_singleBygningById(request):
     return Response(singleByggSerializer(bygning.objects.get(bygnignsnr=request.GET.get('bygningsnr', 0))))
+
+# note, not sure if casting to string and then char is the best way to pass floats to the backend.
+def get_squareSelect(request):
+    x1 = float(request.GET.get(x1, 0))
+    x2 = float(request.GET.get(x2, 0))
+    y1 = float(request.GET.get(y1, 0))
+    y2 = float(request.GET.get(y2, 0))
+    result = koordinater.objects.filter('x'>=x1, 'x'<=x2, 'y'>=y1, 'y'<=y2)
+    return KoordinaterSerializer(result)
