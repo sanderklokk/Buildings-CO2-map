@@ -12,12 +12,17 @@ class Command(BaseCommand):
             data14 = json.load(file14)
             data15 = json.load(file15)
 
+        #preprocess df14 
         df14 = polars.json_normalize(data14['features']).drop(["type", "geometry.type"])
+        df14 = df14.with_columns(polars.col("properties.dato").str.to_datetime())
+        df14 = df14.group_by(["properties.bygningsnr", "properties.bygningstatuskode"]).last() #Discards the oldest building for entries with the same "properties.bygningskode"
+        df14 = df14.filter(polars.col("properties.bygningstatuskode") == "TB")
+
         df15 = polars.json_normalize(data15['features']).drop("type")
 
-        df = df14.join(other=df15, on="properties.bygningsnr", how="inner")
+        # df = df14.join(other=df15, on="properties.bygningsnr", how="inner")
 
-        return df
+        return df14, df15
 
     #TO-DO
     #*Add bulk_create for all tables
@@ -43,8 +48,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         st = time.time()
         self.stdout.write(os.getcwd())
-        pprint.pp(self.createDf().columns)
-        self.populate(self.createDf())
+        # pprint.pp(self.createDf().columns)
+        df14, df15 = self.createDf()
+        print(df14)
+        # self.populate(self.createDf())
         print("print: " + os.getcwd())
         print("elapsed time: " + str(round(time.time() - st, 3)))
         
