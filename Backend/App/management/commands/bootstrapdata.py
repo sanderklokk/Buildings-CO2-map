@@ -8,19 +8,20 @@ from App.models import *
 
 class Command(BaseCommand):
     def createDf(self) -> polars.DataFrame:
+
         with open('../Data/data14.json', 'r') as file14, open('../Data/data15.json', 'r') as file15:
             data14 = json.load(file14)
             data15 = json.load(file15)
 
+        #read data14 to polars DF
+        df14 = polars.json_normalize(data14['features']).drop(["type", "geometry.type"]) 
         #preprocess df14 
-        df14 = polars.json_normalize(data14['features']).drop(["type", "geometry.type"])
-        df14 = df14.with_columns(polars.col("properties.dato").str.to_datetime())
+        df14 = df14.with_columns(polars.col("properties.dato").str.to_datetime()) #cast date column to datetime
         df14 = df14.group_by(["properties.bygningsnr", "properties.bygningstatuskode"]).last() #Discards the oldest building for entries with the same "properties.bygningskode"
-        df14 = df14.filter(polars.col("properties.bygningstatuskode") == "TB")
+        df14 = df14.filter(polars.col("properties.bygningstatuskode") == "TB") #discards rows where bygningsstatuskode != "TB"
 
+        #read data15 to polars DF
         df15 = polars.json_normalize(data15['features']).drop("type")
-
-        # df = df14.join(other=df15, on="properties.bygningsnr", how="inner")
 
         return df14, df15
 
