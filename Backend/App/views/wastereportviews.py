@@ -9,14 +9,6 @@ from rest_framework.response import Response
 from django.core.paginator import Paginator 
 
 # Create your views here.
-# needs error handling, but first test if it works
-
-
-# @api_view(['GET'])
-# def get_allMaterialTypeAndName(request):
-#     material = materialtype.objects.values('navn', 'id')
-#     return allMaterialTypeAndNameSerializer(material)
-
 # Create new waste report
 @api_view(['POST'])
 def post_wastereport(request):

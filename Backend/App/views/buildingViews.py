@@ -7,20 +7,22 @@ from django.core.paginator import Paginator
 
 @api_view(['GET'])
 def get_allByngingByMaterial(request):
-    param = request.GET.get('material', 'default')
-    if(param =='default'):
-        return 0
+    param = request.GET.get('material', 'None')
+    if(param =='None'):
+        return "Error: invalid material type"
     
     type = materialtype.objects.get(navn=param)
     # spitballing, will test
     # material = materialer.objects.filter(type_materiale = type.id)
+    # should be checked if this actually works. the thought is to filter materials by the id taken from materialtype and filter by it, before selecting the relevant tables.
+    # possible last select can be omitted, needs testing 
     bygg = buildingMaterialSerializer(bygning.objects.select_related('bygnignsnr').all().filter(type_materiale=type.id).values("bygnignsnr", "totalmengde", "x", "y"))
 
     return Response(bygg.data, status=200)
 # needs error handling, but first test if it works
 @api_view(['GET'])
 def get_singleBygningById(request):
-    return Response(singleByggSerializer(bygning.objects.get(bygnignsnr=request.GET.get('bygningsnr', 0))))
+    return Response(singleByggSerializer(bygning.objects.get(bygnignsnr=request.GET.get('bygningsnr', 0))), status=200)
 
 # note, not sure if casting to string and then char is the best way to pass floats to the backend.
 def get_squareSelect(request):
@@ -29,4 +31,5 @@ def get_squareSelect(request):
     y1 = float(request.GET.get(y1, 0))
     y2 = float(request.GET.get(y2, 0))
     result = koordinater.objects.filter('x'>=x1, 'x'<=x2, 'y'>=y1, 'y'<=y2)
-    return KoordinaterSerializer(result)
+    return Response(KoordinaterSerializer(result), status=200)
+
