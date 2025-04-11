@@ -6,9 +6,9 @@ urlpatterns = [
     path('wastereport/all', wastereportviews.get_all_wastereports, name='get_all_wastereports'),
     path('wastereport/<int:id>', wastereportviews.get_wastereport, name='get_wastereport'),
 
-    path('bygning/byMaterial<str:material>', buildingViews.get_allByngingByMaterial, name='get_allByngingByMaterial'),
-    path('bygning/byBygningsnr/<int:bygnignsnr>', buildingViews.get_singleBygningById, name='get_singleBygningById'),
-    path('/bygning/squareSelect//<str:x1>/<str:x2>/<str:y1>/<str:y2>', buildingViews.get_squareSelect, name='get_squareSelect'),
+    path('bygning/bymaterial', buildingViews.get_allBygningByMaterial, name='get_allByngingByMaterial'),
+    path('bygning/bybygningsnr/<int:bygningsnr>', buildingViews.get_singleBygningById, name='get_singleBygningById'),
+    path('bygning/squareselect', buildingViews.get_squareSelect, name='get_squareSelect'),
 
     path('materialtype/all', materialtypeviews.get_materialtypes, name='get_materialtypes'),
     path('materialtype/create', materialtypeviews.create_materialtype, name='create_materialtype'),

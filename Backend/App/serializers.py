@@ -29,8 +29,8 @@ class WasteReportDTOSerializer(serializers.Serializer):
 # Db to fronten map
 class buildingMaterialSerializer(serializers.Serializer):
     # id = serializers.IntegerField(required=False, allow_null=True)
-    bygning = serializers.IntegerField(required=True, allow_null=False)
-    mengde = serializers.IntegerField(required = True, allow_null = True)
+    building = serializers.IntegerField(required=True, allow_null=False)
+    totalamount = serializers.IntegerField(required = True, allow_null = True)
     x = serializers.FloatField(required = True, allow_null = False)
     y = serializers.FloatField(required = True, allow_null = False)
     
@@ -68,4 +68,9 @@ class MaterialTypeSerializer(serializers.ModelSerializer):
 class KoordinaterSerializer(serializers.ModelSerializer):
     class Meta:
         model = koordinater
+        fields = '__all__'
+
+class MaterialerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = rapportmateriale
         fields = '__all__'
