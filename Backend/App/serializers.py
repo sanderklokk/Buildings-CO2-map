@@ -26,7 +26,30 @@ class WasteReportDTOSerializer(serializers.Serializer):
     type = serializers.CharField()
     materialer = WasteReportMaterialDTOSerializer(many=True)
 
+# Db to fronten map
+class buildingMaterialSerializer(serializers.Serializer):
+    # id = serializers.IntegerField(required=False, allow_null=True)
+    bygning = serializers.IntegerField(required=True, allow_null=False)
+    mengde = serializers.IntegerField(required = True, allow_null = True)
+    x = serializers.FloatField(required = True, allow_null = False)
+    y = serializers.FloatField(required = True, allow_null = False)
+    
+class singleByggSerializer(serializers.Serializer):
+    bygnignsnr = serializers.IntegerField(required=True, allow_null=False)
+    bygningsstatuskode = serializers.CharField(max_length=5)
+    kommune = serializers.IntegerField()
+    bygningstypekode = serializers.IntegerField()
+    anntalboenheter = serializers.IntegerField()
+    antalletasjer = serializers.IntegerField()
+    bebygdareal = serializers.IntegerField()
+    bruksarealtotalt = serializers.IntegerField()
+    bruksarealbolig = serializers.IntegerField()
+    bruksarealannet = serializers.IntegerField()
+    bygdDato = serializers.DateField()
 
+# class allMaterialTypeAndNameSerializer(serializers.Serializer):
+#     navn = serializers.CharField(required=True, allow_null=False)
+#     id = serializers.IntegerField(required=True, allow_null=False)
 # DB MODELS
 class RapportMaterialeSerializer(serializers.ModelSerializer):
     class Meta:
