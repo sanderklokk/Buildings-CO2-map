@@ -1,5 +1,7 @@
 import { Marker, Popup, useMap, useMapEvent } from "react-leaflet";
 import { useState } from "react";
+import { useBoundStore } from "../../../store/Store";
+import {MapBuildingPopup} from "./MapBuildingPopup";
 
 interface HeatLayerProps {
     data: { lat: number, long: number, intensity: number, text: string }[]
@@ -13,6 +15,7 @@ export const MarkerLayer = ({ data }: HeatLayerProps) => {
     // north, east, south, west
     const [bounds, setBounds] = useState<number[]>([0, 0, 0, 0]);
 
+    const { buildings } = useBoundStore().mapSlice;
 
     const map = useMap();
     useMapEvent('zoomend', () => {
@@ -25,7 +28,7 @@ export const MarkerLayer = ({ data }: HeatLayerProps) => {
     });
 
 
-    return <>
+  /*  return <>
         {zoom > 17 && data.filter((d) => d.lat > bounds[2] && d.lat < bounds[0] && d.long > bounds[3] && d.long < bounds[1]).map((p, i) => {
             return <Marker key={i} position={[p.lat, p.long]}>
                 <Popup>
@@ -34,5 +37,18 @@ export const MarkerLayer = ({ data }: HeatLayerProps) => {
             </Marker>
         }
         )}
-    </>
+    </>*/
+
+    return <>
+        {zoom > 17 && buildings.map(x => ({lat: x.y, long: x.x, building: x.building})).filter((d) => d.lat > bounds[2] && d.lat < bounds[0] && d.long > bounds[3] && d.long < bounds[1]).map((p, i) => {
+            return <Marker key={i} position={[p.lat, p.long]}>
+                <Popup>
+                    <MapBuildingPopup
+                        buildingid={p.building}
+                        />
+                </Popup>
+            </Marker>
+        }
+        )}
+        </>
 }

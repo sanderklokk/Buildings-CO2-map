@@ -1,7 +1,10 @@
 import { useMap } from "react-leaflet";
 import L, { HeatLatLngTuple } from 'leaflet'
 import { useEffect } from "react";
+import { useRef } from "react";
+
 import "leaflet.heat";
+import { useBoundStore } from "../../../store/Store";
 
 interface HeatLayerProps {
   data: { lat: number, long: number, intensity: number, text: string }[],
@@ -12,27 +15,38 @@ interface HeatLayerProps {
 * handle logic for when heatlayer is shown.
 */
 export const HeatLayer = ({ data, zIndex }: HeatLayerProps) => {
+  const { buildings } = useBoundStore().mapSlice;
+  const heatLayerRef = useRef<L.HeatLayer | null>(null);
+  const map = useMap();
 
-  const map = useMap()
+  
   useEffect(() => {
-    const points: HeatLatLngTuple[] = data
-      ? data.map((p) => {
-        return [p.lat, p.long, p.intensity];
-      })
+
+    const points: HeatLatLngTuple[] = buildings
+      ? buildings.map((p) => [p.y, p.x, p.totalamount])
       : [];
-      
-    L.heatLayer(points, { }).addTo(map);
+
+    if (heatLayerRef.current) {
+      map.removeLayer(heatLayerRef.current);
+    }
+
+    const heatLayer = L.heatLayer(points, {}).addTo(map);
+    heatLayerRef.current = heatLayer;
 
     map.eachLayer((layer) => {
-      const l = layer.getPane();
-      if (l && l.className.includes("leaflet-overlay-pane")) {
-        l.style.zIndex = zIndex.toString();
+      const pane = layer.getPane();
+      if (pane && pane.className.includes("leaflet-overlay-pane")) {
+        pane.style.zIndex = zIndex.toString();
       }
-    }
-    );
+    });
+   
+    return () => {
+      if (heatLayerRef.current) {
+        map.removeLayer(heatLayerRef.current);
+        heatLayerRef.current = null;
+      }
+    };
+  }, [map, buildings, zIndex]);
 
-
-  }, [map, data, zIndex]);
-
-  return <></>
-}
+  return <></>;
+};
