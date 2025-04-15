@@ -16,8 +16,8 @@ class Byggningsinfo(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     kommuneId = models.IntegerField()
     bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE)
-    tilbyggsnr = models.IntegerField()
-    byggningstypekode = models.IntegerField()
+    tilbyggsnr = models.IntegerField(blank=True, null=True)
+    byggningstypekode = models.IntegerField(blank=True, null=True)
     bygningstatuskode = models.CharField(max_length=2)
     antallboenheter = models.IntegerField()
     antalletasjer = models.IntegerField()
@@ -25,7 +25,7 @@ class Byggningsinfo(models.Model):
     bruksarealtotalt = models.IntegerField()
     bruksarealbolig = models.IntegerField()
     bruksarealannet = models.IntegerField()
-    
+
 class materialtype(models.Model):
     id = models.AutoField(primary_key=True)
     navn = models.CharField(max_length=100)
