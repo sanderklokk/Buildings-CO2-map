@@ -2,6 +2,7 @@ import os
 import time
 import pprint
 from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 import json
 import polars
 from App.models import *
@@ -14,45 +15,71 @@ class Command(BaseCommand):
             data15 = json.load(file15)
 
         #read data14 to polars DF
-        df14 = polars.json_normalize(data14['features']).drop(["type", "geometry.type"]) 
+        df14 = polars.json_normalize(data14['features']).drop(["type", "geometry.type", "properties.msid"]) 
         #preprocess df14 
         df14 = df14.with_columns(polars.col("properties.dato").str.to_datetime()) #cast date column to datetime
         df14 = df14.group_by(["properties.bygningsnr", "properties.bygningstatuskode"]).last() #Discards the oldest building for entries with the same "properties.bygningskode"
         df14 = df14.filter(polars.col("properties.bygningstatuskode") == "TB") #discards rows where bygningsstatuskode != "TB"
 
         #read data15 to polars DF
-        df15 = polars.json_normalize(data15['features']).drop("type")
-
+        df15 = polars.json_normalize(data15['features']).drop(["type", "properties.msid", "properties.endringstidspunkt"])
+        df15 = df15.filter(polars.col("properties.bygningsnr").is_in(df14["properties.bygningsnr"])) #remove rows with building numbers not in df14
         return df14, df15
 
     #TO-DO
     #*Add bulk_create for all tables
     #*Fix/figiure out duplicate
-    def populate(self, df: polars.DataFrame):
-        bygning.objects.bulk_create([
-            bygning(
-                bygnignsnr=row["properties.bygningsnr"],
-                bygningsstatuskode=row["properties.bygningstatuskode"],
-                bygdDato=row["properties.dato"].split('T', maxsplit = 1)[0],
-                anntalboenheter=row["properties.antallboenheter"],
+    def populate(self, df14: polars.DataFrame, df15: polars.DataFrame, st):
+        print(f"pre-processing:{round(time.time() - st, 3)}")
+        ct = time.time()
+        Bygning.objects.bulk_create([
+            Bygning(
+                byggningsnr=row["properties.bygningsnr"],
+                bygningstatuskode=row["properties.bygningstatuskode"],
+                byggdato=row["properties.dato"].date(), #only save the date (discard time datas)
+
+            ) for row in df14.iter_rows(named=True)
+        ])
+        print(f"Bygninger: {round(time.time() - ct, 3)}")
+        ct = time.time()
+
+        Koordinater.objects.bulk_create([
+            Koordinater(
+                bygning=Bygning.objects.get(byggningsnr=row["properties.bygningsnr"]),
+                latitude=row["geometry.coordinates"][0],
+                longitude=row["geometry.coordinates"][1]
+            ) for row in df14.iter_rows(named=True) if row["geometry.coordinates"] != None
+        ])
+        print(f"Coordinates: {round(time.time() - ct, 3)}")
+        ct = time.time()
+
+        Byggningsinfo.objects.bulk_create([
+            Byggningsinfo(
+                antallboenheter=row["properties.antallboenheter"],
                 antalletasjer=row["properties.antalletasjer"],
                 bebygdareal=row["properties.bebygdareal"],
                 bruksarealannet=row["properties.bruksarealannet"],
                 bruksarealbolig=row["properties.bruksarealbolig"],
                 bruksarealtotalt=row["properties.bruksarealtotalt"],
-                bygningstypekode=row["properties.bygningstypekode"],
-                kommune=row["properties.kommune"]
-
-            ) for row in df.iter_rows(named=True)
+                byggningstypekode=row["properties.bygningstypekode"],
+                bygning=Bygning.objects.get(byggningsnr=row["properties.bygningsnr"]),
+                bygningstatuskode=row["properties.bygningstatuskode"],
+                kommuneId=row["properties.kommune"],
+                tilbyggsnr=row["properties.tilbyggsnr"]
+            ) for row in df15.iter_rows(named=True)
         ])
+
+        print(f"Bygginfo: {round(time.time() - ct, 3)}")
+
 
     def handle(self, *args, **options):
         st = time.time()
+        call_command("flush")
         self.stdout.write(os.getcwd())
         # pprint.pp(self.createDf().columns)
         df14, df15 = self.createDf()
         print(df14)
-        # self.populate(self.createDf())
+        self.populate(df14, df15, st)
         print("print: " + os.getcwd())
         print("elapsed time: " + str(round(time.time() - st, 3)))
         
