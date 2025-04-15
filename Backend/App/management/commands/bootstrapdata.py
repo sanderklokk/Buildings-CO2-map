@@ -1,6 +1,4 @@
-import os
 import time
-import pprint
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 import json
@@ -74,12 +72,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         st = time.time()
-        call_command("flush")
-        self.stdout.write(os.getcwd())
-        # pprint.pp(self.createDf().columns)
+        call_command("flush") #remove existing data
+
         df14, df15 = self.createDf()
-        print(df14)
         self.populate(df14, df15, st)
-        print("print: " + os.getcwd())
-        print("elapsed time: " + str(round(time.time() - st, 3)))
+
+        print(f"elapsed time: {round(time.time() - st, 3)}")
         
