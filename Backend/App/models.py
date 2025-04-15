@@ -6,10 +6,16 @@ class Bygning(models.Model):
     bygningstatuskode = models.CharField(max_length=2)
     byggdato = models.DateField()
 
+class Koordinater(models.Model):
+    # bygningsnr = models.ForeignKey(Bygning, on_delete = models.CASCADE, primary_key=True) 
+    bygning = models.OneToOneField(Bygning, on_delete=models.CASCADE, primary_key=True)
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+
 class Byggningsinfo(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    id = models.UUIDField(primary_key=True, on_delete=models.CASCADE, editable=False, default=uuid.uuid4)
     kommuneId = models.IntegerField()
-    byggningsnr = models.IntegerField()
+    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE)
     tilbyggsnr = models.IntegerField()
     byggningstypekode = models.IntegerField()
     bygningstatuskode = models.CharField(max_length=2)
@@ -19,11 +25,6 @@ class Byggningsinfo(models.Model):
     bruksarealtotalt = models.IntegerField()
     bruksarealbolig = models.IntegerField()
     bruksarealannet = models.IntegerField()
-
-class Koordinater(models.Model):
-    bygningsnr = models.ForeignKey(Bygning, on_delete = models.CASCADE, primary_key=True) 
-    longitude = models.FloatField()
-    latitude = models.FloatField()
 
 class materialtype(models.Model):
     id = models.AutoField(primary_key=True)
