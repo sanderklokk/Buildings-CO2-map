@@ -73,21 +73,24 @@ export type APIWasteReportDetailed = APIWasteReportOverview & {
     
 
 export interface APIMapBuilding {
-    x: number; /* long */
-    y: number; /* lat */
+    latitude: number; /* lat */
+    longitude: number; /* long */
     building: number; /* building id */
     totalamount: number; /*heatmap intensity */
 }
 
 export interface APIDetailedBuilding {
-    bygnignsnr: number;
-    bygningsstatuskode: string;
-    kommune: number;
-    bygningstypekode: number;
+    byggningsnr: number;
+    bygningstatuskode: string;
+    kommuneId: number;
+    byggningstypekode: number;  
+    byggningstype: string;
+    antallboenheter: number;
     antalletasjer: number;
     bebygdareal: number;
-    bruksarealtotalt: number;
+    bruksarealtotalt: number;   
     bruksarealbolig: number;
     bruksarealannet: number;
     bygdDato: string;
+
 }

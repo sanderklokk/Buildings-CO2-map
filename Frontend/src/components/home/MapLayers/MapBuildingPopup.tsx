@@ -15,11 +15,11 @@ export const MapBuildingPopup = ({buildingid, coordinates}: {buildingid: number,
             {buildingdata && (
                 <>
                <Typography variant='h5' fontWeight={600}>
-                    Bygg: {buildingdata.data.bygnignsnr
+                    Bygg: {buildingdata.data.byggningsnr
                     }
                 </Typography>
                 <Typography>
-                    Byggtype: {buildingdata.data.bygningstypekode}
+                    Byggtype: {buildingdata.data.byggningstypekode}
                     lat {coordinates.lat} long {coordinates.long}
                 </Typography>
                 <Typography>

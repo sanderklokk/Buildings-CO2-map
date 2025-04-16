@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from ..serializers import buildingMaterialSerializer, singleByggSerializer, KoordinaterSerializer, MaterialerSerializer
-from ..models import materialtype, Bygning as bygning, Koordinater as koordinater, materialer
+from ..models import materialtype, Bygning as bygning, Koordinater as koordinater, materialer, Byggningsinfo
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
 from django.db.models import F, IntegerField, Value
@@ -10,11 +10,14 @@ from django.db.models import F, IntegerField, Value
 
 @api_view(['GET'])
 def get_allBygningByMaterial(request):
+
+    # format materials-parameter
     materialids = request.GET.get('materials', None)
     if (materialids != None):
         materialids = materialids.split(",")
         materialids = [int(i) for i in materialids]
-        
+    
+    # format buildingtypes-parameter
     buildingtypes = request.GET.get('buildingtypes', None)
     if (buildingtypes != None):
         buildingtypes = buildingtypes.split(",")
@@ -31,19 +34,25 @@ def get_allBygningByMaterial(request):
     #)
 
 
-    b = koordinater.objects.select_related('bygningid')
+    # filter out tilbygg (as there is only one koordinat for each building)
+    b = koordinater.objects.select_related('bygning').filter(
+        bygning__byggningsinfo__tilbyggsnr__isnull=True  
+    )
+
+    # filter by buildingtype-param
     if buildingtypes != None:
         b = b.filter(
-        bygningid__bygningstypekode__in=buildingtypes
-    )
+            bygning__byggningsinfo__byggningstypekode__in=buildingtypes)
+    
+    # transform to fit serializer and wanted format
     b = b.annotate(
-        building=F("bygningid__bygnignsnr"),
-        totalamount=Value(10),
+        building=F("bygning__byggningsnr"),
+        totalamount=Value(10),  
     ).values(
         "building",
         "totalamount",
-        "x",
-        "y"
+        "latitude",
+        "longitude"
     )
 
     serialized = buildingMaterialSerializer(b, many=True)
@@ -51,7 +60,6 @@ def get_allBygningByMaterial(request):
 
 
     r = []
-
     # mapping the data to the correct format
     for i in range(len(serialized.data)):
         rr = {
@@ -62,7 +70,7 @@ def get_allBygningByMaterial(request):
         }
         r.append(rr) 
     
-    print("DOne")
+  
     return Response(r, status=200)
 
     bygg = materialer.objects.filter(type_materiale=materialid).select_related('bygning').select_related('koordinater').annotate(
@@ -85,7 +93,18 @@ def get_allBygningByMaterial(request):
 @api_view(['GET'])
 def get_singleBygningById(_, bygningsnr):
     try: 
-        bygg = bygning.objects.get(bygnignsnr=int(bygningsnr))
+        bygg = Byggningsinfo.objects.select_related('bygning').filter(
+           # byggningsinfo__tilbyggsnr__isnull=True  
+            tilbyggsnr__isnull=True,
+        ).annotate(
+            byggningsnr=F("bygning__byggningsnr"),
+            bygdDato=F("bygning__byggdato"),
+        ).get(
+            byggningsnr=int(bygningsnr)
+        )
+        print("BYGG", bygg)
+       # bygning.objects.get(bygningsnr=int(bygningsnr))
+
     except bygning.DoesNotExist:
         return Response({"error": f'bygning with id {bygningsnr} does not exist'}, status=404)
     serialized = singleByggSerializer(bygg)

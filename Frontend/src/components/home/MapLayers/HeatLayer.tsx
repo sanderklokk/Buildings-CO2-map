@@ -7,14 +7,13 @@ import "leaflet.heat";
 import { useBoundStore } from "../../../store/Store";
 
 interface HeatLayerProps {
-  data: { lat: number, long: number, intensity: number, text: string }[],
   zIndex: number
 }
 
 /*
 * handle logic for when heatlayer is shown.
 */
-export const HeatLayer = ({ data, zIndex }: HeatLayerProps) => {
+export const HeatLayer = ({ zIndex }: HeatLayerProps) => {
   const { buildings } = useBoundStore().mapSlice;
   const heatLayerRef = useRef<L.HeatLayer | null>(null);
   const map = useMap();
@@ -23,7 +22,7 @@ export const HeatLayer = ({ data, zIndex }: HeatLayerProps) => {
   useEffect(() => {
 
     const points: HeatLatLngTuple[] = buildings
-      ? buildings.map((p) => [p.y, p.x, p.totalamount])
+      ? buildings.map((p) => [p.longitude, p.latitude, p.totalamount])
       : [];
 
     if (heatLayerRef.current) {

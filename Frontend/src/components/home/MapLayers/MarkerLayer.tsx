@@ -3,14 +3,11 @@ import { useState } from "react";
 import { useBoundStore } from "../../../store/Store";
 import {MapBuildingPopup} from "./MapBuildingPopup";
 
-interface HeatLayerProps {
-    data: { lat: number, long: number, intensity: number, text: string }[]
-}
 /**
  * handle logic for when markers are shown.
  * handle performance fixes when markers are shown.
  */
-export const MarkerLayer = ({ data }: HeatLayerProps) => {
+export const MarkerLayer = () => {
     const [zoom, setZoom] = useState<number>(13);
     // north, east, south, west
     const [bounds, setBounds] = useState<number[]>([0, 0, 0, 0]);
@@ -40,8 +37,8 @@ export const MarkerLayer = ({ data }: HeatLayerProps) => {
     </>*/
 
     return <>
-        {zoom > 17 && buildings.map(x => ({lat: x.y, long: x.x, building: x.building})).filter((d) => d.lat > bounds[2] && d.lat < bounds[0] && d.long > bounds[3] && d.long < bounds[1]).map((p, i) => {
-            return <Marker key={i} position={[p.lat, p.long]}>
+        {zoom > 17 && buildings.map(x => ({long: x.longitude, lat: x.latitude, building: x.building})).filter((d) => d.long > bounds[2] && d.long < bounds[0] && d.lat > bounds[3] && d.lat < bounds[1]).map((p, i) => {
+            return <Marker key={i} position={[p.long, p.lat]}>
                 <Popup>
                     <MapBuildingPopup
                         buildingid={p.building}
