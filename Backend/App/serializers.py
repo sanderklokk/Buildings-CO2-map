@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import materialtype, rapport, rapportmateriale, koordinater
+from .models import materialtype, rapport, rapportmateriale, Koordinater
 
 # DTO Models
 class WasteReportMaterialDTOSerializer(serializers.Serializer):
@@ -67,7 +67,7 @@ class MaterialTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 class KoordinaterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = koordinater
+        model = Koordinater
         fields = '__all__'
 
 class MaterialerSerializer(serializers.ModelSerializer):

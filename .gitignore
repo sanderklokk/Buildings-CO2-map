@@ -1,5 +1,3 @@
 Data/
 node_modules
-Backend/Backend/__pycache__
-Backend/App/__pycache__
-Backend/App/migrations/__pycache__
+__pycache__

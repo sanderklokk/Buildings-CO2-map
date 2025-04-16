@@ -1,20 +1,30 @@
 from django.db import models
 import uuid
 
-# Create your models here.
+class Bygning(models.Model):
+    byggningsnr = models.IntegerField(primary_key=True)
+    bygningstatuskode = models.CharField(max_length=2)
+    byggdato = models.DateField()
 
-class bygning(models.Model):
-    bygnignsnr = models.IntegerField(primary_key=True)
-    bygningsstatuskode = models.CharField(max_length=5)
-    kommune = models.IntegerField()
-    bygningstypekode = models.IntegerField()
-    anntalboenheter = models.IntegerField()
+class Koordinater(models.Model):
+    # bygningsnr = models.ForeignKey(Bygning, on_delete = models.CASCADE, primary_key=True) 
+    bygning = models.OneToOneField(Bygning, on_delete=models.CASCADE, primary_key=True)
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+
+class Byggningsinfo(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    kommuneId = models.IntegerField()
+    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE)
+    tilbyggsnr = models.IntegerField(blank=True, null=True)
+    byggningstypekode = models.IntegerField(blank=True, null=True)
+    bygningstatuskode = models.CharField(max_length=2)
+    antallboenheter = models.IntegerField()
     antalletasjer = models.IntegerField()
     bebygdareal = models.IntegerField()
     bruksarealtotalt = models.IntegerField()
     bruksarealbolig = models.IntegerField()
     bruksarealannet = models.IntegerField()
-    bygdDato = models.DateField()
 
 class materialtype(models.Model):
     id = models.AutoField(primary_key=True)
@@ -23,13 +33,8 @@ class materialtype(models.Model):
     farlig = models.BooleanField(default=False)
     synlig = models.BooleanField(default=True)
 
-class koordinater(models.Model):
-    bygningid = models.ForeignKey(bygning, on_delete = models.CASCADE, primary_key=True) 
-    x = models.FloatField()
-    y = models.FloatField()
-
 class materialer(models.Model): #bygningsrelasjon?
-    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE, primary_key=True) 
+    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE, primary_key=True) 
     type_materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     mengde = models.IntegerField()
     totalmengde = models.IntegerField()
@@ -44,7 +49,7 @@ class materialer(models.Model): #bygningsrelasjon?
 class rapport(models.Model):
     id = models.AutoField(primary_key=True)
     # Null=True temporary
-    bygning = models.ForeignKey(bygning, on_delete=models.CASCADE, null=True)
+    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE, null=True)
 
     dato = models.DateField(auto_now_add=True, null=True)
     address = models.CharField(max_length=100)
