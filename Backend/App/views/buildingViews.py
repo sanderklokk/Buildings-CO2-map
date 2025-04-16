@@ -24,9 +24,8 @@ def get_allBygningByMaterial(request):
         buildingtypes = [int(i) for i in buildingtypes]
     
     
+    # get parameters related to area
     limitarea = int(request.GET.get('limitarea', 0))
-
-    print("LIMIT AREA", limitarea)
     latstart = float(request.GET.get('latstart', 0))
     latend = float(request.GET.get('latend', 0))
     longstart = float(request.GET.get('longstart', 0))
@@ -46,14 +45,9 @@ def get_allBygningByMaterial(request):
     b = koordinater.objects.select_related('bygning').filter(
         bygning__byggningsinfo__tilbyggsnr__isnull=True  
     )
-    print("TTTT")
-    print(limitarea)
-    print(limitarea == True)
+  
     if limitarea == 1:
-        print("FFFF")
         # filter by coordinates
-        print(latstart)
-        print(latend)
         b = b.filter(
             latitude__gte=latstart,
             latitude__lte=latend,
@@ -115,8 +109,8 @@ def get_allBygningByMaterial(request):
 @api_view(['GET'])
 def get_singleBygningById(_, bygningsnr):
     try: 
+        # get main building
         bygg = Byggningsinfo.objects.select_related('bygning').filter(
-           # byggningsinfo__tilbyggsnr__isnull=True  
             tilbyggsnr__isnull=True,
         ).annotate(
             byggningsnr=F("bygning__byggningsnr"),
@@ -124,7 +118,7 @@ def get_singleBygningById(_, bygningsnr):
         ).get(
             byggningsnr=int(bygningsnr)
         )
-        print("BYGG", bygg)
+      
        # bygning.objects.get(bygningsnr=int(bygningsnr))
 
     except bygning.DoesNotExist:
