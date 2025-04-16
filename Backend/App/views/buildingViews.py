@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from ..serializers import buildingMaterialSerializer, singleByggSerializer, KoordinaterSerializer, MaterialerSerializer
-from ..models import materialtype, bygning, koordinater, materialer
+from ..models import materialtype, Bygning as bygning, Koordinater as koordinater, materialer
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
 from django.db.models import F
@@ -22,7 +22,7 @@ def get_allBygningByMaterial(request):
     #bygg = materialer.objects.filter(type_materiale=materialid).select_related("").values(
     #    "bygning", "totalmengde", "koordinater__x", "koordinater__y"
     #)
-    bygg = materialer.objects.filter(type_materiale=materialid).select_related('bygning').select_related('koordinater').annotate(
+    bygg = materialer.objects.filter(type_materiale=materialid).select_related('Bygning').select_related('Koordinater').annotate(
         building=F("bygning__bygnignsnr"),
         totalamount=F("totalmengde"),      
         x=F("bygning__koordinater__x"), 
