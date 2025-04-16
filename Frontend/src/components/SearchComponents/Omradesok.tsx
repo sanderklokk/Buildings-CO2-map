@@ -16,10 +16,11 @@ import { useQuery } from "@tanstack/react-query";
 import { get_all_materialtypes } from "../../api/materialtypeAPI";
 import { get_search_building_materials } from "../../api/mapsearchAPI";
 import { BUILDINGCODES } from "../../assets/data/buildingcodes";
+import { AREAS } from "../../assets/data/areas";
 
 // Demo-data
 //const byggtypeOptions = ["Byggtype 1", "Byggtype 2", "Byggtype 3"];
-const omradeOptions = ["Område 1", "Område 2", "Område 3"];
+//const omradeOptions = ["Område 1", "Område 2", "Område 3"];
 //const materialOptions = ["Material 1", "Material 2", "Material 3"];
 const subMaterialOptions = [
   "Underkategori 1",
@@ -31,7 +32,7 @@ const Omradesok = () => {
 
   const { setBuildings, buildings } = useBoundStore().mapSlice;
   const [byggtype, setByggtype] = useState<string[]>([]);
-  const [omrade, setOmrade] = useState<string[]>([]);
+  const [omrade, setOmrade] = useState<string | undefined>(undefined);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [selectedSubMaterials, setSelectedSubMaterials] = useState<string[]>(
     []
@@ -46,11 +47,11 @@ const Omradesok = () => {
     setByggtype(typeof value === "string" ? value.split(",") : value);
   };
 
-  const handleOmradeChange = (event: SelectChangeEvent<string[]>) => {
+  const handleOmradeChange = (event: SelectChangeEvent<string>) => {
     const {
       target: { value },
     } = event;
-    setOmrade(typeof value === "string" ? value.split(",") : value);
+    setOmrade(value);
   };
 
   const handleMaterialChange = (event: SelectChangeEvent<string[]>) => {
@@ -79,7 +80,7 @@ const Omradesok = () => {
   };
 
   const clearOmrade = () => {
-    setOmrade([]);
+    setOmrade(undefined);
   };
 
   const clearMaterial = () => {
@@ -93,7 +94,8 @@ const Omradesok = () => {
 
   const handleSearch = async () => {
     try {
-      const res = await get_search_building_materials(selectedMaterials, byggtype);
+      const area = omrade == undefined ? undefined : AREAS.find(x => x.id == Number(omrade));
+      const res = await get_search_building_materials(selectedMaterials, byggtype, area);
       if (res.status === 200) {
         setBuildings(res.data);
       } else {
@@ -153,22 +155,14 @@ const Omradesok = () => {
             <InputLabel id="omrade-label">Område</InputLabel>
             <Select
               labelId="omrade-label"
-              multiple
-              value={omrade}
+              value={omrade || ""}
               onChange={handleOmradeChange}
               input={<OutlinedInput label="Område" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {(selected as string[]).map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
               label="Område"
             >
-              {omradeOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {AREAS.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.label}
                 </MenuItem>
               ))}
             </Select>
@@ -177,7 +171,7 @@ const Omradesok = () => {
             Tegn område
           </Button>
         </Box>
-        {omrade.length > 0 && (
+        {omrade != undefined && (
           <Box className="flex justify-end mt-2">
             <Button variant="text" onClick={clearOmrade}>
               Fjern filter

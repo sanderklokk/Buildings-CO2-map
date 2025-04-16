@@ -24,6 +24,14 @@ def get_allBygningByMaterial(request):
         buildingtypes = [int(i) for i in buildingtypes]
     
     
+    limitarea = int(request.GET.get('limitarea', 0))
+
+    print("LIMIT AREA", limitarea)
+    latstart = float(request.GET.get('latstart', 0))
+    latend = float(request.GET.get('latend', 0))
+    longstart = float(request.GET.get('longstart', 0))
+    longend = float(request.GET.get('longend', 0))
+    
     # spitballing, will test
     # material = materialer.objects.filter(type_materiale = type.id)
     # should be checked if this actually works. the thought is to filter materials by the id taken from materialtype and filter by it, before selecting the relevant tables.
@@ -38,6 +46,20 @@ def get_allBygningByMaterial(request):
     b = koordinater.objects.select_related('bygning').filter(
         bygning__byggningsinfo__tilbyggsnr__isnull=True  
     )
+    print("TTTT")
+    print(limitarea)
+    print(limitarea == True)
+    if limitarea == 1:
+        print("FFFF")
+        # filter by coordinates
+        print(latstart)
+        print(latend)
+        b = b.filter(
+            latitude__gte=latstart,
+            latitude__lte=latend,
+            longitude__gte=longstart,
+            longitude__lte=longend
+        )
 
     # filter by buildingtype-param
     if buildingtypes != None:

@@ -37,12 +37,12 @@ export const MarkerLayer = () => {
     </>*/
 
     return <>
-        {zoom > 17 && buildings.map(x => ({long: x.longitude, lat: x.latitude, building: x.building})).filter((d) => d.long > bounds[2] && d.long < bounds[0] && d.lat > bounds[3] && d.lat < bounds[1]).map((p, i) => {
-            return <Marker key={i} position={[p.long, p.lat]}>
+        {zoom > 17 && buildings.filter((d) => d.longitude > bounds[2] && d.longitude < bounds[0] && d.latitude > bounds[3] && d.latitude < bounds[1]).map((p, i) => {
+            return <Marker key={i} position={[p.longitude, p.latitude]}>
                 <Popup>
                     <MapBuildingPopup
-                        buildingid={p.building}
-                        coordinates={{ lat: p.lat, long: p.long }}
+                        building={p}
+                        coordinates={{ lat: p.latitude, long: p.longitude }}
                         />
                 </Popup>
             </Marker>

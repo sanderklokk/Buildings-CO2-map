@@ -94,3 +94,21 @@ export interface APIDetailedBuilding {
     bygdDato: string;
 
 }
+
+
+// EXTERNAL API //
+
+// https://ws.geonorge.no/adresser/v1/#/default/get_punktsok
+export interface APIPunktSok {
+    metadata: {
+        totaltAntallTreff: number;
+    }
+    adresser: {
+        adressetekst: string;
+        representasjonspunkt: {
+            lat: number;
+            lon: number;
+        }
+    }[]
+
+}
