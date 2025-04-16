@@ -15,9 +15,10 @@ import { useBoundStore } from "../../store/Store";
 import { useQuery } from "@tanstack/react-query";
 import { get_all_materialtypes } from "../../api/materialtypeAPI";
 import { get_search_building_materials } from "../../api/mapsearchAPI";
+import { BUILDINGCODES } from "../../assets/data/buildingcodes";
 
 // Demo-data
-const byggtypeOptions = ["Byggtype 1", "Byggtype 2", "Byggtype 3"];
+//const byggtypeOptions = ["Byggtype 1", "Byggtype 2", "Byggtype 3"];
 const omradeOptions = ["Område 1", "Område 2", "Område 3"];
 //const materialOptions = ["Material 1", "Material 2", "Material 3"];
 const subMaterialOptions = [
@@ -35,7 +36,7 @@ const Omradesok = () => {
   const [selectedSubMaterials, setSelectedSubMaterials] = useState<string[]>(
     []
   );
-
+  
   const { data: materialOptions, isLoading: materialsLoading, isError: materialsError} = useQuery({queryKey: ["materials"], queryFn: () => get_all_materialtypes(true)});
 
   const handleByggtypeChange = (event: SelectChangeEvent<string[]>) => {
@@ -92,7 +93,7 @@ const Omradesok = () => {
 
   const handleSearch = async () => {
     try {
-      const res = await get_search_building_materials(Number(selectedMaterials[0]));
+      const res = await get_search_building_materials(selectedMaterials, byggtype);
       if (res.status === 200) {
         setBuildings(res.data);
       } else {
@@ -121,16 +122,18 @@ const Omradesok = () => {
             input={<OutlinedInput label="Byggtype" />}
             renderValue={(selected) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {(selected as string[]).map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
+                {(selected as string[]).map((value) => {
+               //   const type  = BUILDINGCODES.find(x => x.id == value);
+               //   if (!type) return <></>
+                  return <Chip key={value} label={value} />
+            })}
               </Box>
             )}
             label="Byggtype"
           >
-            {byggtypeOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
+            {BUILDINGCODES.sort((a, b) => a.id.localeCompare(b.id)) .map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.id} {option.label}
               </MenuItem>
             ))}
           </Select>

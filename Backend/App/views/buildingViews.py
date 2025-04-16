@@ -4,15 +4,22 @@ from ..serializers import buildingMaterialSerializer, singleByggSerializer, Koor
 from ..models import materialtype, bygning, koordinater, materialer
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
-from django.db.models import F
+from django.db.models import F, IntegerField, Value
 
 
 
 @api_view(['GET'])
 def get_allBygningByMaterial(request):
-    materialid = request.GET.get('material', None)
-    if (materialid == None):
-        return "Error: invalid material type"
+    materialids = request.GET.get('materials', None)
+    if (materialids != None):
+        materialids = materialids.split(",")
+        materialids = [int(i) for i in materialids]
+        
+    buildingtypes = request.GET.get('buildingtypes', None)
+    if (buildingtypes != None):
+        buildingtypes = buildingtypes.split(",")
+        buildingtypes = [int(i) for i in buildingtypes]
+    
     
     # spitballing, will test
     # material = materialer.objects.filter(type_materiale = type.id)
@@ -22,6 +29,42 @@ def get_allBygningByMaterial(request):
     #bygg = materialer.objects.filter(type_materiale=materialid).select_related("").values(
     #    "bygning", "totalmengde", "koordinater__x", "koordinater__y"
     #)
+
+
+    b = koordinater.objects.select_related('bygningid')
+    if buildingtypes != None:
+        b = b.filter(
+        bygningid__bygningstypekode__in=buildingtypes
+    )
+    b = b.annotate(
+        building=F("bygningid__bygnignsnr"),
+        totalamount=Value(10),
+    ).values(
+        "building",
+        "totalamount",
+        "x",
+        "y"
+    )
+
+    serialized = buildingMaterialSerializer(b, many=True)
+    return Response(serialized.data, status=200)
+
+
+    r = []
+
+    # mapping the data to the correct format
+    for i in range(len(serialized.data)):
+        rr = {
+            "x": serialized.data[i]['x'],
+            "y": serialized.data[i]['y'],
+            "building": serialized.data[i]['bygningid'],
+            "totalamount": 10,
+        }
+        r.append(rr) 
+    
+    print("DOne")
+    return Response(r, status=200)
+
     bygg = materialer.objects.filter(type_materiale=materialid).select_related('bygning').select_related('koordinater').annotate(
         building=F("bygning__bygnignsnr"),
         totalamount=F("totalmengde"),      
@@ -36,6 +79,7 @@ def get_allBygningByMaterial(request):
     serialized = buildingMaterialSerializer(bygg, many=True)
 
     return Response(serialized.data, status=200)
+   
 
 # needs error handling, but first test if it works
 @api_view(['GET'])

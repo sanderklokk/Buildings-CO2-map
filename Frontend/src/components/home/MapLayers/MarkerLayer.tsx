@@ -45,6 +45,7 @@ export const MarkerLayer = ({ data }: HeatLayerProps) => {
                 <Popup>
                     <MapBuildingPopup
                         buildingid={p.building}
+                        coordinates={{ lat: p.lat, long: p.long }}
                         />
                 </Popup>
             </Marker>

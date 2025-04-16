@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { get_detailed_building } from '../../../api/mapsearchAPI';
 
 
-export const MapBuildingPopup = ({buildingid}: {buildingid: number}) => {
+export const MapBuildingPopup = ({buildingid, coordinates}: {buildingid: number, 
+    coordinates: {lat: number, long: number}}) => {
 
     const { data: buildingdata, isLoading, isError } = useQuery({queryKey: ["buildingdata", buildingid], queryFn: () => get_detailed_building(buildingid)});
 
@@ -19,6 +20,7 @@ export const MapBuildingPopup = ({buildingid}: {buildingid: number}) => {
                 </Typography>
                 <Typography>
                     Byggtype: {buildingdata.data.bygningstypekode}
+                    lat {coordinates.lat} long {coordinates.long}
                 </Typography>
                 <Typography>
                     Bruksareal: {buildingdata.data.bruksarealtotalt}

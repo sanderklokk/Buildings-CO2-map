@@ -6,10 +6,11 @@ export const GET_MATERIAL_IN_ALL_BUILDINGS = "api/bygning/bymaterial";
 
 export const GET_DETAILED_BUILING = "api/bygning/bybygningsnr/";
 
-export const get_search_building_materials = async (materialid: number): Promise<AxiosResponse<APIMapBuilding[]>> => {
+export const get_search_building_materials = async (materialid: string[], buildingtypes: string[]): Promise<AxiosResponse<APIMapBuilding[]>> => {
 
     return service.get(GET_MATERIAL_IN_ALL_BUILDINGS, {
-        params: { material: materialid.toString() }
+        params: { materials: materialid.length > 0 ? materialid.join(",") : null,
+            buildingtypes: buildingtypes.length > 0 ? buildingtypes.join(",") : null },
     });
 }
 
