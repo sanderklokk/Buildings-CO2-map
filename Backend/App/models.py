@@ -5,6 +5,7 @@ class Bygning(models.Model):
     byggningsnr = models.IntegerField(primary_key=True)
     bygningstatuskode = models.CharField(max_length=2)
     byggdato = models.DateField()
+    naboer = models.CharField()
 
 class Koordinater(models.Model):
     # bygningsnr = models.ForeignKey(Bygning, on_delete = models.CASCADE, primary_key=True) 

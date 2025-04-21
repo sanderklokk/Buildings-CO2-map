@@ -35,6 +35,7 @@ class Command(BaseCommand):
                 byggningsnr=row["properties.bygningsnr"],
                 bygningstatuskode=row["properties.bygningstatuskode"],
                 byggdato=row["properties.dato"].date(), #only save the date (discard time datas)
+                naboer = json.dump([])
 
             ) for row in df14.iter_rows(named=True)
         ])
