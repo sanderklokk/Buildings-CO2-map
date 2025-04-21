@@ -6,9 +6,9 @@ from django_pandas.io import read_frame
 
 def similarity(building_id:str, report_id:str) -> float:
     score = 0
-    report = models.rapport.objects.filter(id = report_id)
-    building = models.bygning.objects.filter(bygningid = building_id)
-    report_building = models.bygning.objects.filter(bygningid = report.bygning)
+    report = models.rapport.objects.filter(id = report_id)[0]
+    building = models.bygning.objects.filter(bygningid = building_id)[0]
+    report_building = models.bygning.objects.filter(bygningid = report.bygning)[0]
     #Comapares bulding codes
     building_code = str(building.bygningstypekode)
     report_code = str(report_building.bygningstypekode)
