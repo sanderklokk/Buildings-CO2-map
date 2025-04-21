@@ -23,7 +23,7 @@ export const AvfallsplanForm = () => {
     data: materialtypes,
     isLoading: isMaterialsLoading,
     isError: isMaterialsError,
-  } = useQuery({ queryKey: ["materialtypes"], queryFn: get_all_materialtypes });
+  } = useQuery({ queryKey: ["materialtypes", false], queryFn: () => get_all_materialtypes(false) });
 
   const { addAvfallRow, wasteReport } = useBoundStore().wasteReportForm;
 
@@ -37,30 +37,31 @@ export const AvfallsplanForm = () => {
   const getSearchOptions = () => {
     // Show only toplevel categories if no input
 
-    if (!materialtypes) return [];
+    if (!materialtypes?.data) return [];
 
     if (addWasteCategoryInputValue === "")
-      return materialtypes.filter(
+      return materialtypes.data.filter(
         (wasteMaterial) =>
           !wasteMaterial.forelder &&
           !wasteReport.avfall.farlig
             .concat(wasteReport.avfall.ordinert)
             .map((x) => x.id)
-            .includes(wasteMaterial.id)
+            .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
       );
-    return materialtypes.filter(
+    return materialtypes.data.filter(
       (wasteMaterial) =>
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
           .map((x) => x.id)
-          .includes(wasteMaterial.id)
+          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
     );
   };
 
-  const getSubMaterials = (materialId: number) => {
+  const getSubMaterials = (materialId: number | null) => {
+
     if (!materialtypes) return [];
 
-    return materialtypes.filter(
+    return materialtypes.data.filter(
       (wasteMaterial) => wasteMaterial.forelder === materialId
     );
   };
@@ -68,17 +69,20 @@ export const AvfallsplanForm = () => {
   const getSubMaterialsNotInUse = () => {
     if (!selected) return [];
 
-    return getSubMaterials(selected || 0).filter(
+    return getSubMaterials(selected).filter(
       (wasteMaterial) =>
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
           .map((x) => x.id)
-          .includes(wasteMaterial.id)
+          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
     );
   };
 
   const handleAddWasteCategory = (value: APIMaterialType | null) => {
+    
     if (value) {
+      if (value.id == null) return;
+      
       setSelected(value.id);
       if (getSubMaterials(value.id).length === 0) {
         setShowSubMaterials(false);
@@ -94,7 +98,6 @@ export const AvfallsplanForm = () => {
 
   return (
     <>
-      {" "}
       <Box>
         <Typography marginTop={2} fontSize={20} marginBottom={2}>
           Legg til type
@@ -125,7 +128,7 @@ export const AvfallsplanForm = () => {
               <Box>
                 <Typography marginTop={2} fontSize={18} marginBottom={2}>
                   Velg underkategori for{" "}
-                  {materialtypes.find((x) => x.id == selected)?.navn}
+                  {materialtypes.data.find((x) => x.id == selected)?.navn}
                 </Typography>
                 <Box>
                   {showSubMaterials &&
@@ -233,7 +236,7 @@ export const AvfallsplanForm = () => {
                     return (
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
-                        material={materialtypes?.find(
+                        material={materialtypes?.data.find(
                           (x) => x.id == wasteCategory.id
                         )}
                       />
@@ -325,7 +328,7 @@ export const AvfallsplanForm = () => {
                     return (
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
-                        material={materialtypes?.find(
+                        material={materialtypes?.data.find(
                           (x) => x.id == wasteCategory.id
                         )}
                       />

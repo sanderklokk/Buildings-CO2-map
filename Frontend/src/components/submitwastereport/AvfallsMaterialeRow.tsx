@@ -6,9 +6,9 @@ import { useBoundStore } from "../../store/Store";
 import { APIMaterialType } from "../../api/models";
 
 export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | undefined}) => {
-
+    console.log(material)
     const { updateAvfallRow, wasteReport }  = useBoundStore().wasteReportForm;
-    if (!material) {
+    if (!material || material.id == null) {
         return <></>;
     }
 
