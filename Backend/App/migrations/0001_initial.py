@@ -26,6 +26,7 @@ class Migration(migrations.Migration):
                 ('bruksarealbolig', models.IntegerField()),
                 ('bruksarealannet', models.IntegerField()),
                 ('bygdDato', models.DateField()),
+                ('naboer', models.CharField()),
             ],
         ),
         migrations.CreateModel(

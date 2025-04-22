@@ -35,7 +35,7 @@ class materialtype(models.Model):
     synlig = models.BooleanField(default=True)
 
 class materialer(models.Model): #bygningsrelasjon?
-    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE, primary_key=True) 
+    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE) 
     type_materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     mengde = models.IntegerField()
     totalmengde = models.IntegerField()

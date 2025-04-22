@@ -27,14 +27,10 @@ class Migration(migrations.Migration):
             model_name='materialer',
             name='forelder',
         ),
-        migrations.RemoveField(
-            model_name='materialer',
-            name='id',
-        ),
         migrations.AlterField(
             model_name='materialer',
             name='bygning',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='App.bygning'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, serialize=False, to='App.bygning'),
         ),
         migrations.CreateModel(
             name='materialtype',
