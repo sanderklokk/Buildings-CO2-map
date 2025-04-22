@@ -6,20 +6,23 @@ import {
   DialogActions,
   TextField,
   Button,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 
 interface AddMaterialProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (materialName: string) => void;
+  onAdd: (materialName: string, isFarlig: boolean) => void;
 }
 
 const AddMaterial: React.FC<AddMaterialProps> = ({ open, onClose, onAdd }) => {
   const [materialName, setMaterialName] = useState("");
+  const [isFarlig, setIsFarlig] = useState(false);
 
   const handleAdd = () => {
     if (materialName.trim() !== "") {
-      onAdd(materialName);
+      onAdd(materialName, isFarlig);
       setMaterialName("");
       onClose();
     }
@@ -35,6 +38,8 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ open, onClose, onAdd }) => {
           value={materialName}
           onChange={(e) => setMaterialName(e.target.value)}
         />
+        <FormControlLabel className="mt-2" control={<Switch value={isFarlig} onChange={(e) => setIsFarlig(e.target.checked)}/>} label="Farlig materiale" />
+     
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Avbryt</Button>
