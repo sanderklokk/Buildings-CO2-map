@@ -5,6 +5,7 @@ import json
 def similarity(building_id:int, report_id:int) -> float:
     score = 0
     report = models.rapport.objects.get(id = report_id)
+    building = models.Bygning.objects.get(byggningsnr = building_id)
     report_building = models.Bygning.objects.get(byggningsnr = report.bygning.byggningsnr)
     building_info = models.Byggningsinfo.objects.get(bygning = building.byggningsnr)
     report_building_info = models.Byggningsinfo.objects.get(bygning = report_building.byggningsnr)
@@ -42,7 +43,6 @@ def recalibrateDatabase():
         #Saving best score for row
         best_scores = []
         for j in models.rapport.objects.all():
-            building = models.Bygning.objects.get(byggningsnr = j.id)
             #Calculating how close the two rows are
             score = similarity(i.byggningsnr,j.id)
             #If we do not ahve enough buildings save everything
