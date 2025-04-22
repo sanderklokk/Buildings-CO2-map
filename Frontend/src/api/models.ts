@@ -13,6 +13,10 @@ export interface APIWasteReportMaterial {
 export interface APIWasteReport {
     id: number | null;
     bygning: number | null;
+    coordinates?: {
+        lat: number | null;
+        long: number | null;
+    }
     dato: string;
     address: string;
     postalcode: number;
@@ -111,4 +115,31 @@ export interface APIPunktSok {
         }
     }[]
 
+}
+
+export interface APIAdresseSok {
+    metadata: {
+        totaltAntallTreff: number;
+        sokeStreng: string;
+    };
+    adresser: {
+        adressenavn: string;
+        adressetekst: string;
+        nummer: number;
+        bokstav: string;
+        kommunenummer: string;
+        kommunenavn: string;
+        gardsnummer: string;
+        bruksnummer: string;
+        festenummer: string;
+        objtype: string;
+        poststed: string;
+        postnummer: string;
+        representasjonspunkt: {
+            epsg: string;
+            lat: number;
+            lon: number;
+        }
+    }[];
+    
 }

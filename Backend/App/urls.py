@@ -9,6 +9,7 @@ urlpatterns = [
     path('bygning/bymaterial', buildingViews.get_allBygningByMaterial, name='get_allByngingByMaterial'),
     path('bygning/bybygningsnr/<int:bygningsnr>', buildingViews.get_singleBygningById, name='get_singleBygningById'),
     path('bygning/squareselect', buildingViews.get_squareSelect, name='get_squareSelect'),
+    path('bygning/nearby', buildingViews.get_closestbuilding, name='get_nearbybuilding'),
 
     path('materialtype/all', materialtypeviews.get_materialtypes, name='get_materialtypes'),
     path('materialtype/create', materialtypeviews.create_materialtype, name='create_materialtype'),

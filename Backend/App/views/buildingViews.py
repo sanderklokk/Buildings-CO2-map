@@ -4,7 +4,8 @@ from ..serializers import buildingMaterialSerializer, singleByggSerializer, Koor
 from ..models import materialtype, Bygning as bygning, Koordinater as koordinater, materialer, Byggningsinfo
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
-from django.db.models import F, IntegerField, Value
+from django.db.models import F, IntegerField, Value, FloatField
+from django.db.models.functions import Power, Sqrt
 
 
 
@@ -138,3 +139,40 @@ def get_squareSelect(request):
     serialized = KoordinaterSerializer(result, many=True)
     return Response(serialized.data, status=200)
 
+# get closest building near coordinates, used when getting building after an address search etc.
+@api_view(['GET'])
+def get_closestbuilding(request):
+    lat = float(request.GET.get("lat", 0))
+    lon = float(request.GET.get("lon", 0))
+
+    if lat == 0 or lon == 0:
+        return Response({"error": "missing coordinates"}, status=400)
+
+    k = koordinater.objects.annotate(
+        distance=Sqrt(
+            Power(F('latitude') - lat, 2) + Power(F('longitude') - lon, 2)
+        )
+    ).order_by('distance').first()
+
+    if not k:
+        return Response({"error": "no buildings found"}, status=404)
+    
+
+    try: 
+        # get detailed building
+        bygg = Byggningsinfo.objects.select_related('bygning').filter(
+            tilbyggsnr__isnull=True,
+        ).annotate(
+            byggningsnr=F("bygning__byggningsnr"),
+            bygdDato=F("bygning__byggdato"),
+        ).get(
+            byggningsnr=int(k.bygning.byggningsnr)
+        )
+      
+    except bygning.DoesNotExist:
+        #shouldnt occur
+        return Response({"error": 'interal error'}, status=500)
+    
+    serialized = singleByggSerializer(bygg)
+    
+    return Response(serialized.data, status=200)

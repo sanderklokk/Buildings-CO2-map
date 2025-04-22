@@ -32,6 +32,7 @@ export interface WasteReport {
         ordinert: AvfallsMaterialeRow[];
         farlig: AvfallsMaterialeRow[];
     }
+    bygning: number | null;
 };
 
 export interface WasteReportSlice {
@@ -42,6 +43,7 @@ export interface WasteReportSlice {
         removeAvfallRow: (id: number | null) => void;
         addAvfallRow: (id: number | null, dangerous: boolean) => void;
         updateAvfallRow: (id: number | null, data: Partial<AvfallsMaterialeRow>) => void;
+        setBygning: (buildingid: number | null) => void;
     }
 }
 
@@ -69,8 +71,10 @@ export const createWasteReportFormSlice: StateCreator<WasteReportSlice> = (set) 
             avfall: {
                 ordinert: [],
                 farlig: [],
-            }
+            },
+            bygning: null,
         },
+    
         setGjelder: (gjelder: WasteReport["gjelder"]) => set((state) => ({ ...state, wasteReportForm: {...state.wasteReportForm, wasteReport: { ...state.wasteReportForm.wasteReport, gjelder } }})),
         setAvfall: (avfall: WasteReport["avfall"]) => set((state) => ({ ...state, wasteReportForm: {...state.wasteReportForm, wasteReport: { ...state.wasteReportForm.wasteReport, avfall } }})),
         removeAvfallRow: (id: number | null) => set((state) => {
@@ -94,6 +98,7 @@ export const createWasteReportFormSlice: StateCreator<WasteReportSlice> = (set) 
             const ordinert = state.wasteReportForm.wasteReport.avfall.ordinert.map((i) => i.id === id ? { ...i, ...data } : i);
             const farlig = state.wasteReportForm.wasteReport.avfall.farlig.map((i) => i.id === id ? { ...i, ...data } : i);
             return { ...state, wasteReportForm: {...state.wasteReportForm, wasteReport: { ...state.wasteReportForm.wasteReport, avfall: { ordinert, farlig } } }}
-        })
+        }),
+        setBygning: (buildingid: number | null) => set((state) => ({ ...state, wasteReportForm: {...state.wasteReportForm, wasteReport: { ...state.wasteReportForm.wasteReport, bygning: buildingid } }}))
     }
 }); 
