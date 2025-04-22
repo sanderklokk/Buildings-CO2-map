@@ -1,15 +1,12 @@
 # VIEWS / API Endpoints related to waste reports
 
-
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from ..serializers import WasteReportDTOSerializer, RapportSerializer, RapportMaterialeSerializer, MaterialTypeSerializer
-from ..models import materialtype, rapport, rapportmateriale
+from ..models import rapport, rapportmateriale
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
 
-
-
+# Create your views here.
 # Create new waste report
 @api_view(['POST'])
 def post_wastereport(request):

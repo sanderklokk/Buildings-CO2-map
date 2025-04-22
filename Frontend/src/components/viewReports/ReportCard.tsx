@@ -56,7 +56,7 @@ const ReportCard = ({ report, onViewReport }: ReportCardProps) => {
           color="primary"
           size="small"
           variant="contained"
-          onClick={() => onViewReport(report.id)}
+          onClick={() => onViewReport(report.id.toString())}
         >
           Se detaljert rapport
         </Button>

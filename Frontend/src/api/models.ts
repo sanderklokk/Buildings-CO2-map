@@ -1,6 +1,6 @@
 export interface APIWasteReportMaterial {
-    id: string | null;
-    materiale: string;
+    id: number | null;
+    materiale: number;
     planlagtmengde: number;
     faktiskmengde: number;
     mengdetilgjenbruk: number;
@@ -11,8 +11,12 @@ export interface APIWasteReportMaterial {
 
 
 export interface APIWasteReport {
-    id: string | null;
+    id: number | null;
     bygning: number | null;
+    coordinates?: {
+        lat: number | null;
+        long: number | null;
+    }
     dato: string;
     address: string;
     postalcode: number;
@@ -26,15 +30,15 @@ export interface APIWasteReport {
 }
 
 export interface APIMaterialType {
-    id: string;
-    forelder: string | null;
+    id: number | null;
+    forelder: number | null;
     navn: string;
     farlig: boolean;
     synlig: boolean;
 }
 
 export interface APIWasteReportOverview {
-    id: string,
+    id: number,
     dato: string;
     address: string;
     postalcode: number;
@@ -53,7 +57,7 @@ export interface APIWasteReportOverviewList {
 }
 
 export interface APIWasteReportDetailedMaterial {
-    id: string;
+    id: number;
     planlagtmengde: number;
     faktiskmengde: number;
     mengdetilgjenbruk: number;
@@ -63,7 +67,7 @@ export interface APIWasteReportDetailedMaterial {
     rapport: number;
     materiale: number;
     navn: string;
-    forelder: string | null;
+    forelder: number | null;
     farlig: boolean;
 }
 
@@ -71,3 +75,72 @@ export type APIWasteReportDetailed = APIWasteReportOverview & {
     materialer: APIWasteReportDetailedMaterial[];
 };
     
+
+export interface APIMapBuilding {
+    latitude: number; /* lat */
+    longitude: number; /* long */
+    building: number; /* building id */
+    totalamount: number; /*heatmap intensity */
+}
+
+export interface APIDetailedBuilding {
+    byggningsnr: number;
+    bygningstatuskode: string;
+    kommuneId: number;
+    byggningstypekode: number;  
+    byggningstype: string;
+    antallboenheter: number;
+    antalletasjer: number;
+    bebygdareal: number;
+    bruksarealtotalt: number;   
+    bruksarealbolig: number;
+    bruksarealannet: number;
+    bygdDato: string;
+
+}
+
+
+// EXTERNAL API //
+
+// https://ws.geonorge.no/adresser/v1/#/default/get_punktsok
+export interface APIPunktSok {
+    metadata: {
+        totaltAntallTreff: number;
+    }
+    adresser: {
+        adressetekst: string;
+        representasjonspunkt: {
+            lat: number;
+            lon: number;
+        },
+        kommunenavn: string;
+    }[]
+
+}
+
+export interface APIAdresseSok {
+    metadata: {
+        totaltAntallTreff: number;
+        sokeStreng: string;
+    };
+    adresser: {
+        adressenavn: string;
+        adressetekst: string;
+        nummer: number;
+        bokstav: string;
+        kommunenummer: string;
+        kommunenavn: string;
+        gardsnummer: string;
+        bruksnummer: string;
+        festenummer: string;
+        objtype: string;
+        poststed: string;
+        postnummer: string;
+        representasjonspunkt: {
+            epsg: string;
+            lat: number;
+            lon: number;
+        }
+    }[];
+    
+}

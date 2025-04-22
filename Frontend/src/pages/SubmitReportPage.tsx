@@ -10,6 +10,7 @@ import { isAxiosError } from "axios";
 import { Alert } from "@mui/material";
 import { AlertColor, AlertPropsColorOverrides } from "@mui/material/Alert";
 import { OverridableStringUnion } from "@mui/types";
+import { BuildingForm } from "../components/submitwastereport/BuildingForm";
 
 
 interface SnackbarData {
@@ -37,7 +38,7 @@ export const SubmitReportPage = () => {
 
     const toApiReport = (report: WasteReport): APIWasteReport => ({
         id: null,
-        bygning: null,
+        bygning: report.bygning,
         dato: new Date().toISOString(),
         address: report.gjelder.eiendom.address,
         postalcode: Number(report.gjelder.eiendom.postalCode),
@@ -79,13 +80,19 @@ export const SubmitReportPage = () => {
 
 
 
-        return <Box width={"100%"} flexGrow={1} maxWidth={"1200px"} mx={"auto"} display={"flex"} flexDirection={"column"} alignContent={"start"} marginBottom={10}>
+        return <Box width={"100%"} mt={5} flexGrow={1} maxWidth={"1200px"} mx={"auto"} display={"flex"} flexDirection={"column"} alignContent={"start"} marginBottom={10}>
             <FormControl fullWidth>
 
                 <Box marginX={5}>
                     <Typography variant="h4" marginBottom={3}>
                         Registrer avfallsrapport
                     </Typography>
+                    <Box>
+                    <Typography variant="h5" fontWeight={"bold"}>
+                            Bygning
+                        </Typography>
+                        <BuildingForm />
+                    </Box>
                     <Box>
                         <Typography variant="h5" fontWeight={"bold"}>
                             Planen gjelder

@@ -3,9 +3,13 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
-import { APIAddressSearchResult, get_address_search, get_building_search } from "../../api/mapsearchAPI";
-import { useBoundStore } from "../../store/Store";
+import { get_address_search } from "../../api/geonorgeAPI";
+
+//import { useBoundStore } from "../../store/Store";
 import { AxiosResponse } from "axios";
+import { APIPunktSok } from "../../api/models";
+import { get_closest_building_materials } from "../../api/mapsearchAPI";
+import { useBoundStore } from "../../store/Store";
 
 
 
@@ -15,9 +19,9 @@ const Hortigsok = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
 
-  const [searchResult, setSearchResult] = useState<AxiosResponse<APIAddressSearchResult> | null>();
+  const [searchResult, setSearchResult] = useState<AxiosResponse<APIPunktSok> | null>();
 
-  const { setHurtigsokResult } = useBoundStore().mapSearch;
+  const { setHurtigSokResult, setBuildings } = useBoundStore().mapSlice;
 
   const [formInputs, setFormInputs] = useState({
     query: "",
@@ -45,6 +49,7 @@ const Hortigsok = () => {
   
     setHasSearched(true);
     try {
+      
       setLoadingSearch(true);
       const res = await get_address_search({
         query: formInputs.query,
@@ -60,6 +65,8 @@ const Hortigsok = () => {
       setLoadingSearch(false);
 
     } catch (error) {
+      setLoadingSearch(false);
+      setSearchResult(null);
       console.error("Error fetching address search results:", error);
     }
   
@@ -68,9 +75,10 @@ const Hortigsok = () => {
 
   const handleSelectResult = async ({ lat, long }: { lat: number, long: number }) => {
     try {
-      const res = await get_building_search({ lat, lon: long });
+      setBuildings([]);
+      const res = await get_closest_building_materials(lat, long);
       if (res.status === 200) {
-        setHurtigsokResult(res.data);
+        setHurtigSokResult(res.data);
       }
     } catch (error) {
       console.error("Error fetching building search results:", error);
