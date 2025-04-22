@@ -5,11 +5,11 @@ import { MarkerLayer } from "./MapLayers/MarkerLayer";
 //import { TileLayer } from "./MapLayers/TileLayer";
 
 // temporary
-import { getData } from "../../../../Data/getdata.ts";
+// import { getData } from "../../../../Data/getdata.ts";
 
 export const Map = () => {
 
-  const data = getData();
+  // const data = getData();
   // const data = [{ lat: 63.43049, long: 10.39506, text: "Trondheim", intensity: 40 }];
 
   return (
@@ -28,14 +28,14 @@ export const Map = () => {
 
     >
       <Pane name="fullmappane" style={{ zIndex: 1 }} >
-        <TileLayer url='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+        <TileLayer url='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' maxZoom={20}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
       </Pane>
-      <HeatLayer data={data} zIndex={2} />
-      <MarkerLayer data={data} />
+      <HeatLayer zIndex={2} />
+      <MarkerLayer />
       <Pane name="labelpane" style={{ zIndex: 3 }}>
-        <TileLayer url='https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png'
+        <TileLayer url='https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png' maxZoom={20}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
       </Pane>

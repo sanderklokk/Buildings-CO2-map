@@ -71,3 +71,44 @@ export type APIWasteReportDetailed = APIWasteReportOverview & {
     materialer: APIWasteReportDetailedMaterial[];
 };
     
+
+export interface APIMapBuilding {
+    latitude: number; /* lat */
+    longitude: number; /* long */
+    building: number; /* building id */
+    totalamount: number; /*heatmap intensity */
+}
+
+export interface APIDetailedBuilding {
+    byggningsnr: number;
+    bygningstatuskode: string;
+    kommuneId: number;
+    byggningstypekode: number;  
+    byggningstype: string;
+    antallboenheter: number;
+    antalletasjer: number;
+    bebygdareal: number;
+    bruksarealtotalt: number;   
+    bruksarealbolig: number;
+    bruksarealannet: number;
+    bygdDato: string;
+
+}
+
+
+// EXTERNAL API //
+
+// https://ws.geonorge.no/adresser/v1/#/default/get_punktsok
+export interface APIPunktSok {
+    metadata: {
+        totaltAntallTreff: number;
+    }
+    adresser: {
+        adressetekst: string;
+        representasjonspunkt: {
+            lat: number;
+            lon: number;
+        }
+    }[]
+
+}
