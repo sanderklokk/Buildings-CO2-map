@@ -1,16 +1,31 @@
 import math
 from App import models
 import json
+import time
+
+dictkoords = {}
+dictbygning = {}
+dictbygginfo = {}
+dictnaboer = {}
+dictrapport = {}
+dictrapportmateriale = {}
+dictmaterialtyper = {}
+
+
 
 def similarity(building_id:int, report_id:int) -> float:
     score = 0
-    report = models.rapport.objects.get(id = report_id)
-    report_building = models.Bygning.objects.get(byggningsnr = report.bygning.byggningsnr)
-    building_info = models.Byggningsinfo.objects.get(bygning = building.byggningsnr)
-    report_building_info = models.Byggningsinfo.objects.get(bygning = report_building.byggningsnr)
+    report = dictrapport[str(report_id)] #models.rapport.objects.get(id = report_id)
+    building = dictbygning[str(building_id)] # models.Bygning.objects.get(byggningsnr = building_id)
+    report_building = dictbygning[str(report.bygning.byggningsnr)] # models.Bygning.objects.get(byggningsnr = report.bygning.byggningsnr)
+    building_info =  dictbygginfo[str(building_id)] # models.Byggningsinfo.objects.get(bygning = building_id)
+    report_building_info =  dictbygginfo[str(report.bygning.byggningsnr)] # models.Byggningsinfo.objects.get(bygning = report_building.byggningsnr)
+
     #Comapares bulding codes
     building_code = str(building_info.byggningstypekode)
     report_code = str(report_building_info.byggningstypekode)
+    
+   
     if(building_code[0] == report_code[0]):
         if(building_code[1] == report_code[1]):
             if(building_code[2] == report_code[2]):
@@ -24,10 +39,14 @@ def similarity(building_id:int, report_id:int) -> float:
     #Compares livable area
     score += 1 - abs(building_info.bruksarealtotalt-report_building_info.bruksarealtotalt)/max(building_info.bruksarealtotalt,report_building_info.bruksarealtotalt)
     #Computes euclidian distance between cordinates and normalises againts highest known value
-    building_cordinate = models.Koordinater.objects.get(bygning = building.byggningsnr)
-    report_cordinate = models.Koordinater.objects.get(bygning = report_building.byggningsnr)
-    score += 1 - math.sqrt((building_cordinate.longitude-report_cordinate.longitude)**2+(building_cordinate.latitude-report_cordinate.latitude)**2)/5
+
+    building_cordinate = dictkoords[str(report_building.byggningsnr)] 
     
+  
+    report_cordinate = dictkoords[str(report_building.byggningsnr)] 
+
+    score += 1 - math.sqrt((building_cordinate.longitude-report_cordinate.longitude)**2+(building_cordinate.latitude-report_cordinate.latitude)**2)/5
+
     #Compares build year
     bulding_date = int(str(building.byggdato)[:4])
     report_date = int(str(report_building.byggdato)[:4])
@@ -38,12 +57,69 @@ def similarity(building_id:int, report_id:int) -> float:
 
 
 def recalibrateDatabase():
-    for i in models.Bygning.objects.all():
+    global dictkoords
+    print("recalibrating database")
+    print("Loading koordinater")
+    koordinates_data = models.Koordinater.objects.all()
+    for i in koordinates_data:
+        dictkoords[str(i.bygning.byggningsnr)] = i
+    global dictbygginfo
+    print("Loading building info")
+    building_info_data = models.Byggningsinfo.objects.all()
+    for i in building_info_data:
+        dictbygginfo[str(i.bygning.byggningsnr)] = i
+    global dictbygning
+    print("Loading building data")  
+    building_data = models.Bygning.objects.all()
+    
+    for i in building_data:
+        dictbygning[str(i.byggningsnr)] = i
+
+    global dictnaboer
+    dictnaboer = {}
+    for i in building_data:
+        dictnaboer[str(i.byggningsnr)] = i.naboer
+
+  
+    global dictrapport
+    dictrapport = {}  
+    rapport_data = models.rapport.objects.all()
+    for i in rapport_data:
+        dictrapport[str(i.id)] = i
+
+    global dictrapportmateriale
+    dictrapportmateriale = {}
+    rapport_materiale_data = models.rapportmateriale.objects.all()
+    for i in rapport_materiale_data:
+        dictrapportmateriale[f'{i.rapport.id},{i.materiale.id}'] = i
+
+    global dictmaterialtyper
+    materialtyper_data = models.materialtype.objects.all()
+    for i in materialtyper_data:
+        dictmaterialtyper[str(i.navn)] = i
+
+    print("starting calibration")
+
+    count = 0
+    
+    t = time.time()
+    for i in building_data:
+        count += 1
+        if count % 200 == 0:
+            print(f'count: {count}')
+            print(f'time: {time.time()-t}')
+        
         #Saving best score for row
+       # tt = time.time()
+        
         best_scores = []
-        for j in models.rapport.objects.all():
-            building = models.Bygning.objects.get(byggningsnr = j.id)
+        
+        for j in rapport_data:
+
+         
+        #    building = models.Bygning.objects.get(byggningsnr = j.id)
             #Calculating how close the two rows are
+
             score = similarity(i.byggningsnr,j.id)
             #If we do not ahve enough buildings save everything
             if len(best_scores) < 6:
@@ -52,51 +128,41 @@ def recalibrateDatabase():
             else:
                 best_scores.append((score,j.id))
                 best_scores.remove(min(best_scores, key=lambda p:p[0]))
-        i.naboer = json.dumps(best_scores)
-        i.save()
+      
+        
+        dictnaboer[str(i.byggningsnr)] = best_scores
         updateMaterials(i.byggningsnr)
-
-def addOneReport(report_ID:int):
-    for i in models.Bygning.objects.all():
-        check = json.loads(i.naboer)
-        new = check.copy()
-        new.append(similarity(i.byggningsnr,report_ID))
-        new.remove(min(new, key=lambda p:p[0]))
-        if new != check:
-            i.naboer = new
-            i.save()
-            updateMaterials(i.byggningsnr)
-
-def addOneHouse(house_ID:str):
-    bulding = models.Bygning.objects.get(id = house_ID)
-    reports = models.rapport.objects.all()
-    new = []
-    for i in reports:
-        new.append(similarity(bulding.byggningsnr,i.id))
-        if len(new) > 5:
-            new.remove(min(new, key=lambda p:p[0]))
-    bulding.naboer = json.dump(new)
-    updateMaterials(bulding.byggningsnr)
+        
+        #print(time.time()-tt)
+        
 
 def updateMaterials(bygning:int):
-    bulding = models.Bygning.objects.get(byggningsnr = bygning)
-    bulding_info = models.Byggningsinfo.objects.get(bygning = bulding.byggningsnr)
+    global dictbygning
+    global dictmaterialtyper
+
+    #bulding =  models.Bygning.objects.get(byggningsnr = bygning)
+
+    bulding = dictbygning[str(bygning)] 
+   
+
+    bulding_info = dictbygginfo[str(bygning)]    #models.Byggningsinfo.objects.get(bygning = bulding.byggningsnr)
     similar = []
-    for tuple in json.loads(bulding.naboer):
+    for tuple in dictnaboer[str(bulding.byggningsnr)]:
         score, key = tuple
         similar.append(key)
-    trevirke = models.materialtype.objects.get(navn = "trevirke")
+    trevirke = dictmaterialtyper["trevirke"] # models.materialtype.objects.get(navn = "trevirke")
     trevirke_id = trevirke.id
-    sement = models.materialtype.objects.get(navn = "sement")
+    sement = dictmaterialtyper["sement"] # models.materialtype.objects.get(navn = "sement")
     sement_id = sement.id
     sement = 0
     trevirke = 0
     for i in similar:
-        report = models.rapport.objects.get(id = i)
-        report_trevirke = models.rapportmateriale.objects.get(rapport = report,materiale = trevirke_id)
+        report = dictrapport[str(i)] #models.rapport.objects.get(id = i)
+        report_trevirke = dictrapportmateriale[f'{report.id},{trevirke_id}'] #models.rapportmateriale.objects.get(rapport = report,materiale = trevirke_id)
         trevirke += report_trevirke.totalmengde/report_trevirke.faktiskmengde
-        report_sement = models.rapportmateriale.objects.get(rapport = report,materiale = sement_id)
+        report_sement = dictrapportmateriale[f'{report.id},{sement_id}'] #models.rapportmateriale.objects.get(rapport = report,materiale = sement_id)
         sement += report_sement.totalmengde/report_sement.faktiskmengde
+    
     sement = sement/len(similar)
     trevirke = trevirke/len(similar)
     try:
