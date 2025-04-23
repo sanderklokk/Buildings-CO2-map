@@ -4,7 +4,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from ..serializers import WasteReportDTOSerializer, RapportSerializer, RapportMaterialeSerializer, MaterialTypeSerializer
-from ..models import rapport, rapportmateriale
+from ..models import rapport, rapportmateriale, Bygning
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
 
@@ -53,6 +53,7 @@ def get_all_wastereports(request):
     }
     for report in totalreports['results']:
         r =  sum([x["faktiskmengde"] for x in RapportMaterialeSerializer(rapportmateriale.objects.filter(rapport=report['id']), many=True).data])
+        report['buildingmadedate'] = Bygning.objects.filter(byggningsnr=report['bygning']).values('byggdato').get()['byggdato']
         report['totalmaterials'] = r
 
     return Response(totalreports, status=200)

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { get_wastereport } from "../api/wastereportAPI";
 import { TextField, RadioGroup, Radio, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 
 
@@ -106,7 +107,7 @@ export const DetailedReport = () => {
                                         report.data.materialer.map((material) => <TableRow key={material.id} className="border-b">
                                             <TableCell className="border-r">
                                                 <Typography className="font-bold p-3">
-                                                    {material.navn}
+                                                    {material.navn} {material.farlig && <ReportProblemIcon color="warning" fontSize="small" />}
                                                 </Typography>
                                             </TableCell>
                                             <TableCell className="border-r">

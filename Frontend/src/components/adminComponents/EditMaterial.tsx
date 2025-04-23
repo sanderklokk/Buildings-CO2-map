@@ -17,6 +17,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import SubMaterialChip from "./SubMaterialChip";
 import { APIMaterialType } from "../../api/models";
 import { useBoundStore } from "../../store/Store";
@@ -71,6 +72,7 @@ export const EditMaterial = ({
   const [localActive, setLocalActive] = useState(material.synlig);
 
   const [newSubName, setNewSubName] = useState("");
+  const [newSubFarlig, setNewSubFarlig] = useState(false);
 
   const [selectedParent, setSelectedParent] = useState<number | "root">("root");
   const [showHideConfirmation, setShowHideConfirmation] = useState(false);
@@ -178,15 +180,24 @@ export const EditMaterial = ({
     return result;
   };
 
+  const getMaterial = (id: number | string): APIMaterialType | null => {
+    if (id === "root") {
+      return material;
+    }
+    const m = materials.find((m) => m.id == id);
+    return m ? m : null;
+  };
+
   const handleAddSubcategory = async () => {
     if (newSubName.trim() !== "") {
       try {
+        const parent = getMaterial(selectedParent)
         const res = await create_materialtype({
           id: null,
           navn: newSubName,
           forelder: selectedParent === "root" ? material.id : selectedParent,
-          farlig: false,
-          synlig: true,
+          farlig: parent && parent.farlig ? true : newSubFarlig,
+          synlig: parent ? parent.synlig : false,
         });
 
         if (res.status === 200) {
@@ -263,7 +274,7 @@ export const EditMaterial = ({
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
-              <SubMaterialChip label={sub.navn} />
+              <SubMaterialChip label={<span>{sub.navn} {sub.farlig && <ReportProblemIcon color="warning" fontSize="inherit" />}</span> } />
               <IconButton
                 size="small"
                 onClick={(e) => {
@@ -357,13 +368,15 @@ export const EditMaterial = ({
               </Select>
             </FormControl>
           </Box>
-          <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+          <Box display={"flex"} gap={2} mt={2} alignItems={"center"}>
             <TextField
               label="Ny undermateriale"
               fullWidth
               value={newSubName}
               onChange={(e) => setNewSubName(e.target.value)}
             />
+               <FormControlLabel control={<Switch value={newSubFarlig} checked={newSubFarlig || getMaterial(selectedParent)?.farlig} disabled={getMaterial(selectedParent)?.farlig}  onChange={(e) => setNewSubFarlig(e.target.checked)}/>} label="Farlig" />
+                 
             <Button variant="contained" onClick={handleAddSubcategory}>
               Legg til
             </Button>

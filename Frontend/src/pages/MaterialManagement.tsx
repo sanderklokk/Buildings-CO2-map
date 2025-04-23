@@ -54,13 +54,13 @@ const MaterialManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
-  const handleAddNewMaterial = async (materialName: string) => {
+  const handleAddNewMaterial = async (materialName: string, isFarlig: boolean) => {
     try {
       const res = await create_materialtype({
         id: null,
         navn: materialName,
         forelder: null,
-        farlig: false,
+        farlig: isFarlig,
         synlig: false,
       });
 

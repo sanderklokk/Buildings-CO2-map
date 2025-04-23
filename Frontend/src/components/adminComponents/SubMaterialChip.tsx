@@ -1,8 +1,8 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Chip } from "@mui/material";
 
 interface SubMaterialChipProps {
-  label: string;
+  label: string | ReactNode;
 }
 
 export const SubMaterialChip: React.FC<SubMaterialChipProps> = ({ label }) => {
