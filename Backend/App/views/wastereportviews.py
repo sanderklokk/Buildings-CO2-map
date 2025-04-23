@@ -1,7 +1,5 @@
 # VIEWS / API Endpoints related to waste reports
 
-
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from ..serializers import WasteReportDTOSerializer, RapportSerializer, RapportMaterialeSerializer, MaterialTypeSerializer
 from ..models import rapport, rapportmateriale, Bygning

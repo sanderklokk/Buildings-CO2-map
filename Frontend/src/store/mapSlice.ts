@@ -7,6 +7,8 @@ export interface MapSlice {
     mapSlice: {
         buildings: APIMapBuilding[];
         setBuildings: (buildings: APIMapBuilding[]) => void;
+        hurtigSokResult: APIMapBuilding | null;
+        setHurtigSokResult: (result: APIMapBuilding | null) => void;
     }
 }
 
@@ -24,5 +26,15 @@ export const createMapSlice: StateCreator<MapSlice> = (set) => ({
                 },
             }));
         },
+        hurtigSokResult: null,
+        setHurtigSokResult: (result: APIMapBuilding | null) => {
+            set((state) => ({
+                mapSlice: {
+                    ...state.mapSlice,
+                    hurtigSokResult: result,
+                },
+            }));
+        },
+
     }
 });

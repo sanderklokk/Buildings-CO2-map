@@ -9,6 +9,8 @@ export const GET_DETAILED_BUILING = "api/bygning/bybygningsnr/";
 
 export const GET_CLOSEST_BUILDING = "api/bygning/nearby";
 
+export const GET_CLOSEST_BUILDING_MATERIALS = "api/bygning/nearbymaterial";
+
 export const get_search_building_materials = async (materialid: string[], buildingtypes: string[], area: Area | undefined): Promise<AxiosResponse<APIMapBuilding[]>> => {
 
     return service.get(GET_MATERIAL_IN_ALL_BUILDINGS, {
@@ -30,6 +32,15 @@ export const get_detailed_building = async (buildingid: number): Promise<AxiosRe
 
 export const get_closest_building = async (lat: number, lon: number): Promise<AxiosResponse<APIDetailedBuilding>> => {
     return service.get(GET_CLOSEST_BUILDING, {
+        params: {
+            lat: lon, // api handles lat long reversed
+            lon: lat,
+        },
+    });
+}
+
+export const get_closest_building_materials = async (lat: number, lon: number): Promise<AxiosResponse<APIMapBuilding>> => {
+    return service.get(GET_CLOSEST_BUILDING_MATERIALS, {
         params: {
             lat: lon, // api handles lat long reversed
             lon: lat,

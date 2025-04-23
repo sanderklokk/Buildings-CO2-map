@@ -1,6 +1,9 @@
 import { MapContainer, Pane, TileLayer } from "react-leaflet";
 import { HeatLayer } from "./MapLayers/HeatLayer";
 import { MarkerLayer } from "./MapLayers/MarkerLayer";
+import { useEffect } from "react";
+import { get_search_building_materials } from "../../api/mapsearchAPI";
+import { useBoundStore } from "../../store/Store";
 
 //import { TileLayer } from "./MapLayers/TileLayer";
 
@@ -9,8 +12,26 @@ import { MarkerLayer } from "./MapLayers/MarkerLayer";
 
 export const Map = () => {
 
-  // const data = getData();
-  // const data = [{ lat: 63.43049, long: 10.39506, text: "Trondheim", intensity: 40 }];
+  const { setBuildings } = useBoundStore().mapSlice;
+
+  useEffect(() => {
+    const initialfetch = async () => {
+      try {
+        const res = await get_search_building_materials([], [], undefined);
+        if (res.status === 200) {
+          setBuildings(res.data);
+        } else {
+          setBuildings([]);
+          console.error("Error fetching building materials");
+        }
+      } catch (error) {
+        setBuildings([]);
+        console.error("Error fetching building materials", error);
+      }
+    };
+
+    initialfetch();
+  }, [setBuildings]);
 
   return (
     <MapContainer

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   FormControl,
@@ -30,7 +30,7 @@ const subMaterialOptions = [
 
 const Omradesok = () => {
 
-  const { setBuildings, buildings } = useBoundStore().mapSlice;
+  const { setBuildings, buildings, setHurtigSokResult } = useBoundStore().mapSlice;
   const [byggtype, setByggtype] = useState<string[]>([]);
   const [omrade, setOmrade] = useState<string | undefined>(undefined);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
@@ -94,6 +94,7 @@ const Omradesok = () => {
 
   const handleSearch = async () => {
     try {
+      setHurtigSokResult(null);
       const area = omrade == undefined ? undefined : AREAS.find(x => x.id == Number(omrade));
       const res = await get_search_building_materials(selectedMaterials, byggtype, area);
       if (res.status === 200) {

@@ -113,7 +113,8 @@ export interface APIPunktSok {
         representasjonspunkt: {
             lat: number;
             lon: number;
-        }
+        },
+        kommunenavn: string;
     }[]
 
 }

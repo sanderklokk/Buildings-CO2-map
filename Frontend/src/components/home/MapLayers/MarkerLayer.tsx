@@ -12,7 +12,7 @@ export const MarkerLayer = () => {
     // north, east, south, west
     const [bounds, setBounds] = useState<number[]>([0, 0, 0, 0]);
 
-    const { buildings } = useBoundStore().mapSlice;
+    const { buildings, hurtigSokResult } = useBoundStore().mapSlice;
 
     const map = useMap();
     useMapEvent('zoomend', () => {
@@ -23,20 +23,19 @@ export const MarkerLayer = () => {
         const bounds = map.getBounds();
         setBounds([bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest()]);
     });
-
-
-  /*  return <>
-        {zoom > 17 && data.filter((d) => d.lat > bounds[2] && d.lat < bounds[0] && d.long > bounds[3] && d.long < bounds[1]).map((p, i) => {
-            return <Marker key={i} position={[p.lat, p.long]}>
-                <Popup>
-                    {p.text}
-                </Popup>
-            </Marker>
-        }
-        )}
-    </>*/
+    
 
     return <>
+        {hurtigSokResult && 
+        <Marker position={[hurtigSokResult.longitude, hurtigSokResult.latitude]}>
+            <Popup>
+                <MapBuildingPopup
+                    building={hurtigSokResult}
+                    coordinates={{ lat: hurtigSokResult.latitude, long: hurtigSokResult.longitude }}
+                    />
+            </Popup>
+        </Marker>
+        }
         {zoom > 17 && buildings.filter((d) => d.longitude > bounds[2] && d.longitude < bounds[0] && d.latitude > bounds[3] && d.latitude < bounds[1]).map((p, i) => {
             return <Marker key={i} position={[p.longitude, p.latitude]}>
                 <Popup>
