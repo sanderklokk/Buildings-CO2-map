@@ -11,8 +11,9 @@ dictrapport = {}
 dictrapportmateriale = {}
 dictmaterialtyper = {}
 
+newmaterials = []
 
-
+# calculate similarity score between two buildings
 def similarity(building_id:int, report_id:int) -> float:
     score = 0
     report = dictrapport[str(report_id)] #models.rapport.objects.get(id = report_id)
@@ -58,6 +59,7 @@ def similarity(building_id:int, report_id:int) -> float:
 
 def recalibrateDatabase():
     global dictkoords
+    global newmaterials
     print("recalibrating database")
     print("Loading koordinater")
     koordinates_data = models.Koordinater.objects.all()
@@ -109,15 +111,15 @@ def recalibrateDatabase():
             print(f'count: {count}')
             print(f'time: {time.time()-t}')
         
+        if len(newmaterials) > 5000:
+            bulk_create_update()
+            newmaterials = []
+        
         #Saving best score for row
-       # tt = time.time()
-        
         best_scores = []
-        
         for j in rapport_data:
 
          
-        #    building = models.Bygning.objects.get(byggningsnr = j.id)
             #Calculating how close the two rows are
 
             score = similarity(i.byggningsnr,j.id)
@@ -134,11 +136,18 @@ def recalibrateDatabase():
         updateMaterials(i.byggningsnr)
         
         #print(time.time()-tt)
+    
+    if len(newmaterials) > 0:
+        bulk_create_update()
+        newmaterials = []
         
 
+# update materials for a building
 def updateMaterials(bygning:int):
     global dictbygning
     global dictmaterialtyper
+
+    global newmaterials
 
     #bulding =  models.Bygning.objects.get(byggningsnr = bygning)
 
@@ -150,40 +159,59 @@ def updateMaterials(bygning:int):
     for tuple in dictnaboer[str(bulding.byggningsnr)]:
         score, key = tuple
         similar.append(key)
-    trevirke = dictmaterialtyper["trevirke"] # models.materialtype.objects.get(navn = "trevirke")
-    trevirke_id = trevirke.id
-    sement = dictmaterialtyper["sement"] # models.materialtype.objects.get(navn = "sement")
-    sement_id = sement.id
-    sement = 0
-    trevirke = 0
-    for i in similar:
-        report = dictrapport[str(i)] #models.rapport.objects.get(id = i)
-        report_trevirke = dictrapportmateriale[f'{report.id},{trevirke_id}'] #models.rapportmateriale.objects.get(rapport = report,materiale = trevirke_id)
-        trevirke += report_trevirke.totalmengde/report_trevirke.faktiskmengde
-        report_sement = dictrapportmateriale[f'{report.id},{sement_id}'] #models.rapportmateriale.objects.get(rapport = report,materiale = sement_id)
-        sement += report_sement.totalmengde/report_sement.faktiskmengde
-    
-    sement = sement/len(similar)
-    trevirke = trevirke/len(similar)
-    try:
-        update = models.materialer.objects.get(bygning = bulding,type_materiale = models.materialtype.objects.get(navn = "trevirke"))
-        update.mengde = trevirke
-        update.totalmengde = trevirke*bulding_info.bruksarealtotalt
-        update.save()
-    except:
-        new = models.materialer(bygning = bulding, type_materiale = models.materialtype.objects.get(navn = "trevirke"), mengde = 89, totalmengde = trevirke*bulding_info.bruksarealtotalt)
-        new.save()
+   # trevirke = dictmaterialtyper["trevirke"] # models.materialtype.objects.get(navn = "trevirke")
+   # trevirke_id = trevirke.id
+  ##  sement = dictmaterialtyper["sement"] # models.materialtype.objects.get(navn = "sement")
+   # sement_id = sement.id
+   # sement = 0
+   # trevirke = 0
 
-    try:
-        update = models.materialer.objects.get(bygning = bulding, type_materiale = models.materialtype.objects.get(navn = "sement"))
-        update.mengde = sement
-        update.totalmengde = sement*bulding_info.bruksarealtotalt
-        update.save()
-    except:
-        new = models.materialer(bygning = bulding, type_materiale = models.materialtype.objects.get(navn = "sement"), mengde = 90, totalmengde = sement*bulding_info.bruksarealtotalt)
-        new.save()
-    
+    for material in dictmaterialtyper.values():
+        materialamount = 0
+        for i in similar:
+            material_id = material.id
+            report = dictrapport[str(i)] #models.rapport.objects.get(id = i)
+            report_material = dictrapportmateriale.get(f'{report.id},{material_id}', -1) #models.rapportmateriale.objects.get(rapport = report,materiale = trevirke_id)
+            if report_material == -1:
+                continue
+            try:
+                materialamount += report_material.totalmengde/report_material.faktiskmengde
+            except:
+                # 0 division error etc
+                pass
+            #report_sement = dictrapportmateriale[f'{report.id},{sement_id}'] #models.rapportmateriale.objects.get(rapport = report,materiale = sement_id)
+            #sement += report_sement.totalmengde/report_sement.faktiskmengde
         
+       #sement = sement/len(similar)
+        materialamount = materialamount/len(similar)
+        materialname = material.navn
+      #  try:
+      #      update = models.materialer.objects.get(bygning = bulding,type_materiale = models.materialtype.objects.get(navn = materialname))
+      #      update.mengde = materialamount
+      #      update.totalmengde = materialamount*bulding_info.bruksarealtotalt
+      #      update.save()
+      #  except:
+        newmaterials.append(models.materialer(bygning = bulding, type_materiale = material, mengde = materialamount, totalmengde = materialamount*bulding_info.bruksarealtotalt))
+           # new.save()
+
+#        try:
+ #           update = models.materialer.objects.get(bygning = bulding, type_materiale = models.materialtype.objects.get(navn = "sement"))
+  #          update.mengde = sement
+   #         update.totalmengde = sement*bulding_info.bruksarealtotalt
+    #        update.save()
+    #    except:
+    #        new = models.materialer(bygning = bulding, type_materiale = models.materialtype.objects.get(navn = "sement"), mengde = 90, totalmengde = sement*bulding_info.bruksarealtotalt)
+    #        new.save()
+        
+            
+def bulk_create_update():
+    global newmaterials
+    models.materialer.objects.bulk_create(
+        newmaterials,
+        update_conflicts=["mengde", "totalmengde"],
+        unique_fields=["bygning", "type_materiale"],
+        update_fields=["mengde", "totalmengde"],
+    )
 
 
 

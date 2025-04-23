@@ -39,7 +39,11 @@ class materialer(models.Model): #bygningsrelasjon?
     type_materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     mengde = models.IntegerField()
     totalmengde = models.IntegerField()
-
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['bygning', 'type_materiale'], name='unique_bygning_materiale')
+        ]
 
 
 # class rapport(models.Model):
