@@ -10,6 +10,9 @@ interface HeatLayerProps {
   zIndex: number
 }
 
+// tweak intensity for a less "completely red" map
+const HEAT_INTENSITY_MULTIPLIER = 0.05;
+
 /*
 * handle logic for when heatlayer is shown.
 */
@@ -22,7 +25,7 @@ export const HeatLayer = ({ zIndex }: HeatLayerProps) => {
   useEffect(() => {
 
     const points: HeatLatLngTuple[] = buildings
-      ? buildings.map((p) => [p.longitude, p.latitude, p.totalamount])
+      ? buildings.map((p) => [p.longitude, p.latitude, p.totalamount*HEAT_INTENSITY_MULTIPLIER])
       : [];
 
     if (heatLayerRef.current) {
