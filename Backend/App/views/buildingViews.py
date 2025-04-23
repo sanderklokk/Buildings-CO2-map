@@ -4,7 +4,7 @@ from ..serializers import buildingMaterialSerializer, singleByggSerializer, Koor
 from ..models import materialtype, Bygning as bygning, Koordinater as koordinater, materialer, Byggningsinfo
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
-from django.db.models import F, IntegerField, Value, FloatField
+from django.db.models import F, IntegerField, Value, FloatField, Sum, Case, When
 from django.db.models.functions import Power, Sqrt
 
 
@@ -17,6 +17,7 @@ def get_allBygningByMaterial(request):
     if (materialids != None):
         materialids = materialids.split(",")
         materialids = [int(i) for i in materialids]
+  
     
     # format buildingtypes-parameter
     buildingtypes = request.GET.get('buildingtypes', None)
@@ -32,16 +33,6 @@ def get_allBygningByMaterial(request):
     longstart = float(request.GET.get('longstart', 0))
     longend = float(request.GET.get('longend', 0))
     
-    # spitballing, will test
-    # material = materialer.objects.filter(type_materiale = type.id)
-    # should be checked if this actually works. the thought is to filter materials by the id taken from materialtype and filter by it, before selecting the relevant tables.
-    # possible last select can be omitted, needs testing 
-    #bygg = buildingMaterialSerializer(bygning.objects.select_related('bygnignsnr').all().filter(type_materiale=materialid).values("bygnignsnr", "totalmengde", "x", "y"))
-    #bygg = materialer.objects.filter(type_materiale=materialid).select_related("").values(
-    #    "bygning", "totalmengde", "koordinater__x", "koordinater__y"
-    #)
-
-
     # filter out tilbygg (as there is only one koordinat for each building)
     b = koordinater.objects.select_related('bygning').filter(
         bygning__byggningsinfo__tilbyggsnr__isnull=True  
@@ -61,16 +52,34 @@ def get_allBygningByMaterial(request):
         b = b.filter(
             bygning__byggningsinfo__byggningstypekode__in=buildingtypes)
     
+    # select related mateirals (left join to get all buildings)
+    b = b.prefetch_related("bygning__materialer")
+    
+    # filter chosen materials
+    if materialids != None:
+        b = b.annotate(
+            totalamount=Sum(Case(
+            When(bygning__materialer__type_materiale__in=materialids, then=F("bygning__materialer__totalmengde")),
+            default=Value(0, output_field=FloatField()),
+            output_field=FloatField(),
+                )
+            )
+        )
+    else:
+        # if no materials get all
+        b = b.annotate(
+            totalamount=Sum("bygning__materialer__totalmengde", default=Value(0, output_field=FloatField()))
+        )
+    
     # transform to fit serializer and wanted format
     b = b.annotate(
-        building=F("bygning__byggningsnr"),
-        totalamount=Value(10),  
+        building=F("bygning__byggningsnr")
     ).values(
         "building",
         "totalamount",
         "latitude",
         "longitude"
-    )
+    ).distinct()
 
     serialized = buildingMaterialSerializer(b, many=True)
     return Response(serialized.data, status=200)
@@ -80,7 +89,7 @@ def get_allBygningByMaterial(request):
 @api_view(['GET'])
 def get_singleBygningById(_, bygningsnr):
     try: 
-        # get main building
+        # get main building with needed info
         bygg = Byggningsinfo.objects.select_related('bygning').filter(
             tilbyggsnr__isnull=True,
         ).annotate(
@@ -89,8 +98,6 @@ def get_singleBygningById(_, bygningsnr):
         ).get(
             byggningsnr=int(bygningsnr)
         )
-      
-       # bygning.objects.get(bygningsnr=int(bygningsnr))
 
     except bygning.DoesNotExist:
         return Response({"error": f'bygning with id {bygningsnr} does not exist'}, status=404)
@@ -115,21 +122,23 @@ def get_closestbuilding(request):
     lat = float(request.GET.get("lat", 0))
     lon = float(request.GET.get("lon", 0))
 
+    # check params 
     if lat == 0 or lon == 0:
         return Response({"error": "missing coordinates"}, status=400)
 
+    # get closest building by calculatig distance
     k = koordinater.objects.annotate(
         distance=Sqrt(
             Power(F('latitude') - lat, 2) + Power(F('longitude') - lon, 2)
         )
     ).order_by('distance').first()
 
+    # check if any building was found (should never happen)
     if not k:
         return Response({"error": "no buildings found"}, status=404)
     
-
+    # get related info and get results
     try: 
-        # get detailed building
         bygg = Byggningsinfo.objects.select_related('bygning').filter(
             tilbyggsnr__isnull=True,
         ).annotate(
@@ -177,18 +186,24 @@ def get_closestbuilding_material(request):
     # get koordinater and format results
     bygg = bygg.select_related("koordinater").annotate(
         building=F("byggningsnr"),
-        totalamount=Value(10),  
         latitude=F("koordinater__latitude"),
         longitude=F("koordinater__longitude")
+    )
+
+    # get total materials and get result
+    bygg = bygg.select_related("materialer").annotate(
+        totalamount=Sum("materialer__totalmengde", default=Value(0, output_field=FloatField()))
     ).values(
         "building",
-        "totalamount",
         "latitude",
-        "longitude"
-    )
+        "longitude",
+        "totalamount"
+    ).distinct()
+
 
     serialized = buildingMaterialSerializer(bygg, many=True)
     if not serialized.data:
         return Response({"error": "no buildings found"}, status=404)
 
+    # return first instance (there is only one)
     return Response(bygg[0], status=200)
