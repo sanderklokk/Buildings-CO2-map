@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Box,
   Button,
+  Divider,
   Table,
   TableBody,
   TableCell,
@@ -42,11 +43,7 @@ export const AvfallsplanForm = () => {
     if (addWasteCategoryInputValue === "")
       return materialtypes.data.filter(
         (wasteMaterial) =>
-          !wasteMaterial.forelder &&
-          !wasteReport.avfall.farlig
-            .concat(wasteReport.avfall.ordinert)
-            .map((x) => x.id)
-            .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
+          !wasteMaterial.forelder
       );
     return materialtypes.data.filter(
       (wasteMaterial) =>
@@ -55,6 +52,10 @@ export const AvfallsplanForm = () => {
           .map((x) => x.id)
           .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
     );
+  };
+
+  const getMaterialById = (id: number) => {
+    return materialtypes?.data.find((x) => x.id === id);
   };
 
   const getSubMaterials = (materialId: number | null) => {
@@ -78,13 +79,26 @@ export const AvfallsplanForm = () => {
     );
   };
 
-  const handleAddWasteCategory = (value: APIMaterialType | null) => {
+  const handleAddWasteCategory = (value: APIMaterialType | null, force=false) => {
     
     if (value) {
       if (value.id == null) return;
-      
+     
+     
+     
       setSelected(value.id);
-      if (getSubMaterials(value.id).length === 0) {
+      if (getSubMaterials(value.id).length === 0 || force) {
+        if (
+          wasteReport.avfall.farlig
+            .concat(wasteReport.avfall.ordinert)
+            .map((x) => x.id)
+            .includes(value.id)
+        ) {
+          setAddWasteCategoryValue(null);
+          setAddWasteCategoryInputValue("");
+          return;
+        }
+        
         setShowSubMaterials(false);
         addAvfallRow(value.id, value.farlig);
         setAddWasteCategoryValue(null);
@@ -131,6 +145,21 @@ export const AvfallsplanForm = () => {
                   {materialtypes.data.find((x) => x.id == selected)?.navn}
                 </Typography>
                 <Box>
+                  {(() => { 
+                    if (!selected) return;
+                    const mat = getMaterialById(selected);
+                    if (!mat) return;
+                  
+                      return <Button
+                      key={mat.id}
+                      sx={{ margin: "3px" }}
+                      onClick={() => handleAddWasteCategory(mat, true)}
+                      variant="outlined"
+                    >
+                      {mat.navn}
+                    </Button>
+                  })()}
+                  <Divider orientation="vertical" className="inline"  />
                   {showSubMaterials &&
                     getSubMaterialsNotInUse().length === 0 && (
                       <Typography>

@@ -12,6 +12,7 @@ import SubMaterialChip from "./SubMaterialChip";
 import { APIMaterialType } from "../../api/models";
 import EditMaterial from "./EditMaterial";
 import { useBoundStore } from "../../store/Store";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 interface MaterialCardProps {
   material: APIMaterialType;
@@ -41,7 +42,7 @@ const MaterialCard = ({
   const renderSubcategories = (subs: APIMaterialType[], level=0) => {
     return subs.map((sub) => (
       <Box key={sub.id} sx={{ ml: level * 2, mt: 1 }}>
-        <SubMaterialChip label={sub.navn} />
+        <SubMaterialChip label={<span>{sub.navn} {sub.farlig && <ReportProblemIcon color="warning" fontSize="inherit" />}</span>} />
         {subcategories(sub.id) &&
           subcategories(sub.id).length > 0 &&
           renderSubcategories(subcategories(sub.id), level + 1)}
@@ -79,7 +80,7 @@ const MaterialCard = ({
 
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            {material.navn}
+            {material.navn} {material.farlig && <ReportProblemIcon color="warning" fontSize="small" />}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
             Undermaterialer
