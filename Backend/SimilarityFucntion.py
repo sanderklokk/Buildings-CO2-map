@@ -98,7 +98,7 @@ def recalibrateDatabase():
     global dictmaterialtyper
     materialtyper_data = models.materialtype.objects.all()
     for i in materialtyper_data:
-        dictmaterialtyper[str(i.navn)] = i
+        dictmaterialtyper[str(i.id)] = i
 
     print("starting calibration")
 
@@ -184,7 +184,6 @@ def updateMaterials(bygning:int):
         
        #sement = sement/len(similar)
         materialamount = materialamount/len(similar)
-        materialname = material.navn
       #  try:
       #      update = models.materialer.objects.get(bygning = bulding,type_materiale = models.materialtype.objects.get(navn = materialname))
       #      update.mengde = materialamount
