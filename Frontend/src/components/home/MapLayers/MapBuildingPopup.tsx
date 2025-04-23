@@ -39,7 +39,7 @@ export const MapBuildingPopup = ({ building, coordinates }: {
             {buildingdata && (
                 <>
                     <Typography style={{margin: 0}} margin={0} padding={0}>
-                        Materialmengde: {building.totalamount}
+                        Materialmengde: {building.totalamount} tonn
                     </Typography>
                     <Typography style={{margin: 0}} margin={0} padding={0}>
                         Bruksareal: {buildingdata.data.bruksarealtotalt}
