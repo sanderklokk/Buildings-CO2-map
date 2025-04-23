@@ -49,6 +49,7 @@ export interface APIWasteReportOverview {
     handtering: string;
     type: string;
     totalmaterials: number;
+    buildingmadedate: string;
 }
 
 export interface APIWasteReportOverviewList {

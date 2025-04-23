@@ -42,10 +42,10 @@ const ReportCard = ({ report, onViewReport }: ReportCardProps) => {
           <strong>Seksjonsnr.:</strong> {/*report.sectionNumber*/}
         </Typography>
         <Typography variant="body2">
-          <strong>Total mengde avfall:</strong> {report.totalmaterials} kg
+          <strong>Total mengde avfall:</strong> {report.totalmaterials} tonn
         </Typography>
         <Typography variant="body2">
-          <strong>Byggeår:</strong> {/*report.buildingYear*/}
+          <strong>Byggeår: </strong> {report.buildingmadedate.split("-")[0]}
         </Typography>
         <Typography variant="body2">
           <strong>Dato levert:</strong> {report.dato}

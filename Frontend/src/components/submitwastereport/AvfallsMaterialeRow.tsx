@@ -4,6 +4,7 @@ import { useState } from "react";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useBoundStore } from "../../store/Store";
 import { APIMaterialType } from "../../api/models";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | undefined}) => {
     console.log(material)
@@ -24,7 +25,7 @@ export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | u
     return <TableRow>
         <TableCell {...cellProps}>
             <Typography className="font-bold p-3">
-                {material.navn}
+                {material.navn} {material.farlig && <ReportProblemIcon color="warning" fontSize="small" />}
             </Typography>
         </TableCell>
         <TableCell {...cellProps}>
