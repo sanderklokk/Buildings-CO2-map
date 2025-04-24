@@ -5,6 +5,7 @@ class Bygning(models.Model):
     byggningsnr = models.IntegerField(primary_key=True)
     bygningstatuskode = models.CharField(max_length=2)
     byggdato = models.DateField()
+    naboer = models.CharField()
 
 class Koordinater(models.Model):
     # bygningsnr = models.ForeignKey(Bygning, on_delete = models.CASCADE, primary_key=True) 
@@ -34,11 +35,16 @@ class materialtype(models.Model):
     synlig = models.BooleanField(default=True)
 
 class materialer(models.Model): #bygningsrelasjon?
-    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE, primary_key=True) 
+    bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE) 
     type_materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     mengde = models.IntegerField()
+    mengdeperm2 = models.DecimalField(max_digits=8, decimal_places=4)
     totalmengde = models.IntegerField()
-
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['bygning', 'type_materiale'], name='unique_bygning_materiale')
+        ]
 
 
 # class rapport(models.Model):
@@ -66,6 +72,7 @@ class rapportmateriale(models.Model):
     materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     planlagtmengde = models.IntegerField()
     faktiskmengde = models.IntegerField()
+    mengdeperm2 = models.DecimalField(max_digits=8, decimal_places=4)
     mengdetilgjenbruk = models.IntegerField()
     mengdetilanlegg = models.IntegerField()
     anlegg = models.CharField(max_length=100)
