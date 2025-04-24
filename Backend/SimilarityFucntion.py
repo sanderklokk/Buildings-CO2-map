@@ -36,9 +36,21 @@ def similarity(building_id:int, report_id:int) -> float:
         else:
             score += 1
     #Compares number of livable units
-    score += 1 - abs(building_info.antallboenheter-report_building_info.antallboenheter)/max(building_info.antallboenheter,report_building_info.antallboenheter)
+    try:
+        score += 1 - abs(building_info.antallboenheter-report_building_info.antallboenheter)/max(building_info.antallboenheter,report_building_info.antallboenheter)
+    except ZeroDivisionError:
+        # zerodiv error, means both have 0 units since max(...). Then score is set to 1
+        score += 1 
+
+        
+
     #Compares livable area
-    score += 1 - abs(building_info.bruksarealtotalt-report_building_info.bruksarealtotalt)/max(building_info.bruksarealtotalt,report_building_info.bruksarealtotalt)
+    try: 
+        score += 1 - abs(building_info.bruksarealtotalt-report_building_info.bruksarealtotalt)/max(building_info.bruksarealtotalt,report_building_info.bruksarealtotalt)
+    except ZeroDivisionError:
+        # zerodiv error, means both have 0 area since max(...). Then score is set to 1
+        score += 1
+    
     #Computes euclidian distance between cordinates and normalises againts highest known value
 
     building_cordinate = dictkoords[str(report_building.byggningsnr)] 
