@@ -18,6 +18,7 @@ const Hortigsok = () => {
   const [showDetailed, setShowDetailed] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [searchResult, setSearchResult] = useState<AxiosResponse<APIPunktSok> | null>();
 
@@ -46,7 +47,7 @@ const Hortigsok = () => {
   };
 
   const handleSearch = async () => {
-  
+    setErrorMessage("");
     setHasSearched(true);
     try {
       
@@ -76,11 +77,14 @@ const Hortigsok = () => {
   const handleSelectResult = async ({ lat, long }: { lat: number, long: number }) => {
     try {
       setBuildings([]);
+      setErrorMessage("");
       const res = await get_closest_building_materials(lat, long);
       if (res.status === 200) {
         setHurtigSokResult(res.data);
       }
     } catch (error) {
+      setHurtigSokResult(null);
+      setErrorMessage("Feil: Valgt bygg er ikke registrert.");
       console.error("Error fetching building search results:", error);
     }
     setHasSearched(false);
@@ -112,7 +116,7 @@ const Hortigsok = () => {
         </Box>
       )}
 
-      <Box className="mt-4">
+      <Box className="mt-4 mb-3">
         <Button variant="contained" fullWidth onClick={handleSearch}>
           Søk
         </Button>
@@ -169,6 +173,12 @@ const Hortigsok = () => {
 
         </>
       }
+       {
+            errorMessage &&
+            <Typography className="mt-2 text-sm text-red-500">
+              {errorMessage}
+            </Typography>
+          }
     </Box>
   );
 };

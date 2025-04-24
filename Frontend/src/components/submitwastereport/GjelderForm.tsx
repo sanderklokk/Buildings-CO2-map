@@ -11,7 +11,7 @@ export const GjelderForm = () => {
             <h1 className="text-xl text-center mt-6">Eiendom/Byggested</h1>
             <Box display={"flex"} flexWrap={"wrap"} gap={3} justifyContent={"center"} alignItems={"center"}>
                 <TextField required name="addressinput" label="Adresse" type="text" className="w-[200px] mx-auto" placeholder="Adresse" variant="filled" value={wasteReport.gjelder.eiendom.address} onChange={(e) => setGjelder({ ...wasteReport.gjelder, eiendom: { ...wasteReport.gjelder.eiendom, address: e.target.value} })} />
-                <TextField required name="postnrinput" label="Postnr." type="text" className="w-[100px] mx-auto" placeholder="Postnr." variant="filled" value={wasteReport.gjelder.eiendom.postalCode} onChange={(e) => setGjelder({ ...wasteReport.gjelder, eiendom: { ...wasteReport.gjelder.eiendom, postalCode: e.target.value} })} />
+                <TextField required name="postnrinput" label="Postnr." type="number" className="w-[100px] mx-auto" placeholder="Postnr." variant="filled" value={wasteReport.gjelder.eiendom.postalCode} onChange={(e) => setGjelder({ ...wasteReport.gjelder, eiendom: { ...wasteReport.gjelder.eiendom, postalCode: e.target.value} })} />
                 <TextField required name="poststedinput" label="Poststed" type="text" className="w-[200px] mx-auto" placeholder="Poststed" variant="filled" value={wasteReport.gjelder.eiendom.postalPlace} onChange={(e) => setGjelder({ ...wasteReport.gjelder, eiendom: { ...wasteReport.gjelder.eiendom, postalPlace: e.target.value} })} />
             </Box>
         </Box>
