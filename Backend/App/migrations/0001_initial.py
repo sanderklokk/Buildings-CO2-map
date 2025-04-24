@@ -51,6 +51,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('mengde', models.IntegerField()),
+                ('mengdeperm2', models.DecimalField(max_digits=8, decimal_places= 4)),
                 ('totalmengde', models.IntegerField()),
                 ('bygning', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='App.bygning')),
                 ('forelder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='App.materialer')),
@@ -78,6 +79,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('planlagtmengde', models.IntegerField()),
                 ('faktiskmengde', models.IntegerField()),
+                ('mengdeperm2', models.DecimalField(max_digits=8, decimal_places=4)),
                 ('mengdetilgjenbruk', models.IntegerField()),
                 ('mengdetilanlegg', models.IntegerField()),
                 ('anlegg', models.CharField(max_length=100)),

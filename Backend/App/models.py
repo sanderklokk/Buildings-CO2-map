@@ -38,6 +38,7 @@ class materialer(models.Model): #bygningsrelasjon?
     bygning = models.ForeignKey(Bygning, on_delete=models.CASCADE) 
     type_materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     mengde = models.IntegerField()
+    mengdeperm2 = models.DecimalField(max_digits=8, decimal_places=4)
     totalmengde = models.IntegerField()
     
     class Meta:
@@ -71,6 +72,7 @@ class rapportmateriale(models.Model):
     materiale = models.ForeignKey(materialtype, on_delete=models.CASCADE)
     planlagtmengde = models.IntegerField()
     faktiskmengde = models.IntegerField()
+    mengdeperm2 = models.DecimalField(max_digits=8, decimal_places=4)
     mengdetilgjenbruk = models.IntegerField()
     mengdetilanlegg = models.IntegerField()
     anlegg = models.CharField(max_length=100)

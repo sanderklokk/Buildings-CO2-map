@@ -140,7 +140,8 @@ class Command(BaseCommand):
             trevirke = rapportmateriale(
                 rapport= ting,
                 materiale=materialtype.objects.get(navn = "trevirke"),
-                faktiskmengde = row["properties.bruksarealtotalt"],
+                faktiskmengde = row["trevirke"],
+                mengdeperm2 = row["trevirke"]/row["properties.bruksarealtotalt"],
                 totalmengde = row["trevirke"],
 
                 planlagtmengde = 0,
@@ -152,7 +153,8 @@ class Command(BaseCommand):
             sement = rapportmateriale(
                 rapport=ting,
                 materiale=materialtype.objects.get(navn = "sement"),
-                faktiskmengde = row["properties.bruksarealtotalt"],
+                faktiskmengde = row["sement"],
+                mengdeperm2 = row["sement"]/row["properties.bruksarealtotalt"],
                 totalmengde = row["sement"],
 
                 planlagtmengde = 0,

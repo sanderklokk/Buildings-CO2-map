@@ -175,7 +175,7 @@ def updateMaterials(bygning:int):
             if report_material == -1:
                 continue
             try:
-                materialamount += report_material.totalmengde/report_material.faktiskmengde
+                materialamount += report_material.mengdeperm2
             except:
                 # 0 division error etc
                 pass
@@ -183,14 +183,17 @@ def updateMaterials(bygning:int):
             #sement += report_sement.totalmengde/report_sement.faktiskmengde
         
        #sement = sement/len(similar)
-        materialamount = materialamount/len(similar)
+        try:
+            materialamount = materialamount/len(similar)
+        except:
+            materialamount = 0
       #  try:
       #      update = models.materialer.objects.get(bygning = bulding,type_materiale = models.materialtype.objects.get(navn = materialname))
       #      update.mengde = materialamount
       #      update.totalmengde = materialamount*bulding_info.bruksarealtotalt
       #      update.save()
       #  except:
-        newmaterials.append(models.materialer(bygning = bulding, type_materiale = material, mengde = materialamount, totalmengde = materialamount*bulding_info.bruksarealtotalt))
+        newmaterials.append(models.materialer(bygning = bulding, type_materiale = material, mengdeperm2= materialamount , mengde = materialamount*bulding_info.bruksarealtotalt, totalmengde = materialamount*bulding_info.bruksarealtotalt))
            # new.save()
 
 #        try:
@@ -207,7 +210,7 @@ def bulk_create_update():
     global newmaterials
     models.materialer.objects.bulk_create(
         newmaterials,
-        update_conflicts=["mengde", "totalmengde"],
+        update_conflicts=["mengdeperm2","mengde", "totalmengde"],
         unique_fields=["bygning", "type_materiale"],
         update_fields=["mengde", "totalmengde"],
     )
