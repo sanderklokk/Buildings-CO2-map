@@ -176,11 +176,13 @@ def get_closestbuilding_material(request):
     
     # get building from closest koordinater
     try: 
+        print("OOOOO")
         bygg = bygning.objects.filter(
             byggningsnr=int(k.bygning.byggningsnr)
         )
     except bygning.DoesNotExist:
         #shouldnt occur
+        print("fff")
         return Response({"error": 'interal error'}, status=500)
     
     # get koordinater and format results
@@ -188,8 +190,9 @@ def get_closestbuilding_material(request):
         building=F("byggningsnr"),
         latitude=F("koordinater__latitude"),
         longitude=F("koordinater__longitude")
+    ).select_related("byggningsinfo").filter(
+        byggningsinfo__tilbyggsnr__isnull=True
     )
-
     # get total materials and get result
     bygg = bygg.select_related("materialer").annotate(
         totalamount=Sum("materialer__totalmengde", default=Value(0, output_field=FloatField()))

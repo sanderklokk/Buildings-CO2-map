@@ -2,9 +2,10 @@
 
 from rest_framework.decorators import api_view
 from ..serializers import WasteReportDTOSerializer, RapportSerializer, RapportMaterialeSerializer, MaterialTypeSerializer
-from ..models import rapport, rapportmateriale, Bygning
+from ..models import rapport, rapportmateriale, Bygning, Byggningsinfo
 from rest_framework.response import Response
 from django.core.paginator import Paginator 
+import math
 
 # Create your views here.
 # Create new waste report
@@ -23,10 +24,27 @@ def post_wastereport(request):
         return Response(report.errors, status=400)
     
     savedreport = report.save()
+
+    # get building 
+    try:
+        building = Byggningsinfo.objects.get(bygning=reportdata['bygning'], tilbyggsnr__isnull=True)
+    except Byggningsinfo.DoesNotExist:
+        building = Byggningsinfo.objects.filter(bygning=reportdata['bygning']).first()
+    
+
+    if building is None:
+        savedreport.delete()
+        return Response({"error": "Building not found"}, status=404)
+
+
     for material in materialer:
         material['rapport'] = savedreport.id
+        material['totalmengde'] = material['faktiskmengde']
+        material['mengdeperm2'] = math.floor((material['faktiskmengde'] / building.bruksarealtotalt)*1000)/1000
         materialserializer = RapportMaterialeSerializer(data=material)
-        if (not materialserializer.is_valid(raise_exception=True)):
+        if (not materialserializer.is_valid(raise_exception=False)):
+            rapportmateriale.objects.filter(rapport=savedreport).delete()
+            savedreport.delete()
             return Response(materialserializer.errors, status=400)
         materialserializer.save()
 

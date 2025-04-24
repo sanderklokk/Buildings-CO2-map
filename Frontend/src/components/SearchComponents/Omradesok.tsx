@@ -9,7 +9,7 @@ import {
   Chip,
   Button,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+{/*import EditIcon from "@mui/icons-material/Edit";*/}
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useBoundStore } from "../../store/Store";
 import { useQuery } from "@tanstack/react-query";
@@ -168,9 +168,11 @@ const Omradesok = () => {
               ))}
             </Select>
           </FormControl>
-          <Button variant="outlined" startIcon={<EditIcon />}>
+         {/* <Button variant="outlined" startIcon={<EditIcon />}>
             Tegn område
           </Button>
+
+         */}
         </Box>
         {omrade != undefined && (
           <Box className="flex justify-end mt-2">
