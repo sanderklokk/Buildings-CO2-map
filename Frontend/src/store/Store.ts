@@ -4,7 +4,7 @@ import { createMaterialManagementSlice, MaterialManagementSlice } from './materi
 import { MapSlice, createMapSlice } from './mapSlice';
 
 
-type Store = WasteReportSlice & MaterialManagementSlice & MapSlice; 
+export type Store = WasteReportSlice & MaterialManagementSlice & MapSlice; 
     
 export const useBoundStore = create<Store>((...a) => ({
     ...createWasteReportFormSlice(...a),

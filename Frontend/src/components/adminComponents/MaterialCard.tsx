@@ -42,7 +42,7 @@ const MaterialCard = ({
   const renderSubcategories = (subs: APIMaterialType[], level=0) => {
     return subs.map((sub) => (
       <Box key={sub.id} sx={{ ml: level * 2, mt: 1 }}>
-        <SubMaterialChip label={<span>{sub.navn} {sub.farlig && <ReportProblemIcon color="warning" fontSize="inherit" />}</span>} />
+        <SubMaterialChip label={<span>{sub.navn} {sub.farlig && <ReportProblemIcon data-testid="dangerous-icon" color="warning" fontSize="inherit" />}</span>} />
         {subcategories(sub.id) &&
           subcategories(sub.id).length > 0 &&
           renderSubcategories(subcategories(sub.id), level + 1)}
@@ -80,7 +80,7 @@ const MaterialCard = ({
 
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            {material.navn} {material.farlig && <ReportProblemIcon color="warning" fontSize="small" />}
+            {material.navn} {material.farlig && <ReportProblemIcon data-testid="dangerous-icon-parent" color="warning" fontSize="small" />}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
             Undermaterialer
