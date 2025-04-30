@@ -18,10 +18,7 @@ import { get_search_building_materials } from "../../api/mapsearchAPI";
 import { BUILDINGCODES } from "../../assets/data/buildingcodes";
 import { AREAS } from "../../assets/data/areas";
 
-// Demo-data
-//const byggtypeOptions = ["Byggtype 1", "Byggtype 2", "Byggtype 3"];
-//const omradeOptions = ["Område 1", "Område 2", "Område 3"];
-//const materialOptions = ["Material 1", "Material 2", "Material 3"];
+
 const subMaterialOptions = [
   "Underkategori 1",
   "Underkategori 2",

@@ -100,6 +100,7 @@ const Hortigsok = () => {
           variant="text"
           onClick={toggleDetailed}
           size="small"
+          data-testid="toggle-detailed-search-btn"
           endIcon={
             showDetailed ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />
           }
@@ -117,7 +118,7 @@ const Hortigsok = () => {
       )}
 
       <Box className="mt-4 mb-3">
-        <Button variant="contained" fullWidth onClick={handleSearch}>
+        <Button variant="contained" data-testid="hortigsok-sok-btn" fullWidth onClick={handleSearch}>
           Søk
         </Button>
       </Box>
@@ -141,7 +142,7 @@ const Hortigsok = () => {
                   <Typography>
                     {address.kommunenavn}
                   </Typography>
-                  <Button sx={{ justifySelf: "flex-end" }} variant="outlined" size="small" className="mt-2" onClick={() => handleSelectResult({ lat: address.representasjonspunkt.lat, long: address.representasjonspunkt.lon })}>
+                  <Button data-testid={"hurtigsok-select-adress-"+i} sx={{ justifySelf: "flex-end" }} variant="outlined" size="small" className="mt-2" onClick={() => handleSelectResult({ lat: address.representasjonspunkt.lat, long: address.representasjonspunkt.lon })}>
                     Velg
                   </Button>
                 </Box>
