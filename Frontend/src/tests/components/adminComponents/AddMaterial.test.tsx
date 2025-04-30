@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import AddMaterial from '../../../components/adminComponents/AddMaterial';
-import { describe, it, vi, expect } from 'vitest';
+import { render, screen, fireEvent } from "@testing-library/react";
+import AddMaterial from "../../../components/adminComponents/AddMaterial";
+import { describe, it, vi, expect } from "vitest";
 
-describe('AddMaterial', () => {
+describe("AddMaterial", () => {
   const setup = (overrideProps = {}) => {
     const onClose = vi.fn();
     const onAdd = vi.fn();
@@ -17,56 +17,64 @@ describe('AddMaterial', () => {
     return { onClose, onAdd };
   };
 
-  it('checks render correct', () => {
+  it("checks render correct", () => {
     setup();
-    expect(screen.getByText('Legg til nytt hovedmateriale')).toBeInTheDocument();
-    expect(screen.getByLabelText('Materialnavn')).toBeInTheDocument();
-    expect(screen.getByLabelText('Farlig materiale')).toBeInTheDocument();
+    expect(
+      screen.getByText("Legg til nytt hovedmateriale"),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Materialnavn")).toBeInTheDocument();
+    expect(screen.getByLabelText("Farlig materiale")).toBeInTheDocument();
   });
 
-  it('check name input works', () => {
+  it("check name input works", () => {
     setup();
-    const matnavn = screen.getByLabelText('Materialnavn') as HTMLInputElement;
-    fireEvent.change(matnavn, { target: { value: 'plaaanker' } });
-    expect(matnavn.value).toBe('plaaanker');
+    const matnavn = screen.getByLabelText("Materialnavn") as HTMLInputElement;
+    fireEvent.change(matnavn, { target: { value: "plaaanker" } });
+    expect(matnavn.value).toBe("plaaanker");
   });
 
-  it('check dangerous switch works', () => {
+  it("check dangerous switch works", () => {
     setup();
-    const dangerousswitch = screen.getByLabelText('Farlig materiale') as HTMLInputElement;
+    const dangerousswitch = screen.getByLabelText(
+      "Farlig materiale",
+    ) as HTMLInputElement;
     expect(dangerousswitch.checked).toBe(false);
     fireEvent.click(dangerousswitch);
     expect(dangerousswitch.checked).toBe(true);
   });
 
-  it('check onadd called correctly', () => {
+  it("check onadd called correctly", () => {
     const { onAdd, onClose } = setup();
-    fireEvent.change(screen.getByLabelText('Materialnavn'), { target: { value: 'restavfall' } });
-    fireEvent.click(screen.getByLabelText('Farlig materiale'));
-    fireEvent.click(screen.getByText('Legg til'));
+    fireEvent.change(screen.getByLabelText("Materialnavn"), {
+      target: { value: "restavfall" },
+    });
+    fireEvent.click(screen.getByLabelText("Farlig materiale"));
+    fireEvent.click(screen.getByText("Legg til"));
 
-    expect(onAdd).toHaveBeenCalledWith('restavfall', true);
+    expect(onAdd).toHaveBeenCalledWith("restavfall", true);
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('check onadd called correctly (with other values)', () => {
+  it("check onadd called correctly (with other values)", () => {
     const { onAdd, onClose } = setup();
-    fireEvent.change(screen.getByLabelText('Materialnavn'), { target: { value: 'bly' } });
+    fireEvent.change(screen.getByLabelText("Materialnavn"), {
+      target: { value: "bly" },
+    });
 
-    fireEvent.click(screen.getByLabelText('Farlig materiale'));
-    fireEvent.click(screen.getByLabelText('Farlig materiale'));
-    fireEvent.click(screen.getByLabelText('Farlig materiale'));
-    fireEvent.click(screen.getByLabelText('Farlig materiale'));
-    
-    fireEvent.click(screen.getByText('Legg til'));
+    fireEvent.click(screen.getByLabelText("Farlig materiale"));
+    fireEvent.click(screen.getByLabelText("Farlig materiale"));
+    fireEvent.click(screen.getByLabelText("Farlig materiale"));
+    fireEvent.click(screen.getByLabelText("Farlig materiale"));
 
-    expect(onAdd).toHaveBeenCalledWith('bly', false);
+    fireEvent.click(screen.getByText("Legg til"));
+
+    expect(onAdd).toHaveBeenCalledWith("bly", false);
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('check close on cancel', () => {
+  it("check close on cancel", () => {
     const { onClose } = setup();
-    fireEvent.click(screen.getByText('Avbryt'));
+    fireEvent.click(screen.getByText("Avbryt"));
     expect(onClose).toHaveBeenCalled();
   });
 });
