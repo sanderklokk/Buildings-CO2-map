@@ -79,7 +79,7 @@ export const EditMaterial = ({
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [subToDelete, setSubToDelete] = useState<APIMaterialType | null>(null);
-  const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState<string>("");
 
   useEffect(() => {
     if (open) {
@@ -240,7 +240,6 @@ export const EditMaterial = ({
 
   const confirmDelete = async () => {
     if (subToDelete) {
-
       const affected_materials = await removeSubById(subToDelete.id);
       if (subToDelete.id != null) {
         removeMaterial(subToDelete.id);
@@ -276,6 +275,7 @@ export const EditMaterial = ({
             <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
               <SubMaterialChip label={<span>{sub.navn} {sub.farlig && <ReportProblemIcon color="warning" fontSize="inherit" />}</span> } />
               <IconButton
+                data-testid={"delete-submaterial-button-"+sub.id}
                 size="small"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -306,13 +306,13 @@ export const EditMaterial = ({
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" data-testid="edit-material-popup">
         <DialogTitle>{material.navn}</DialogTitle>
         <DialogContent>
           <Box sx={{ my: 2 }}>
             <FormControlLabel
               control={
-                <Switch checked={localActive} onChange={handleToggleActive} />
+                <Switch checked={localActive} data-testid={"hidden-switch"} onChange={handleToggleActive} />
               }
               label="Material synlig"
             />
@@ -333,7 +333,7 @@ export const EditMaterial = ({
                 materialet?
               </Typography>
               <Box sx={{ mt: 1, display: "flex", gap: 2 }}>
-                <Button variant="contained" color="error" onClick={confirmHide}>
+                <Button variant="contained" data-testid="confirm-hidden" color="error" onClick={confirmHide}>
                   Bekreft
                 </Button>
                 <Button variant="outlined" onClick={cancelHide}>
@@ -351,8 +351,9 @@ export const EditMaterial = ({
               <InputLabel id="parent-select-label">
                 Overordnet kategori
               </InputLabel>
-              <Select
+              <Select 
                 labelId="parent-select-label"
+                data-testid="parent-select"
                 value={selectedParent}
                 label="Overordnet kategori"
                 onChange={(e) =>
@@ -375,7 +376,7 @@ export const EditMaterial = ({
               value={newSubName}
               onChange={(e) => setNewSubName(e.target.value)}
             />
-               <FormControlLabel control={<Switch value={newSubFarlig} checked={newSubFarlig || getMaterial(selectedParent)?.farlig} disabled={getMaterial(selectedParent)?.farlig}  onChange={(e) => setNewSubFarlig(e.target.checked)}/>} label="Farlig" />
+               <FormControlLabel control={<Switch data-testid="create-sub-farlig-switch" value={newSubFarlig} checked={newSubFarlig || getMaterial(selectedParent)?.farlig} disabled={getMaterial(selectedParent)?.farlig}  onChange={(e) => setNewSubFarlig(e.target.checked)}/>} label="Farlig" />
                  
             <Button variant="contained" onClick={handleAddSubcategory}>
               Legg til
@@ -400,6 +401,7 @@ export const EditMaterial = ({
             Skriv "bekreft" for å fortsette.
           </Typography>
           <TextField
+            data-testid={"delete-confirm-input"}
             label='Skriv "bekreft"'
             fullWidth
             value={deleteConfirmInput}
@@ -411,6 +413,7 @@ export const EditMaterial = ({
           <Button onClick={cancelDelete}>Avbryt</Button>
           <Button
             onClick={confirmDelete}
+            data-testid="confirm-delete-submatrial-button"
             variant="contained"
             color="error"
             disabled={deleteConfirmInput.toLowerCase() !== "bekreft"}
