@@ -150,7 +150,9 @@ describe("Omradesok", () => {
   });
 
   it("check updates building state after search", async () => {
-    vi.fn(get_search_building_materials).mockResolvedValue({
+    (
+      get_search_building_materials as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       status: 200,
       statusText: "OK",
       data: mockBuildingmaterialsdata,
@@ -168,7 +170,9 @@ describe("Omradesok", () => {
     await userEvent.click(screen.getByTestId("omradesok-sok-btn"));
 
     await waitFor(() => {
-      expect(mockStore.mapSlice.setBuildings).toHaveBeenCalledWith([]);
+      expect(mockStore.mapSlice.setBuildings).toHaveBeenCalledWith(
+        mockBuildingmaterialsdata,
+      );
     });
   });
 });
