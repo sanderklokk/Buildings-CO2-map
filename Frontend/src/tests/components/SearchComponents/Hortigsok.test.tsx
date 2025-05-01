@@ -3,7 +3,6 @@ import HortigSok from "../../../components/SearchComponents/Hortigsok";
 import { vi, describe, beforeEach, it, expect } from "vitest";
 import { get_address_search } from "../../../api/geonorgeAPI";
 import { get_closest_building_materials } from "../../../api/mapsearchAPI";
-
 import * as Store from "../../../store/Store";
 import { APIAdresseSok, APIMapBuilding } from "../../../api/models";
 import { AxiosHeaders } from "axios";

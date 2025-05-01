@@ -4,8 +4,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import { get_address_search } from "../../api/geonorgeAPI";
-
-//import { useBoundStore } from "../../store/Store";
 import { AxiosResponse } from "axios";
 import { APIPunktSok } from "../../api/models";
 import { get_closest_building_materials } from "../../api/mapsearchAPI";
