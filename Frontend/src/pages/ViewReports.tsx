@@ -68,8 +68,8 @@ export const ViewReports = () => {
       </Box>
 
       {isLoading && <Typography>Henter rapporter...</Typography>}
-      {isError && <Typography>Feil oppstod under henting av rapporter</Typography>}
-      {reports?.data.results &&
+      {isError && <Typography data-testid={"reports-error-msg"}>Feil oppstod under henting av rapporter</Typography>}
+      {reports && reports.data.results &&
         <Box>
           <Box
             sx={{
@@ -91,7 +91,7 @@ export const ViewReports = () => {
 
           </Box>
           <Box flex={1} display="flex" justifyContent="center" marginTop={3}>
-            <Pagination page={page} count={Math.ceil((reports.data.total / count) + 0.1)} onChange={(_, value) => setPage(value)} />
+            <Pagination data-testid={"viewreports-pagination"} page={page} count={Math.ceil((reports.data.total / count) + 0.1)} onChange={(_, value) => setPage(value)} />
           </Box>
         </Box>
       }

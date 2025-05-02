@@ -26,7 +26,7 @@ interface ReportCardProps {
 
 const ReportCard = ({ report, onViewReport }: ReportCardProps) => {
   return (
-    <Card sx={{ minHeight: 250 }}>
+    <Card sx={{ minHeight: 250 }} data-testid={"report-card-"+report.id}>
       <CardContent>
         <Typography variant="body2" sx={{ mb: 1 }}>
           <strong>Rapport-ID:</strong> {report.id}
@@ -56,6 +56,7 @@ const ReportCard = ({ report, onViewReport }: ReportCardProps) => {
           color="primary"
           size="small"
           variant="contained"
+          data-testid="show-report-btn"
           onClick={() => onViewReport(report.id.toString())}
         >
           Se detaljert rapport
