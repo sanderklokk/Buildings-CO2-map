@@ -11,8 +11,7 @@ import { ViewReports } from "../../pages/ViewReports";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AxiosHeaders } from "axios";
-import { userEvent } from "@storybook/test";
-import { act } from "react";
+import { userEvent } from "@testing-library/user-event";
 
 const mockreport: APIWasteReportOverview = {
   id: 50,
@@ -83,7 +82,6 @@ describe("ViewReports", () => {
 
     render(<ViewReports />);
     await waitFor(() => {
-      screen.debug();
       expect(screen.getByTestId("reports-error-msg")).toBeInTheDocument();
     });
   });
@@ -94,9 +92,9 @@ describe("ViewReports", () => {
     const sidebarsearch = screen.getByLabelText("Søk rapport");
     expect(mainsearch).toBeInTheDocument();
     expect(sidebarsearch).toBeInTheDocument();
-    await act(async () => {
-      await userEvent.type(mainsearch, "trondheimvei 40");
-    });
+
+    await userEvent.type(mainsearch, "trondheimvei 40");
+
     expect(mainsearch).toHaveValue("trondheimvei 40");
     expect(sidebarsearch).toHaveValue("trondheimvei 40");
 
@@ -104,9 +102,7 @@ describe("ViewReports", () => {
       expect(get_wastereports).toHaveBeenCalledWith(1, 9, "trondheimvei 40");
     });
 
-    await act(async () => {
-      await userEvent.clear(sidebarsearch);
-    });
+    await userEvent.clear(sidebarsearch);
 
     expect(mainsearch).toHaveValue("");
     expect(sidebarsearch).toHaveValue("");
@@ -136,24 +132,24 @@ describe("ViewReports", () => {
     expect(pagesection).toBeInTheDocument();
 
     const page2 = within(pagesection).getByText("2");
-    await act(async () => {
-      await userEvent.click(page2);
-    });
+
+    await userEvent.click(page2);
+
     await waitFor(() => {
       expect(get_wastereports).toHaveBeenCalledWith(2, 9, "");
     });
 
     const page1 = within(pagesection).getByText("1");
-    await act(async () => {
-      await userEvent.click(page1);
-    });
+
+    await userEvent.click(page1);
+
     await waitFor(() => {
       expect(get_wastereports).toHaveBeenCalledWith(1, 9, "");
     });
     const next = within(pagesection).getByLabelText("Go to next page");
-    await act(async () => {
-      await userEvent.click(next);
-    });
+
+    await userEvent.click(next);
+
     await waitFor(() => {
       expect(get_wastereports).toHaveBeenCalledWith(2, 9, "");
     });
