@@ -50,7 +50,7 @@ export const AvfallsplanForm = () => {
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
           .map((x) => x.id)
-          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
+          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id) ||  getSubMaterials(wasteMaterial.id).length > 0
     );
   };
 
@@ -120,6 +120,7 @@ export const AvfallsplanForm = () => {
           <>
             <Box display={"flex"} justifyContent={"start"}>
               <Autocomplete
+                data-testid="reportform-material-autocomplete"
                 options={getSearchOptions()}
                 getOptionLabel={(option) => option.navn}
                 style={{ width: 300 }}
@@ -133,6 +134,7 @@ export const AvfallsplanForm = () => {
                   <TextField
                     {...params}
                     label="Materialtype"
+                    data-testid="reportform-material-input"
                     variant="outlined"
                   />
                 )}
@@ -155,6 +157,7 @@ export const AvfallsplanForm = () => {
                       sx={{ margin: "3px" }}
                       onClick={() => handleAddWasteCategory(mat, true)}
                       variant="outlined"
+                      data-testid="reportform-add-parent-material"
                     >
                       {mat.navn}
                     </Button>
@@ -174,6 +177,7 @@ export const AvfallsplanForm = () => {
                           sx={{ margin: "3px" }}
                           onClick={() => handleAddWasteCategory(material)}
                           variant="outlined"
+                          data-testid={"reportform-add-sub-material-"+material.id}
                         >
                           {material.navn}
                         </Button>
@@ -205,7 +209,7 @@ export const AvfallsplanForm = () => {
         >
           <TableContainer className="max-w-[1200px]">
             <Table>
-              <TableHead className="bg-blue-100 border ">
+              <TableHead className="bg-blue-100 border " data-testid="reportform-ordinert-head">
                 <TableRow className="">
                   <TableCell>
                     <Typography className="font-bold">
@@ -299,7 +303,7 @@ export const AvfallsplanForm = () => {
         >
           <TableContainer className="max-w-[1200px]">
             <Table>
-              <TableHead className="bg-blue-100 border ">
+              <TableHead className="bg-blue-100 border "  data-testid="reportform-farlig-head">
                 <TableRow className="">
                   <TableCell>
                     <Typography className="font-bold">Farlig avfall</Typography>

@@ -7,7 +7,7 @@ import { APIMaterialType } from "../../api/models";
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | undefined}) => {
-    console.log(material)
+   
     const { updateAvfallRow, wasteReport }  = useBoundStore().wasteReportForm;
     if (!material || material.id == null) {
         return <></>;
@@ -29,26 +29,26 @@ export const AvfallsMaterialeRow = ({ material }:{ material: APIMaterialType | u
             </Typography>
         </TableCell>
         <TableCell {...cellProps}>
-            <TextField placeholder="0 (t)" fullWidth type="number" value={getAvfallRow()?.plannedAmount == 0 ? "" : getAvfallRow()?.plannedAmount} onChange={(e) => updateAvfallRow(material.id, { plannedAmount: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
+            <TextField data-testid={"form-avfallsrow-plannedamount"}  placeholder="0 (t)" fullWidth type="number" value={getAvfallRow()?.plannedAmount == 0 ? "" : getAvfallRow()?.plannedAmount} onChange={(e) => updateAvfallRow(material.id, { plannedAmount: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
         </TableCell>
         <TableCell {...cellProps}>
-            <TextField placeholder="0 (t)" fullWidth type="number" value={getAvfallRow()?.actualAmount == 0 ? "" : getAvfallRow()?.actualAmount} onChange={(e) => updateAvfallRow(material.id, { actualAmount: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
+            <TextField data-testid={"form-avfallsrow-actualamount"} placeholder="0 (t)" fullWidth type="number" value={getAvfallRow()?.actualAmount == 0 ? "" : getAvfallRow()?.actualAmount} onChange={(e) => updateAvfallRow(material.id, { actualAmount: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
         </TableCell>
 
         <TableCell {...cellProps}>
-            <Typography className="text-center">{getAvfallRow()?.actualAmount != null && getAvfallRow()?.plannedAmount != null && (getAvfallRow()?.actualAmount || 0) - (getAvfallRow()?.plannedAmount || 0)}</Typography>
+            <Typography data-testid={"form-avfallsrow-difference"} className="text-center">{getAvfallRow()?.actualAmount != null && getAvfallRow()?.plannedAmount != null && (getAvfallRow()?.actualAmount || 0) - (getAvfallRow()?.plannedAmount || 0)}</Typography>
         </TableCell>
         <TableCell {...cellProps}>
-            <TextField placeholder="0 (t)" fullWidth className="w-full m-0" type="number" value={getAvfallRow()?.amountToFacility == 0 ? "" : getAvfallRow()?.amountToFacility} onChange={(e) => updateAvfallRow(material.id, { amountToFacility: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
+            <TextField data-testid={"form-avfallsrow-tofacility"} placeholder="0 (t)" fullWidth className="w-full m-0" type="number" value={getAvfallRow()?.amountToFacility == 0 ? "" : getAvfallRow()?.amountToFacility} onChange={(e) => updateAvfallRow(material.id, { amountToFacility: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
+        </TableCell>
+        <TableCell {...cellProps}> 
+            <TextField data-testid={"form-avfallsrow-toreuse"} placeholder="0 (t)" fullWidth type="number" value={getAvfallRow()?.amountToReuse == 0 ? "" : getAvfallRow()?.amountToReuse} onChange={(e) => updateAvfallRow(material.id, { amountToReuse: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
         </TableCell>
         <TableCell {...cellProps}>
-            <TextField placeholder="0 (t)" fullWidth type="number" value={getAvfallRow()?.amountToReuse == 0 ? "" : getAvfallRow()?.amountToReuse} onChange={(e) => updateAvfallRow(material.id, { amountToReuse: e.target.value == "" ? 0 : parseFloat(e.target.value) })} />
-        </TableCell>
-        <TableCell {...cellProps}>
-            <TextField placeholder="-" fullWidth value={getAvfallRow()?.facility} onChange={(e) => updateAvfallRow(material.id, { facility: e.target.value })} />
+            <TextField data-testid={"form-avfallsrow-facility"} placeholder="-" fullWidth value={getAvfallRow()?.facility} onChange={(e) => updateAvfallRow(material.id, { facility: e.target.value })} />
         </TableCell>
         <TableCell width={1} {...cellProps}>
-            <MoreIconPopup id={material.id} />
+            <MoreIconPopup  id={material.id} />
         </TableCell>
     </TableRow>
 }

@@ -105,7 +105,7 @@ export const SubmitReportPage = () => {
                         </Typography>
                         <AvfallsplanForm />
                     </Box>
-                    <Button onClick={handleSubmit} variant="contained" color="primary" size="large" className="w-[200px]" sx={{ marginTop: 5 }}>
+                    <Button onClick={handleSubmit} data-testid={"form-submit-btn"} variant="contained" color="primary" size="large" className="w-[200px]" sx={{ marginTop: 5 }}>
                         Send inn
                     </Button>
                 </Box>
