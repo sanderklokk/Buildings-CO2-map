@@ -36,6 +36,7 @@ const UserMenu = () => {
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box
         onClick={handleClick}
+        data-testid="usermenu-btn"
         sx={{
           display: "flex",
           alignItems: "center",

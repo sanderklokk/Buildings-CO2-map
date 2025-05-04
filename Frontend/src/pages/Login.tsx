@@ -56,7 +56,12 @@ const Login = () => {
               {error}
             </Typography>
           )}
-          <Button variant="contained" onClick={handleLogin} fullWidth>
+          <Button
+            variant="contained"
+            onClick={handleLogin}
+            fullWidth
+            data-testid="login-btn"
+          >
             Logg inn
           </Button>
         </Box>

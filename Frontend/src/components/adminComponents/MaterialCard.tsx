@@ -12,16 +12,13 @@ import SubMaterialChip from "./SubMaterialChip";
 import { APIMaterialType } from "../../api/models";
 import EditMaterial from "./EditMaterial";
 import { useBoundStore } from "../../store/Store";
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 interface MaterialCardProps {
   material: APIMaterialType;
 }
 
-const MaterialCard = ({
-  material,
-}: MaterialCardProps) => {
-
+const MaterialCard = ({ material }: MaterialCardProps) => {
   const { materials } = useBoundStore().materialManagementSlice;
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -36,24 +33,35 @@ const MaterialCard = ({
       return [];
     }
     return materials.filter((mat) => mat.forelder === id);
-  }
+  };
 
-
-  const renderSubcategories = (subs: APIMaterialType[], level=0) => {
+  const renderSubcategories = (subs: APIMaterialType[], level = 0) => {
     return subs.map((sub) => (
       <Box key={sub.id} sx={{ ml: level * 2, mt: 1 }}>
-        <SubMaterialChip label={<span>{sub.navn} {sub.farlig && <ReportProblemIcon data-testid="dangerous-icon" color="warning" fontSize="inherit" />}</span>} />
+        <SubMaterialChip
+          label={
+            <span>
+              {sub.navn}{" "}
+              {sub.farlig && (
+                <ReportProblemIcon
+                  data-testid="dangerous-icon"
+                  color="warning"
+                  fontSize="inherit"
+                />
+              )}
+            </span>
+          }
+        />
         {subcategories(sub.id) &&
           subcategories(sub.id).length > 0 &&
           renderSubcategories(subcategories(sub.id), level + 1)}
       </Box>
     ));
-
   };
 
   return (
     <>
-      <Card sx={{ width: 300 }}>
+      <Card sx={{ width: 300 }} data-testid={"material-card-" + material.id}>
         <Box
           sx={{
             backgroundColor: "var(--color-trk-light-blue)",
@@ -80,7 +88,14 @@ const MaterialCard = ({
 
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            {material.navn} {material.farlig && <ReportProblemIcon data-testid="dangerous-icon-parent" color="warning" fontSize="small" />}
+            {material.navn}{" "}
+            {material.farlig && (
+              <ReportProblemIcon
+                data-testid="dangerous-icon-parent"
+                color="warning"
+                fontSize="small"
+              />
+            )}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
             Undermaterialer
