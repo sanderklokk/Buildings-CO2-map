@@ -24,7 +24,10 @@ export const AvfallsplanForm = () => {
     data: materialtypes,
     isLoading: isMaterialsLoading,
     isError: isMaterialsError,
-  } = useQuery({ queryKey: ["materialtypes", false], queryFn: () => get_all_materialtypes(false) });
+  } = useQuery({
+    queryKey: ["materialtypes", false],
+    queryFn: () => get_all_materialtypes(false),
+  });
 
   const { addAvfallRow, wasteReport } = useBoundStore().wasteReportForm;
 
@@ -42,15 +45,15 @@ export const AvfallsplanForm = () => {
 
     if (addWasteCategoryInputValue === "")
       return materialtypes.data.filter(
-        (wasteMaterial) =>
-          !wasteMaterial.forelder
+        (wasteMaterial) => !wasteMaterial.forelder,
       );
     return materialtypes.data.filter(
       (wasteMaterial) =>
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
           .map((x) => x.id)
-          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
+          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id) ||
+        getSubMaterials(wasteMaterial.id).length > 0,
     );
   };
 
@@ -59,11 +62,10 @@ export const AvfallsplanForm = () => {
   };
 
   const getSubMaterials = (materialId: number | null) => {
-
     if (!materialtypes) return [];
 
     return materialtypes.data.filter(
-      (wasteMaterial) => wasteMaterial.forelder === materialId
+      (wasteMaterial) => wasteMaterial.forelder === materialId,
     );
   };
 
@@ -75,17 +77,17 @@ export const AvfallsplanForm = () => {
         !wasteReport.avfall.farlig
           .concat(wasteReport.avfall.ordinert)
           .map((x) => x.id)
-          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id)
+          .includes(wasteMaterial.id == null ? -1 : wasteMaterial.id),
     );
   };
 
-  const handleAddWasteCategory = (value: APIMaterialType | null, force=false) => {
-    
+  const handleAddWasteCategory = (
+    value: APIMaterialType | null,
+    force = false,
+  ) => {
     if (value) {
       if (value.id == null) return;
-     
-     
-     
+
       setSelected(value.id);
       if (getSubMaterials(value.id).length === 0 || force) {
         if (
@@ -98,7 +100,7 @@ export const AvfallsplanForm = () => {
           setAddWasteCategoryInputValue("");
           return;
         }
-        
+
         setShowSubMaterials(false);
         addAvfallRow(value.id, value.farlig);
         setAddWasteCategoryValue(null);
@@ -120,6 +122,7 @@ export const AvfallsplanForm = () => {
           <>
             <Box display={"flex"} justifyContent={"start"}>
               <Autocomplete
+                data-testid="reportform-material-autocomplete"
                 options={getSearchOptions()}
                 getOptionLabel={(option) => option.navn}
                 style={{ width: 300 }}
@@ -133,6 +136,7 @@ export const AvfallsplanForm = () => {
                   <TextField
                     {...params}
                     label="Materialtype"
+                    data-testid="reportform-material-input"
                     variant="outlined"
                   />
                 )}
@@ -145,21 +149,24 @@ export const AvfallsplanForm = () => {
                   {materialtypes.data.find((x) => x.id == selected)?.navn}
                 </Typography>
                 <Box>
-                  {(() => { 
+                  {(() => {
                     if (!selected) return;
                     const mat = getMaterialById(selected);
                     if (!mat) return;
-                  
-                      return <Button
-                      key={mat.id}
-                      sx={{ margin: "3px" }}
-                      onClick={() => handleAddWasteCategory(mat, true)}
-                      variant="outlined"
-                    >
-                      {mat.navn}
-                    </Button>
+
+                    return (
+                      <Button
+                        key={mat.id}
+                        sx={{ margin: "3px" }}
+                        onClick={() => handleAddWasteCategory(mat, true)}
+                        variant="outlined"
+                        data-testid="reportform-add-parent-material"
+                      >
+                        {mat.navn}
+                      </Button>
+                    );
                   })()}
-                  <Divider orientation="vertical" className="inline"  />
+                  <Divider orientation="vertical" className="inline" />
                   {showSubMaterials &&
                     getSubMaterialsNotInUse().length === 0 && (
                       <Typography>
@@ -174,6 +181,9 @@ export const AvfallsplanForm = () => {
                           sx={{ margin: "3px" }}
                           onClick={() => handleAddWasteCategory(material)}
                           variant="outlined"
+                          data-testid={
+                            "reportform-add-sub-material-" + material.id
+                          }
                         >
                           {material.navn}
                         </Button>
@@ -205,7 +215,10 @@ export const AvfallsplanForm = () => {
         >
           <TableContainer className="max-w-[1200px]">
             <Table>
-              <TableHead className="bg-blue-100 border ">
+              <TableHead
+                className="bg-blue-100 border "
+                data-testid="reportform-ordinert-head"
+              >
                 <TableRow className="">
                   <TableCell>
                     <Typography className="font-bold">
@@ -266,7 +279,7 @@ export const AvfallsplanForm = () => {
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
                         material={materialtypes?.data.find(
-                          (x) => x.id == wasteCategory.id
+                          (x) => x.id == wasteCategory.id,
                         )}
                       />
                     );
@@ -299,7 +312,10 @@ export const AvfallsplanForm = () => {
         >
           <TableContainer className="max-w-[1200px]">
             <Table>
-              <TableHead className="bg-blue-100 border ">
+              <TableHead
+                className="bg-blue-100 border "
+                data-testid="reportform-farlig-head"
+              >
                 <TableRow className="">
                   <TableCell>
                     <Typography className="font-bold">Farlig avfall</Typography>
@@ -358,7 +374,7 @@ export const AvfallsplanForm = () => {
                       <AvfallsMaterialeRow
                         key={wasteCategory.id}
                         material={materialtypes?.data.find(
-                          (x) => x.id == wasteCategory.id
+                          (x) => x.id == wasteCategory.id,
                         )}
                       />
                     );
