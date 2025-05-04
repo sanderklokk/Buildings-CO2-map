@@ -1,50 +1,56 @@
-# React + TypeScript + Vite
+# BuildingsCO2Map frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend of this project is built using React and TypeScript. The frontend provides the following functionality:
+- Interactive map showing estimated materials in buildings in Trondheim.
+- Search for a specific address, or whole areas filtered by type of building, material and area.
+- Create waste reports for buildings.
+- Administrate materials available to be used in waste reports.
+- View and search for waste reports.
 
-Currently, two official plugins are available:
+To ensure all functionality works, also follow the instructions given in the [Backend](../Backend/README.md) README.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prerequisites
+- Enure node is installed. https://nodejs.org/en/download 
 
-## Expanding the ESLint configuration
+## Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/sanderklokk/Buildings-CO2-map.git
+    ```
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+2. Enter the frontend directory:
+   ```bash
+   cd Frontend
+   ```
+3. Install dependencies:
+   ```bash
+    npm install
+    ```
 
-- Configure the top-level `parserOptions` property like this:
+## Run the application
+1. Start the frontend application:
+   ```bash
+   npm run dev
+   ```
+2. Open `http://localhost:5173/` to view the application.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
+## Build 
+1. Build the application:
+   ```bash
+    npm run build
+   ```
+  
+## Tests
+There are comprehensive component-tests created for the frontend using Vitest covering about 80% of the code. The tests are found in [src/tests](src/tests).
+1. Run tests:
+   ```bash
+   npm run test
+   ```
+2. View test coverage
+    ```bash
+   npm run coverage
+    ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
+## Other relevant information
+- The different routes in application are found and defined in the [router](src/pages/Router.tsx) component.
+- The application currently uses [localhost:8000](http://localhost:8000/) as the backend. This can be changed in [api/config.ts](src/api/config.ts).
