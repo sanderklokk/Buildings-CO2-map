@@ -18,25 +18,12 @@ import { get_search_building_materials } from "../../api/mapsearchAPI";
 import { BUILDINGCODES } from "../../assets/data/buildingcodes";
 import { AREAS } from "../../assets/data/areas";
 
-// Demo-data
-//const byggtypeOptions = ["Byggtype 1", "Byggtype 2", "Byggtype 3"];
-//const omradeOptions = ["Område 1", "Område 2", "Område 3"];
-//const materialOptions = ["Material 1", "Material 2", "Material 3"];
-const subMaterialOptions = [
-  "Underkategori 1",
-  "Underkategori 2",
-  "Underkategori 3",
-];
-
 const Omradesok = () => {
 
   const { setBuildings, buildings, setHurtigSokResult } = useBoundStore().mapSlice;
   const [byggtype, setByggtype] = useState<string[]>([]);
   const [omrade, setOmrade] = useState<string | undefined>(undefined);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
-  const [selectedSubMaterials, setSelectedSubMaterials] = useState<string[]>(
-    []
-  );
   
   const { data: materialOptions, isLoading: materialsLoading, isError: materialsError} = useQuery({queryKey: ["materials"], queryFn: () => get_all_materialtypes(true)});
 
@@ -61,18 +48,6 @@ const Omradesok = () => {
     const newMaterials = typeof value === "string" ? value.split(",") : value;
     setSelectedMaterials(newMaterials);
 
-    if (!newMaterials.includes("Material 2")) {
-      setSelectedSubMaterials([]);
-    }
-  };
-
-  const handleSubMaterialChange = (event: SelectChangeEvent<string[]>) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedSubMaterials(
-      typeof value === "string" ? value.split(",") : value
-    );
   };
 
   const clearByggtype = () => {
@@ -85,11 +60,6 @@ const Omradesok = () => {
 
   const clearMaterial = () => {
     setSelectedMaterials([]);
-    setSelectedSubMaterials([]);
-  };
-
-  const clearSubMaterial = () => {
-    setSelectedSubMaterials([]);
   };
 
   const handleSearch = async () => {
@@ -118,6 +88,7 @@ const Omradesok = () => {
         <FormControl fullWidth variant="outlined">
           <InputLabel id="byggtype-label">Byggtype</InputLabel>
           <Select
+            data-testid="byggtype-select"
             labelId="byggtype-label"
             multiple
             value={byggtype}
@@ -155,6 +126,7 @@ const Omradesok = () => {
           <FormControl fullWidth variant="outlined">
             <InputLabel id="omrade-label">Område</InputLabel>
             <Select
+              data-testid="omrade-select"
               labelId="omrade-label"
               value={omrade || ""}
               onChange={handleOmradeChange}
@@ -187,6 +159,7 @@ const Omradesok = () => {
         <FormControl fullWidth variant="outlined">
           <InputLabel id="materialtype-label">Materialtype</InputLabel>
           <Select
+            data-testid="materialtype-select"
             labelId="materialtype-label"
             multiple
             value={selectedMaterials}
@@ -206,7 +179,7 @@ const Omradesok = () => {
             {materialsLoading && <MenuItem disabled>Laster...</MenuItem>}
             {materialsError && <MenuItem disabled>Feil under henting av materialvalg</MenuItem>}
             {materialOptions && materialOptions.data.map((option) => (option.id != null ?
-              <MenuItem key={option.id} value={option.id}>
+              <MenuItem data-testid={"materialtype-option-"+option.id} key={option.id} value={option.id}>
                 {option.navn}
               </MenuItem> : <></>
             ))}
@@ -220,45 +193,8 @@ const Omradesok = () => {
           </Box>
         )}
       </Box>
-
-      {selectedMaterials.includes("Material 2") && (
-        <Box className="space-y-4">
-          <FormControl fullWidth variant="outlined">
-            <InputLabel id="sub-material-label">Underkategori</InputLabel>
-            <Select
-              labelId="sub-material-label"
-              multiple
-              value={selectedSubMaterials}
-              onChange={handleSubMaterialChange}
-              input={<OutlinedInput label="Underkategori" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {(selected as string[]).map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
-              label="Underkategori"
-            >
-              {subMaterialOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {selectedSubMaterials.length > 0 && (
-            <Box className="flex justify-end mt-2">
-              <Button variant="text" onClick={clearSubMaterial}>
-                Fjern filter
-              </Button>
-            </Box>
-          )}
-        </Box>
-      )}
-
       <Box>
-        <Button variant="contained" fullWidth onClick={handleSearch}>
+        <Button data-testid="omradesok-sok-btn" variant="contained" fullWidth onClick={handleSearch}>
           Søk
         </Button>
       </Box>
