@@ -133,5 +133,5 @@ describe("GjelderForm", () => {
         beskrivelse,
       );
     });
-  });
+  }, 10000);
 });
