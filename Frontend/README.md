@@ -53,4 +53,5 @@ There are comprehensive component-tests created for the frontend using Vitest co
 
 ## Other relevant information
 - The different routes in application are found and defined in the [router](src/pages/Router.tsx) component.
+   - The page for creating reports are not accessible from the navigation bar, as it is not a part of the admin functionality. To view this page, open `http://localhost:5173/report/create`
 - The application currently uses [localhost:8000](http://localhost:8000/) as the backend. This can be changed in [api/config.ts](src/api/config.ts).
