@@ -90,6 +90,9 @@ DATABASES = {
             "service": "my_service",
             "passfile": ".my_pgpass",
         },
+        "TEST": {
+            "MIRROR": "default",
+        },
     }
 }
 
