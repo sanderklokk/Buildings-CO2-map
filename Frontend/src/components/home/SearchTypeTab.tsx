@@ -54,15 +54,10 @@ export default function SearchTypeTab() {
       </Box>
 
       {/* Panel for Byggsøk */}
-      {value == 0 && 
-        <Hortigsok />
-      }
-
+      {value == 0 && <Hortigsok />}
 
       {/* Panel for Områdesøk */}
-      {value == 1 && 
-        <Omradesok />
-      }
+      {value == 1 && <Omradesok />}
     </Box>
   );
 }
