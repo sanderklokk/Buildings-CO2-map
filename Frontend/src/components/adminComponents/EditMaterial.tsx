@@ -17,11 +17,15 @@ import {
   MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import SubMaterialChip from "./SubMaterialChip";
 import { APIMaterialType } from "../../api/models";
 import { useBoundStore } from "../../store/Store";
-import { create_materialtype, delete_materialtype, update_materialtypes } from "../../api/materialtypeAPI";
+import {
+  create_materialtype,
+  delete_materialtype,
+  update_materialtypes,
+} from "../../api/materialtypeAPI";
 
 interface FlattenedOption {
   id: number;
@@ -41,15 +45,15 @@ export const EditMaterial = ({
   onClose,
   onSave,
 }: EditMaterialProps) => {
-  const { materials, setMaterials, replaceMaterials, removeMaterial } = useBoundStore().materialManagementSlice;
+  const { materials, setMaterials, replaceMaterials, removeMaterial } =
+    useBoundStore().materialManagementSlice;
 
   const localsubcategories = (id: number | null) => {
     if (id == null) {
       return [];
-
     }
     return materials.filter((mat) => mat.forelder === id);
-  }
+  };
 
   const globalsubcategories = (id: number | null): APIMaterialType[] => {
     if (id == null) {
@@ -67,8 +71,7 @@ export const EditMaterial = ({
       }
     }
     return Array.from(allsubs);
-
-  }
+  };
   const [localActive, setLocalActive] = useState(material.synlig);
 
   const [newSubName, setNewSubName] = useState("");
@@ -107,7 +110,10 @@ export const EditMaterial = ({
 
   const hideMaterial = async () => {
     try {
-      const materialsToUpdate = [...globalsubcategories(material.id), material].map((m) => ({
+      const materialsToUpdate = [
+        ...globalsubcategories(material.id),
+        material,
+      ].map((m) => ({
         ...m,
         synlig: false,
       }));
@@ -120,13 +126,15 @@ export const EditMaterial = ({
       }
     } catch (error) {
       console.error("Error setting material active:", error);
-
     }
-  }
+  };
 
   const activateMaterial = async () => {
     try {
-      const materialsToUpdate = [...globalsubcategories(material.id), material].map((m) => ({
+      const materialsToUpdate = [
+        ...globalsubcategories(material.id),
+        material,
+      ].map((m) => ({
         ...m,
         synlig: true,
       }));
@@ -139,16 +147,12 @@ export const EditMaterial = ({
       }
     } catch (error) {
       console.error("Error setting material active:", error);
-
     }
-  }
-
-
-  const cancelHide = () => {
-
-    setShowHideConfirmation(false);
   };
 
+  const cancelHide = () => {
+    setShowHideConfirmation(false);
+  };
 
   const getSubDepth = (material: APIMaterialType, depth = 0): number => {
     if (material.forelder === null) {
@@ -160,17 +164,15 @@ export const EditMaterial = ({
       }
     }
     return depth;
-  }
+  };
 
-  const flattenSubcategories = (
-    subs: APIMaterialType[],
-  ): FlattenedOption[] => {
+  const flattenSubcategories = (subs: APIMaterialType[]): FlattenedOption[] => {
     const result: FlattenedOption[] = [];
     subs.forEach((sub) => {
       if (sub.id == null) {
         return;
       }
-    
+
       const depth = getSubDepth(sub);
       result.push({
         id: sub.id,
@@ -191,7 +193,7 @@ export const EditMaterial = ({
   const handleAddSubcategory = async () => {
     if (newSubName.trim() !== "") {
       try {
-        const parent = getMaterial(selectedParent)
+        const parent = getMaterial(selectedParent);
         const res = await create_materialtype({
           id: null,
           navn: newSubName,
@@ -203,7 +205,6 @@ export const EditMaterial = ({
         if (res.status === 200) {
           const newSub = res.data;
           setMaterials([...materials, newSub]);
-
         }
       } catch (error) {
         console.error("Error creating subcategory:", error);
@@ -214,7 +215,9 @@ export const EditMaterial = ({
     }
   };
 
-  const removeSubById = async (id: number | null): Promise<APIMaterialType[]> => {
+  const removeSubById = async (
+    id: number | null,
+  ): Promise<APIMaterialType[]> => {
     if (id === null) {
       return [];
     }
@@ -230,7 +233,7 @@ export const EditMaterial = ({
     } catch (error) {
       console.error("Error deleting subcategory:", error);
     }
-    return []
+    return [];
   };
 
   const initiateDelete = (sub: APIMaterialType) => {
@@ -252,13 +255,18 @@ export const EditMaterial = ({
   };
 
   const cancelDelete = () => {
-
     setDeleteConfirmOpen(false);
     setSubToDelete(null);
     setDeleteConfirmInput("");
   };
 
-  const GroupedSubcategories = ({ subs, level }: { subs: APIMaterialType[], level: number }) => {
+  const GroupedSubcategories = ({
+    subs,
+    level,
+  }: {
+    subs: APIMaterialType[];
+    level: number;
+  }) => {
     return (
       <>
         {subs.map((sub) => (
@@ -273,9 +281,18 @@ export const EditMaterial = ({
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
-              <SubMaterialChip label={<span>{sub.navn} {sub.farlig && <ReportProblemIcon color="warning" fontSize="inherit" />}</span> } />
+              <SubMaterialChip
+                label={
+                  <span>
+                    {sub.navn}{" "}
+                    {sub.farlig && (
+                      <ReportProblemIcon color="warning" fontSize="inherit" />
+                    )}
+                  </span>
+                }
+              />
               <IconButton
-                data-testid={"delete-submaterial-button-"+sub.id}
+                data-testid={"delete-submaterial-button-" + sub.id}
                 size="small"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -286,12 +303,13 @@ export const EditMaterial = ({
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </Box>
-            {localsubcategories(sub.id) && localsubcategories(sub.id).length > 0 && (
-              <GroupedSubcategories
-                subs={localsubcategories(sub.id)}
-                level={level + 1}
-              />
-            )}
+            {localsubcategories(sub.id) &&
+              localsubcategories(sub.id).length > 0 && (
+                <GroupedSubcategories
+                  subs={localsubcategories(sub.id)}
+                  level={level + 1}
+                />
+              )}
           </Box>
         ))}
       </>
@@ -302,17 +320,29 @@ export const EditMaterial = ({
     onSave();
   };
 
-  const flattenedOptions = flattenSubcategories(globalsubcategories(material.id));
+  const flattenedOptions = flattenSubcategories(
+    globalsubcategories(material.id),
+  );
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" data-testid="edit-material-popup">
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="sm"
+        data-testid="edit-material-popup"
+      >
         <DialogTitle>{material.navn}</DialogTitle>
         <DialogContent>
           <Box sx={{ my: 2 }}>
             <FormControlLabel
               control={
-                <Switch checked={localActive} data-testid={"hidden-switch"} onChange={handleToggleActive} />
+                <Switch
+                  checked={localActive}
+                  data-testid={"hidden-switch"}
+                  onChange={handleToggleActive}
+                />
               }
               label="Material synlig"
             />
@@ -333,7 +363,12 @@ export const EditMaterial = ({
                 materialet?
               </Typography>
               <Box sx={{ mt: 1, display: "flex", gap: 2 }}>
-                <Button variant="contained" data-testid="confirm-hidden" color="error" onClick={confirmHide}>
+                <Button
+                  variant="contained"
+                  data-testid="confirm-hidden"
+                  color="error"
+                  onClick={confirmHide}
+                >
                   Bekreft
                 </Button>
                 <Button variant="outlined" onClick={cancelHide}>
@@ -345,13 +380,16 @@ export const EditMaterial = ({
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             Undermaterialer
           </Typography>
-          <GroupedSubcategories subs={localsubcategories(material.id)} level={0} />
+          <GroupedSubcategories
+            subs={localsubcategories(material.id)}
+            level={0}
+          />
           <Box sx={{ mt: 2 }}>
             <FormControl fullWidth size="small">
               <InputLabel id="parent-select-label">
                 Overordnet kategori
               </InputLabel>
-              <Select 
+              <Select
                 labelId="parent-select-label"
                 data-testid="parent-select"
                 value={selectedParent}
@@ -376,15 +414,25 @@ export const EditMaterial = ({
               value={newSubName}
               onChange={(e) => setNewSubName(e.target.value)}
             />
-               <FormControlLabel control={<Switch data-testid="create-sub-farlig-switch" value={newSubFarlig} checked={newSubFarlig || getMaterial(selectedParent)?.farlig} disabled={getMaterial(selectedParent)?.farlig}  onChange={(e) => setNewSubFarlig(e.target.checked)}/>} label="Farlig" />
-                 
+            <FormControlLabel
+              control={
+                <Switch
+                  data-testid="create-sub-farlig-switch"
+                  value={newSubFarlig}
+                  checked={newSubFarlig || getMaterial(selectedParent)?.farlig}
+                  disabled={getMaterial(selectedParent)?.farlig}
+                  onChange={(e) => setNewSubFarlig(e.target.checked)}
+                />
+              }
+              label="Farlig"
+            />
+
             <Button variant="contained" onClick={handleAddSubcategory}>
               Legg til
             </Button>
           </Box>
         </DialogContent>
         <DialogActions>
-
           <Button onClick={handleClose} variant="contained">
             Lukk
           </Button>

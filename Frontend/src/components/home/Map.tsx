@@ -11,7 +11,6 @@ import { useBoundStore } from "../../store/Store";
 // import { getData } from "../../../../Data/getdata.ts";
 
 export const Map = () => {
-
   const { setBuildings } = useBoundStore().mapSlice;
 
   useEffect(() => {
@@ -38,7 +37,6 @@ export const Map = () => {
       className="h-full"
       center={[63.3516508469412, 10.3585716127384]}
       zoom={10}
-
       scrollWheelZoom={true}
       maxBounds={[
         [63.895025250709246, 8.530996400060626],
@@ -46,21 +44,23 @@ export const Map = () => {
       ]}
       minZoom={9}
       maxZoom={20}
-
     >
-      <Pane name="fullmappane" style={{ zIndex: 1 }} >
-        <TileLayer url='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' maxZoom={20}
+      <Pane name="fullmappane" style={{ zIndex: 1 }}>
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          maxZoom={20}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
       </Pane>
       <HeatLayer zIndex={2} />
       <MarkerLayer />
       <Pane name="labelpane" style={{ zIndex: 3 }}>
-        <TileLayer url='https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png' maxZoom={20}
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png"
+          maxZoom={20}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
       </Pane>
-
     </MapContainer>
   );
 };
