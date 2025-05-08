@@ -1,4 +1,6 @@
+/* Not in use
 import * as React from "react";
+
 import { getData } from "../../../../Data/getdata.ts";
 
 export const DataTextView = () => {
@@ -140,3 +142,4 @@ export const DataTextView = () => {
     </div>
   );
 };
+*/

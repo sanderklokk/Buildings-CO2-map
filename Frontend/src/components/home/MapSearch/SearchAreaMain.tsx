@@ -1,3 +1,4 @@
+/* Not in use
 import React, { useState } from "react";
 import { Box, Tabs, Tab, TextField, Button } from "@mui/material";
 
@@ -5,7 +6,7 @@ const SearchAreaMain = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [showDetailed, setShowDetailed] = useState(false);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
@@ -15,7 +16,7 @@ const SearchAreaMain = () => {
 
   return (
     <Box className="p-4">
-      {/* Tabs for Byggsøk og Områdesøk */}
+
       <Tabs value={activeTab} onChange={handleTabChange} centered>
         <Tab label="Byggsøk" />
         <Tab label="Områdesøk" />
@@ -49,7 +50,7 @@ const SearchAreaMain = () => {
 
       {activeTab === 1 && (
         <Box className="mt-4">
-          {/* GUI for Områdesøk – kan utvides senere */}
+      
           <TextField
             fullWidth
             label="Områdesøk (GUI placeholder)"
@@ -67,3 +68,4 @@ const SearchAreaMain = () => {
 };
 
 export default SearchAreaMain;
+*/

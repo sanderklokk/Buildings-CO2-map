@@ -1,15 +1,15 @@
-@import "tailwindcss";
+@import "tailwindcss"; 
 
-@theme {
+/* @theme { */
   /* COLORS */
-  --color-trk-deep-blue: #005aa7;
+  /* --color-trk-deep-blue: #005aa7;
   --color-trk-light-blue: #009bdf;
   --color-trk-light-gray: #cccccc;
   --color-trk-black: #000000;
-  --color-trk-white: #ffffff;
+  --color-trk-white: #ffffff; */
 
   /*  */
-}
+/* } */
 
 /*
 Dette er ikke i bruk?

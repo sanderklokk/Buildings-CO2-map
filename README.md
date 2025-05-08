@@ -1,8 +1,8 @@
 # IT2901 P19 Buildings CO2 map
-## Prosjekt for ITP2 via NTNU og Trondheim Komune 
+## Project for ITP2 via NTNU og Trondheim municipality
 
-How to contribute
+This codebase contains the backend and frontend for a web application developed for Trondheim municipality.
 
-1. All folders and classes have captial letter first.
-2. Make sure you don't push the data, only use your local version.
-3. Use conventional commits convention
+To run the project, view:
+- The [Frontend README](Frontend/README.md) for instruction and more information about the frontend.
+- The [Backend README](Backend/README.md) for instruction and more information about the backend.

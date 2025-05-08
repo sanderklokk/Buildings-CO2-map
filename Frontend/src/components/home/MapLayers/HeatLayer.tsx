@@ -1,38 +1,56 @@
 import { useMap } from "react-leaflet";
-import L, { HeatLatLngTuple } from 'leaflet'
+import L, { HeatLatLngTuple } from "leaflet";
 import { useEffect } from "react";
+import { useRef } from "react";
+
 import "leaflet.heat";
+import { useBoundStore } from "../../../store/Store";
 
 interface HeatLayerProps {
-  data: { lat: number, long: number, intensity: number, text: string }[],
-  zIndex: number
+  zIndex: number;
 }
+
+// tweak intensity for a less "completely red" map
+const HEAT_INTENSITY_MULTIPLIER = 0.005;
 
 /*
-* handle logic for when heatlayer is shown.
-*/
-export const HeatLayer = ({ data, zIndex }: HeatLayerProps) => {
+ * handle logic for when heatlayer is shown.
+ */
+export const HeatLayer = ({ zIndex }: HeatLayerProps) => {
+  const { buildings } = useBoundStore().mapSlice;
+  const heatLayerRef = useRef<L.HeatLayer | null>(null);
+  const map = useMap();
 
-  const map = useMap()
   useEffect(() => {
-    const points: HeatLatLngTuple[] = data
-      ? data.map((p) => {
-        return [p.lat, p.long, p.intensity];
-      })
+    const points: HeatLatLngTuple[] = buildings
+      ? buildings.map((p) => [
+          p.longitude,
+          p.latitude,
+          p.totalamount * HEAT_INTENSITY_MULTIPLIER,
+        ])
       : [];
-      
-    L.heatLayer(points, { }).addTo(map);
+
+    if (heatLayerRef.current) {
+      map.removeLayer(heatLayerRef.current);
+    }
+
+    const heatLayer = L.heatLayer(points, {}).addTo(map);
+    heatLayerRef.current = heatLayer;
 
     map.eachLayer((layer) => {
-      const l = layer.getPane();
-      if (l && l.className.includes("leaflet-overlay-pane")) {
-        l.style.zIndex = zIndex.toString();
+      const pane = layer.getPane();
+      if (pane && pane.className.includes("leaflet-overlay-pane")) {
+        pane.style.zIndex = zIndex.toString();
       }
-    }
-    );
+    });
 
+    return () => {
+      if (heatLayerRef.current) {
+        map.removeLayer(heatLayerRef.current);
+        heatLayerRef.current = null;
+      }
+    };
+  }, [map, buildings, zIndex]);
 
-  }, [map, data, zIndex]);
-
-  return <></>
-}
+  return <></>;
+};

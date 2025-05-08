@@ -1,14 +1,32 @@
 import { Router } from "./pages/Router";
 import "./App.css";
-import { Navbar } from "./components/layout/Navbar";
+import { AppProvider, Session } from "@toolpad/core/AppProvider";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme/theme";
+
+const demoSession: Session = {
+  user: {
+    name: "Ola Nordmann",
+    email: "ola@trondheimkommune.no",
+  },
+};
+
+const authentication = {
+  signIn: () => {
+    console.log("SignIn");
+  },
+  signOut: () => {
+    console.log("SignOut");
+  },
+};
 
 function App() {
   return (
-    <div className="App w-full h-full p-0 m-0 bg-trk-white overflow-x-hidden">
-      <Navbar />
-      <Router />
-      {/*footer*/}
-    </div>
+    <AppProvider authentication={authentication} session={demoSession}>
+      <ThemeProvider theme={theme}>
+        <Router />
+      </ThemeProvider>
+    </AppProvider>
   );
 }
 

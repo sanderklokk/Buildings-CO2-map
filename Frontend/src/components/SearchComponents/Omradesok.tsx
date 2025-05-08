@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   FormControl,
@@ -9,26 +9,32 @@ import {
   Chip,
   Button,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+{
+  /*import EditIcon from "@mui/icons-material/Edit";*/
+}
 import { SelectChangeEvent } from "@mui/material/Select";
+import { useBoundStore } from "../../store/Store";
+import { useQuery } from "@tanstack/react-query";
+import { get_all_materialtypes } from "../../api/materialtypeAPI";
+import { get_search_building_materials } from "../../api/mapsearchAPI";
+import { BUILDINGCODES } from "../../assets/data/buildingcodes";
+import { AREAS } from "../../assets/data/areas";
 
-// Demo-data
-const byggtypeOptions = ["Byggtype 1", "Byggtype 2", "Byggtype 3"];
-const omradeOptions = ["Område 1", "Område 2", "Område 3"];
-const materialOptions = ["Material 1", "Material 2", "Material 3"];
-const subMaterialOptions = [
-  "Underkategori 1",
-  "Underkategori 2",
-  "Underkategori 3",
-];
-
-const Omradesok: React.FC = () => {
+const Omradesok = () => {
+  const { setBuildings, buildings, setHurtigSokResult } =
+    useBoundStore().mapSlice;
   const [byggtype, setByggtype] = useState<string[]>([]);
-  const [omrade, setOmrade] = useState<string[]>([]);
+  const [omrade, setOmrade] = useState<string | undefined>(undefined);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
-  const [selectedSubMaterials, setSelectedSubMaterials] = useState<string[]>(
-    []
-  );
+
+  const {
+    data: materialOptions,
+    isLoading: materialsLoading,
+    isError: materialsError,
+  } = useQuery({
+    queryKey: ["materials"],
+    queryFn: () => get_all_materialtypes(true),
+  });
 
   const handleByggtypeChange = (event: SelectChangeEvent<string[]>) => {
     const {
@@ -37,11 +43,11 @@ const Omradesok: React.FC = () => {
     setByggtype(typeof value === "string" ? value.split(",") : value);
   };
 
-  const handleOmradeChange = (event: SelectChangeEvent<string[]>) => {
+  const handleOmradeChange = (event: SelectChangeEvent<string>) => {
     const {
       target: { value },
     } = event;
-    setOmrade(typeof value === "string" ? value.split(",") : value);
+    setOmrade(value);
   };
 
   const handleMaterialChange = (event: SelectChangeEvent<string[]>) => {
@@ -50,19 +56,6 @@ const Omradesok: React.FC = () => {
     } = event;
     const newMaterials = typeof value === "string" ? value.split(",") : value;
     setSelectedMaterials(newMaterials);
-
-    if (!newMaterials.includes("Material 2")) {
-      setSelectedSubMaterials([]);
-    }
-  };
-
-  const handleSubMaterialChange = (event: SelectChangeEvent<string[]>) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedSubMaterials(
-      typeof value === "string" ? value.split(",") : value
-    );
   };
 
   const clearByggtype = () => {
@@ -70,24 +63,47 @@ const Omradesok: React.FC = () => {
   };
 
   const clearOmrade = () => {
-    setOmrade([]);
+    setOmrade(undefined);
   };
 
   const clearMaterial = () => {
     setSelectedMaterials([]);
-    setSelectedSubMaterials([]);
   };
 
-  const clearSubMaterial = () => {
-    setSelectedSubMaterials([]);
+  const handleSearch = async () => {
+    try {
+      setHurtigSokResult(null);
+      const area =
+        omrade == undefined
+          ? undefined
+          : AREAS.find((x) => x.id == Number(omrade));
+      const res = await get_search_building_materials(
+        selectedMaterials,
+        byggtype,
+        area,
+      );
+      if (res.status === 200) {
+        setBuildings(res.data);
+      } else {
+        setBuildings([]);
+        console.error("Error fetching building materials");
+      }
+    } catch (error) {
+      setBuildings([]);
+
+      console.error("Error fetching building materials", error);
+    }
+
+    console.log(buildings);
   };
 
   return (
-    <Box className="w-[80%] p-4 mx-auto space-y-8">
+    <Box className="p-4 space-y-8">
       <Box>
         <FormControl fullWidth variant="outlined">
           <InputLabel id="byggtype-label">Byggtype</InputLabel>
           <Select
+            data-testid="byggtype-select"
             labelId="byggtype-label"
             multiple
             value={byggtype}
@@ -95,18 +111,22 @@ const Omradesok: React.FC = () => {
             input={<OutlinedInput label="Byggtype" />}
             renderValue={(selected) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {(selected as string[]).map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
+                {(selected as string[]).map((value) => {
+                  //   const type  = BUILDINGCODES.find(x => x.id == value);
+                  //   if (!type) return <></>
+                  return <Chip key={value} label={value} />;
+                })}
               </Box>
             )}
             label="Byggtype"
           >
-            {byggtypeOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
+            {BUILDINGCODES.sort((a, b) => a.id.localeCompare(b.id)).map(
+              (option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.id} {option.label}
+                </MenuItem>
+              ),
+            )}
           </Select>
         </FormControl>
         {byggtype.length > 0 && (
@@ -123,32 +143,27 @@ const Omradesok: React.FC = () => {
           <FormControl fullWidth variant="outlined">
             <InputLabel id="omrade-label">Område</InputLabel>
             <Select
+              data-testid="omrade-select"
               labelId="omrade-label"
-              multiple
-              value={omrade}
+              value={omrade || ""}
               onChange={handleOmradeChange}
               input={<OutlinedInput label="Område" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {(selected as string[]).map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
               label="Område"
             >
-              {omradeOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {AREAS.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.label}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <Button variant="outlined" startIcon={<EditIcon />}>
+          {/* <Button variant="outlined" startIcon={<EditIcon />}>
             Tegn område
           </Button>
+
+         */}
         </Box>
-        {omrade.length > 0 && (
+        {omrade != undefined && (
           <Box className="flex justify-end mt-2">
             <Button variant="text" onClick={clearOmrade}>
               Fjern filter
@@ -161,6 +176,7 @@ const Omradesok: React.FC = () => {
         <FormControl fullWidth variant="outlined">
           <InputLabel id="materialtype-label">Materialtype</InputLabel>
           <Select
+            data-testid="materialtype-select"
             labelId="materialtype-label"
             multiple
             value={selectedMaterials}
@@ -168,18 +184,35 @@ const Omradesok: React.FC = () => {
             input={<OutlinedInput label="Materialtype" />}
             renderValue={(selected) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {(selected as string[]).map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
+                {(selected as string[]).map((value) => {
+                  const mat = materialOptions?.data.find(
+                    (x) => x.id == Number(value),
+                  );
+                  if (!mat) return <></>;
+                  return <Chip key={value} label={mat.navn} />;
+                })}
               </Box>
             )}
             label="Materialtype"
           >
-            {materialOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
+            {materialsLoading && <MenuItem disabled>Laster...</MenuItem>}
+            {materialsError && (
+              <MenuItem disabled>Feil under henting av materialvalg</MenuItem>
+            )}
+            {materialOptions &&
+              materialOptions.data.map((option) =>
+                option.id != null ? (
+                  <MenuItem
+                    data-testid={"materialtype-option-" + option.id}
+                    key={option.id}
+                    value={option.id}
+                  >
+                    {option.navn}
+                  </MenuItem>
+                ) : (
+                  <></>
+                ),
+              )}
           </Select>
         </FormControl>
         {selectedMaterials.length > 0 && (
@@ -190,45 +223,13 @@ const Omradesok: React.FC = () => {
           </Box>
         )}
       </Box>
-
-      {selectedMaterials.includes("Material 2") && (
-        <Box className="space-y-4">
-          <FormControl fullWidth variant="outlined">
-            <InputLabel id="sub-material-label">Underkategori</InputLabel>
-            <Select
-              labelId="sub-material-label"
-              multiple
-              value={selectedSubMaterials}
-              onChange={handleSubMaterialChange}
-              input={<OutlinedInput label="Underkategori" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {(selected as string[]).map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
-              label="Underkategori"
-            >
-              {subMaterialOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {selectedSubMaterials.length > 0 && (
-            <Box className="flex justify-end mt-2">
-              <Button variant="text" onClick={clearSubMaterial}>
-                Fjern filter
-              </Button>
-            </Box>
-          )}
-        </Box>
-      )}
-
       <Box>
-        <Button variant="contained" fullWidth>
+        <Button
+          data-testid="omradesok-sok-btn"
+          variant="contained"
+          fullWidth
+          onClick={handleSearch}
+        >
           Søk
         </Button>
       </Box>
