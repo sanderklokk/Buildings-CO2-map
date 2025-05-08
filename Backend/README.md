@@ -32,7 +32,7 @@ The frontend of this project is built using Django and python, and uses a Postgr
    python manage.py runserver
     ```
 7. Stop the server and fill the databse with data:
-    - Ensure the data files are located in the `Data` folder in the root directory as `Data/data14.json`, `Data/data15.json` and `Data/reports.csv`
+    - Ensure the data files are located in the `Data` folder in the root directory as `Data/data14.json`, `Data/data15.json` and `Data/Reports.csv`
     - Run:
    ```bash
    python manage.py bootstrapdata
