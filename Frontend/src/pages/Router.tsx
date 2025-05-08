@@ -46,7 +46,7 @@ export const Router = () => {
       name: "DetailedReport",
       path: "/report/view/:id",
       component: <DetailedReport />,
-    }
+    },
   ];
 
   return (

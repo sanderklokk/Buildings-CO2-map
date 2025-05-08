@@ -38,8 +38,16 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ open, onClose, onAdd }) => {
           value={materialName}
           onChange={(e) => setMaterialName(e.target.value)}
         />
-        <FormControlLabel className="mt-2" control={<Switch value={isFarlig} onChange={(e) => setIsFarlig(e.target.checked)}/>} label="Farlig materiale" />
-     
+        <FormControlLabel
+          className="mt-2"
+          control={
+            <Switch
+              value={isFarlig}
+              onChange={(e) => setIsFarlig(e.target.checked)}
+            />
+          }
+          label="Farlig materiale"
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Avbryt</Button>
