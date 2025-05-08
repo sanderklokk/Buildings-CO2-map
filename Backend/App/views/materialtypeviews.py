@@ -34,7 +34,7 @@ def create_materialtype(request):
 @api_view(['PUT'])
 def update_materialtype(request):
     materials = request.data
-
+    
     updated_materials = []
     for material in materials:
         try:
