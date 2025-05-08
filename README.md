@@ -23,7 +23,8 @@ pip install -r requirements.txt
 
 **add enviroment variables to connect Django and your database**    
 from: https://docs.djangoproject.com/en/5.1/ref/databases/#postgresql-notes
-1. create a file called ```.pg_service.conf``` in your home folder and add these variables:
+1. create a file called ```.pg_service.conf``` in your home folder for linux or in %APPDATA%/postgresql/ for windows
+and add these variables:
 ``` bash
 [my_service]
 host=localhost
@@ -32,7 +33,7 @@ dbname=buildingsc02-dev #change if your DB has another name
 port=5432
 
 ``` 
-2. create a file called ```.my_pgpass``` in your home folder and add configure the authentication credentials for the database like this:
+2. create a file called ```.my_pgpass``` in your home folder for linux or in %APPDATA%/postgresql/ for windows and add configure the authentication credentials for the database like this:
 
 ``` bash
 localhost:5432:buildingsc02-dev:<username>:<password> #change username and password to match your user

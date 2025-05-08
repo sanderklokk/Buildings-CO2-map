@@ -4,10 +4,7 @@ from App.models import Bygning, materialtype
 # IMPORTANT!!! tests inside class MUST start with test to run
 
 
-class apiGetTests(TestCase):
-    def testwastereportCreate(self):
-        response = self.client.get('/api/wastereport/all')
-        self.assertEqual(response.status_code, 200)
+
 
 # use negative ids when creating dummy test data.
 class apiPostTests(TestCase):
@@ -38,6 +35,7 @@ class apiPostTests(TestCase):
             'synlig': 'False'
         }
         response = self.client.post('/api/materialtype/create', payload, format='json')
+
 
 
     def testCreateMaterialTypeExist(self):
@@ -82,7 +80,32 @@ class apiPostTests(TestCase):
         self.assertIn(("test3",), materialtype.objects.filter(synlig="True").values_list("navn"))
         self.assertNotIn(("test2",), materialtype.objects.filter(synlig="True").values_list("navn"))
 
+    def testWasteReport(self):
+        payload = {
+            "address":"test",
+            "bygning": 3435318,
+            "postalcode": 9999,
+            "postalplace": "Testing",
+            "berortbra" : 0,
+            "bygningstype": "test",
+            "konstruksjonstype": "test",
+            "handtering" :"Test",
+            "type" : "test",
+            "materialer": [{
+                    "materiale": int(materialtype.objects.get(navn="test2").id),
+                    "planlagtmengde" : 44.0,
+                    "faktiskmengde" : 50.0,
+                    "mengdetilgjenbruk" : 20.0,
+                    "mengdetilanlegg" : 20.0,
+                    "anlegg" : "test",
+                    "totalmengde" : 20
+            }]
+        }
+        response = self.client.post('/api/wastereport/create', payload, format="json", content_type='application/json')
+        self.assertEqual(200, response.status_code)
 
+        response = self.client.get("/api/wastereport/all")
+        self.assertEqual(200, response.status_code)
 
 def circleRecursiveCheck(a, id):
     if (materialtype.objects.get(id=id).id in a):
